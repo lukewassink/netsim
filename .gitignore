@@ -1,0 +1,49 @@
+# ==========================================
+# Operating System Files
+# ==========================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ==========================================
+# Common IDEs and Editors
+# ==========================================
+
+# IntelliJ / JetBrains
+.idea/
+*.iws
+*.iml
+
+# Vim
+.*.swp
+.*.swo
+
+# ==========================================
+# Build Artifacts and Output
+# ==========================================
+bin/
+obj/
+out/
+dist/*
+build/
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+.history
+.cache
+.lib/
+*.log
+*.tmp
+*.class
+
+# ==========================================
+# Environment Variables and Secrets
+# ==========================================
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
