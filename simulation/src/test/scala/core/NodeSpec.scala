@@ -3,21 +3,25 @@ package core
 import test_utils.{BehaviorSpecUtil, UnitSpec}
 
 class NodeSpec extends UnitSpec {
-  val emptyContent = MessageContent("")
-  val message1 = Message(MessageHeader(0, 1, 4, 1, 9), emptyContent)
-  val message2 = Message(MessageHeader(12, 2, 4, 1, 4), emptyContent)
-  val emptyState = NodeState(NodeHeader(0), List.empty)
+  val message1 = Message(MessageHeader(0, 0, 7, 0, 9), MessageContent("One"))
+  val message2 = Message(MessageHeader(0, 0, 8, 0, 5), MessageContent("Two"))
+  val emptyState = NodeState(NodeHeader(3, 1), List.empty)
 
   describe("NodeState") {
     describe("withOutgoingMessage") {
-      it("adds the message to the list") {
+      it("adds the message to the list and sets node metadata correctly") {
+        val messageWithMetadata1 =
+          Message(MessageHeader(1, 3, 7, 4, 9), MessageContent("One"))
+        val messageWithMetadata2 =
+          Message(MessageHeader(2, 3, 8, 5, 5), MessageContent("Two"))
+
         assert(emptyState.outgoingMessages.isEmpty)
-        val state2 = emptyState.withOutgoingMessage(message1)
-        assert(state2.outgoingMessages === List(message1))
-        val state3 = state2.withOutgoingMessage(message2)
+        val state2 = emptyState.withOutgoingMessage(4, message1)
+        assert(state2.outgoingMessages === List(messageWithMetadata1))
+        val state3 = state2.withOutgoingMessage(5, message2)
         state3.outgoingMessages should contain theSameElementsAs List(
-          message1,
-          message2
+          messageWithMetadata1,
+          messageWithMetadata2
         )
       }
     }
@@ -29,7 +33,7 @@ class NodeSpec extends UnitSpec {
       }
 
       it("clears only the outgoing messages") {
-        val state = NodeState(NodeHeader(0), List(message1, message2))
+        val state = NodeState(NodeHeader(0, 0), List(message1, message2))
         state.outgoingMessages should contain theSameElementsAs List(
           message1,
           message2
@@ -41,12 +45,12 @@ class NodeSpec extends UnitSpec {
 
   describe("Node") {
     val emptyQueue = MessageQueue.empty
-    val emptyState = NodeState(NodeHeader(0), List.empty)
+    val emptyState = NodeState(NodeHeader(0, 0), List.empty)
 
     val emptyNode = Node(List.empty, emptyState, emptyQueue)
     val nodeWithIncomingMessages = Node(
       List.empty,
-      NodeState(NodeHeader(4), List(message1, message2)),
+      NodeState(NodeHeader(4, 0), List(message1, message2)),
       emptyQueue
     )
 
@@ -85,9 +89,11 @@ class NodeSpec extends UnitSpec {
           emptyQueue
         )
         node.outgoingMessages shouldBe empty
-        node
-          .nextNode(10)
-          .outgoingMessages should contain theSameElementsAs List(message1)
+        val nextMessages = node.nextNode(10).outgoingMessages
+        nextMessages should have size 1
+        all(nextMessages) should matchPattern {
+          case Message(_, MessageContent("One")) =>
+        }
       }
 
       it("triggers multiple behaviors") {
@@ -100,18 +106,22 @@ class NodeSpec extends UnitSpec {
           emptyQueue
         )
         node.outgoingMessages shouldBe empty
-        node
+        val outgoingMessages = node
           .nextNode(10)
-          .outgoingMessages should contain theSameElementsAs List(
-          message1,
-          message2
-        )
+          .outgoingMessages
+        outgoingMessages should have size 2
+        exactly(1, outgoingMessages) should matchPattern {
+          case Message(_, MessageContent("One")) =>
+        }
+        exactly(1, outgoingMessages) should matchPattern {
+          case Message(_, MessageContent("Two")) =>
+        }
       }
 
       it("clears delivered messages") {
         val node = Node(
           List.empty,
-          NodeState(NodeHeader(4), List.empty),
+          NodeState(NodeHeader(4, 0), List.empty),
           MessageQueue(message1, message2)
         )
         node.incomingMessages.currentMessages(

@@ -1,5 +1,6 @@
 package core
 
+import test_utils.MessageSpecUtil.testMessage
 import test_utils.{BehaviorSpecUtil, UnitSpec}
 
 class NetworkStateSpec extends UnitSpec {
@@ -10,20 +11,20 @@ class NetworkStateSpec extends UnitSpec {
     val messageAToB = Message(MessageHeader(1, 1, 2, 3, 10), emptyContent)
     val messageAToC = Message(MessageHeader(4, 1, 3, 5, 10), emptyContent)
     val messageBToA = Message(MessageHeader(9, 2, 1, 4, 10), emptyContent)
-    val messageCToB = Message(MessageHeader(6, 3, 2, 11, 16), emptyContent)
+    val messageCToB = Message(MessageHeader(0, 3, 2, 2, 16), emptyContent)
     val nodeA = Node(
       List.empty,
-      NodeState(NodeHeader(1), List(messageAToB, messageAToC)),
+      NodeState(NodeHeader(1, 0), List(messageAToB, messageAToC)),
       MessageQueue.empty
     )
     val nodeB = Node(
       List.empty,
-      NodeState(NodeHeader(2), List(messageBToA)),
+      NodeState(NodeHeader(2, 0), List(messageBToA)),
       MessageQueue.empty
     )
     val nodeC = Node(
       List(BehaviorSpecUtil.TestBehavior(messageCToB)),
-      NodeState(NodeHeader(3), List.empty),
+      NodeState(NodeHeader(3, 0), List.empty),
       MessageQueue.empty
     )
     val network = NetworkState(1, List(nodeA, nodeB, nodeC))

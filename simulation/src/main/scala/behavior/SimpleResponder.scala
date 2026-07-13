@@ -25,5 +25,5 @@ case class SimpleResponder() extends NodeBehavior {
   ): NodeState =
     deliveredMessages
       .map(createResponse)
-      .foldLeft(state)((state, response) => state.withOutgoingMessage(response))
+      .foldLeft(state)((state, response) => state.withOutgoingMessage(time, response))
 }

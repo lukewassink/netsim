@@ -9,7 +9,7 @@ class SimpleResponderSpec extends UnitSpec {
     val message1 = testMessage(2, 5, "One")
     val message2 = testMessage(2, 5, "Two")
     val responder = SimpleResponder()
-    val nodeState = NodeState(NodeHeader(2), List.empty)
+    val nodeState = NodeState(NodeHeader(2, 0), List.empty)
 
     it("handles zero messages") {
       responder

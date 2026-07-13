@@ -8,8 +8,7 @@ object BehaviorSpecUtil {
         time: Int,
         state: NodeState,
         deliveredMessages: List[Message]
-    ): NodeState = {
-      state.withOutgoingMessage(message)
-    }
+    ): NodeState =
+      state.withOutgoingMessage(time, message)
   }
 }
