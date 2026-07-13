@@ -4,9 +4,9 @@ import test_utils.{BehaviorSpecUtil, UnitSpec}
 
 class NodeSpec extends UnitSpec {
   val emptyContent = MessageContent("")
-  val message1 = Message(MessageHeader(0, 1, 2, 1, 9), emptyContent)
-  val message2 = Message(MessageHeader(12, 1, 4, 1, 4), emptyContent)
-  val emptyState = NodeState(List.empty)
+  val message1 = Message(MessageHeader(0, 1, 4, 1, 9), emptyContent)
+  val message2 = Message(MessageHeader(12, 2, 4, 1, 4), emptyContent)
+  val emptyState = NodeState(NodeHeader(0), List.empty)
 
   describe("NodeState") {
     describe("withOutgoingMessage") {
@@ -29,7 +29,7 @@ class NodeSpec extends UnitSpec {
       }
 
       it("clears only the outgoing messages") {
-        val state = NodeState(List(message1, message2))
+        val state = NodeState(NodeHeader(0), List(message1, message2))
         state.outgoingMessages should contain theSameElementsAs List(
           message1,
           message2
@@ -41,12 +41,12 @@ class NodeSpec extends UnitSpec {
 
   describe("Node") {
     val emptyQueue = MessageQueue.empty
-    val emptyState = NodeState(List.empty)
+    val emptyState = NodeState(NodeHeader(0), List.empty)
 
     val emptyNode = Node(List.empty, emptyState, emptyQueue)
     val nodeWithIncomingMessages = Node(
       List.empty,
-      NodeState(List(message1, message2)),
+      NodeState(NodeHeader(4), List(message1, message2)),
       emptyQueue
     )
 
@@ -111,7 +111,7 @@ class NodeSpec extends UnitSpec {
       it("clears delivered messages") {
         val node = Node(
           List.empty,
-          NodeState(List.empty),
+          NodeState(NodeHeader(4), List.empty),
           MessageQueue(message1, message2)
         )
         node.incomingMessages.currentMessages(

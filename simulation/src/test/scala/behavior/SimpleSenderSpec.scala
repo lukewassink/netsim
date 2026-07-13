@@ -1,12 +1,12 @@
 package behavior
 
-import core.{Message, MessageContent, MessageHeader, NodeState}
+import core.{Message, MessageContent, MessageHeader, NodeHeader, NodeState}
 import test_utils.UnitSpec
 
 class SimpleSenderSpec extends UnitSpec {
   val message = Message(MessageHeader(0, 1, 2, 5, 9), MessageContent(""))
   val sender = SimpleSender(5, message)
-  val nodeState = NodeState(List.empty)
+  val nodeState = NodeState(NodeHeader(1), List.empty)
 
   describe("trigger") {
     it("does nothing for earlier times") {

@@ -13,20 +13,20 @@ class NetworkStateSpec extends UnitSpec {
     val messageCToB = Message(MessageHeader(6, 3, 2, 11, 16), emptyContent)
     val nodeA = Node(
       List.empty,
-      NodeState(List(messageAToB, messageAToC)),
+      NodeState(NodeHeader(1), List(messageAToB, messageAToC)),
       MessageQueue.empty
     )
     val nodeB = Node(
       List.empty,
-      NodeState(List(messageBToA)),
+      NodeState(NodeHeader(2), List(messageBToA)),
       MessageQueue.empty
     )
     val nodeC = Node(
       List(BehaviorSpecUtil.TestBehavior(messageCToB)),
-      NodeState(List.empty),
+      NodeState(NodeHeader(3), List.empty),
       MessageQueue.empty
     )
-    val network = NetworkState(1, Map(1 -> nodeA, 2 -> nodeB, 3 -> nodeC))
+    val network = NetworkState(1, List(nodeA, nodeB, nodeC))
     val nextNetwork = network.nextState()
 
     describe("NextState") {
@@ -54,7 +54,26 @@ class NetworkStateSpec extends UnitSpec {
 
       it("triggers node behavior") {
         network.nodes(3).outgoingMessages shouldBe empty
-        nextNetwork.nodes(3).outgoingMessages should contain theSameElementsAs List(messageCToB)
+        nextNetwork
+          .nodes(3)
+          .outgoingMessages should contain theSameElementsAs List(messageCToB)
+      }
+    }
+
+    describe("List constructor") {
+      it("handles an empty list") {
+        NetworkState(0, List.empty).nodes shouldBe empty
+      }
+
+      it("handles a list of nodes") {
+        NetworkState(
+          0,
+          List(nodeA, nodeB, nodeC)
+        ).nodes should contain theSameElementsAs Map(
+          1 -> nodeA,
+          2 -> nodeB,
+          3 -> nodeC
+        )
       }
     }
   }

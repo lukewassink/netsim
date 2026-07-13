@@ -1,13 +1,16 @@
 package core
 
+// Metadata for a node.
+case class NodeHeader(id: Int)
+
 // The share internal state of the node. It contains incoming messages and any shared node history or data required by
 // the behaviors. Individual behaviors can also store their own state.
-case class NodeState(outgoingMessages: List[Message]):
+case class NodeState(header: NodeHeader, outgoingMessages: List[Message]):
   def clearOutgoingMessages: NodeState =
     copy(outgoingMessages = List.empty)
 
   def withOutgoingMessage(message: Message): NodeState =
-    copy(message :: outgoingMessages)
+    copy(outgoingMessages = message :: outgoingMessages)
 
 
 // The fundamental abstraction of the simulation. It can send and receive messages in response to incoming

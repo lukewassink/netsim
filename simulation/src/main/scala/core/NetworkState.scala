@@ -1,5 +1,7 @@
 package core
 
+import scala.annotation.tailrec
+
 // The total state of the network. The network consists of nodes and the current time.
 case class NetworkState(time: Int, nodes: Map[Int, Node]):
 
@@ -27,3 +29,10 @@ case class NetworkState(time: Int, nodes: Map[Int, Node]):
     
     NetworkState(nextTime, updatedNodes)
   }
+
+object NetworkState {
+  def apply(time: Int, nodes: List[Node]): NetworkState = {
+    val nodeMap = nodes.foldLeft(Map[Int, Node]()) { (map, node) => map.updated(node.state.header.id, node) }
+    NetworkState(time, nodeMap)
+  }
+}
