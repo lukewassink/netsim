@@ -1,12 +1,12 @@
 scalaVersion := "3.3.8"
 organization := "com.lukewassink"
+ThisBuild / version := "0.0.0-SNAPSHOT"
 
 val toolkitV = "0.9.2"
 val toolkit = "org.scala-lang" %% "toolkit" % toolkitV
 val toolkitTest = "org.scala-lang" %% "toolkit-test" % toolkitV
 
-lazy val root = rootProject
-  .autoAggregate
+lazy val root = rootProject.autoAggregate
   .settings(
     publish / skip := true
   )
