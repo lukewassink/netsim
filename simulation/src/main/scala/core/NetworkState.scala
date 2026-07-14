@@ -39,7 +39,7 @@ object NetworkState {
   def apply(time: Int, nodes: List[Node], random: Random): NetworkState = {
     val nodeMap: Map[Int, Node] = nodes.foldLeft(Map[Int, Node]()) {
       (map, node) =>
-        map.updated(node.state.header.id, node)
+        map.updated(node.sharedState.header.id, node)
     }
     NetworkState(time, nodeMap, random)
   }

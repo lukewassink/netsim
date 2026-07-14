@@ -4,7 +4,7 @@ import core.{Message, NodeBehavior, NodeState}
 
 case class SimpleSender(timeToSend: Int, message: Message)
     extends NodeBehavior {
-  def trigger(
+  override def updatedNodeState(
       time: Int,
       state: NodeState,
       deliveredMessages: List[Message]

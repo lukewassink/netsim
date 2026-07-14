@@ -18,7 +18,7 @@ case class SimpleResponder() extends NodeBehavior {
     Message(responseHeader, responseContent)
   }
 
-  def trigger(
+  override def updatedNodeState(
       time: Int,
       state: NodeState,
       deliveredMessages: List[Message]

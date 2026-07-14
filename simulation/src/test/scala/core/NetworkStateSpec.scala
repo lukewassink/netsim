@@ -1,10 +1,9 @@
 package core
 
-import test_utils.MessageSpecUtil.testMessage
+import test_utils.BehaviorSpecUtil.TestSelfUpdateBehavior
 import test_utils.NetworkStateSpecUtil.testNetworkState
 import test_utils.{BehaviorSpecUtil, UnitSpec}
 import test_utils.NodeSpecUtil.testNodeState
-import test_utils.RandomSpecUtil.InertRandom
 
 class NetworkStateSpec extends UnitSpec {
   describe("NetworkState") {
@@ -14,7 +13,6 @@ class NetworkStateSpec extends UnitSpec {
     val messageAToB = Message(MessageHeader(1, 1, 2, 3, 10), emptyContent)
     val messageAToC = Message(MessageHeader(4, 1, 3, 5, 10), emptyContent)
     val messageBToA = Message(MessageHeader(9, 2, 1, 4, 10), emptyContent)
-    val messageCToB = Message(MessageHeader(0, 3, 2, 2, 16), emptyContent)
     val nodeA = Node(
       List.empty,
       testNodeState(NodeHeader(1, 0), List(messageAToB, messageAToC)),
@@ -26,7 +24,7 @@ class NetworkStateSpec extends UnitSpec {
       MessageQueue.empty
     )
     val nodeC = Node(
-      List(BehaviorSpecUtil.TestBehavior(messageCToB)),
+      List(BehaviorSpecUtil.TestSelfUpdateBehavior(0)),
       testNodeState(NodeHeader(3, 0), List.empty),
       MessageQueue.empty
     )
@@ -57,10 +55,14 @@ class NetworkStateSpec extends UnitSpec {
       }
 
       it("triggers node behavior") {
-        network.nodes(3).outgoingMessages shouldBe empty
-        nextNetwork
-          .nodes(3)
-          .outgoingMessages should contain theSameElementsAs List(messageCToB)
+        network.nodes(3).behaviors.head match {
+          case TestSelfUpdateBehavior(selfState) =>
+            selfState.should(equal(0))
+        }
+        nextNetwork.nodes(3).behaviors.head match {
+          case TestSelfUpdateBehavior(selfState) =>
+            selfState.should(equal(1))
+        }
       }
     }
 

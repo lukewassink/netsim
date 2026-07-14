@@ -1,6 +1,7 @@
 package core
 
-import test_utils.{BehaviorSpecUtil, UnitSpec}
+import test_utils.BehaviorSpecUtil.{TestMessageBehavior, TestSelfUpdateBehavior}
+import test_utils.UnitSpec
 import test_utils.NodeSpecUtil.testNodeState
 
 class NodeSpec extends UnitSpec {
@@ -83,9 +84,9 @@ class NodeSpec extends UnitSpec {
         nodeWithIncomingMessages.nextNode(1).outgoingMessages shouldBe empty
       }
 
-      it("triggers a behavior to update the state") {
+      it("triggers a behavior to update the shared state") {
         val node = Node(
-          List(BehaviorSpecUtil.TestBehavior(message1)),
+          List(TestMessageBehavior(message1)),
           emptyState,
           emptyQueue
         )
@@ -97,11 +98,27 @@ class NodeSpec extends UnitSpec {
         }
       }
 
+      it("triggers a behavior to update the behavior's state") {
+        val node = Node(
+          List(TestSelfUpdateBehavior(0)),
+          emptyState,
+          emptyQueue
+        )
+        node.behaviors.head match {
+          case TestSelfUpdateBehavior(selfState) =>
+            selfState.should(equal(0))
+        }
+        node.nextNode(10).behaviors.head match {
+          case TestSelfUpdateBehavior(selfState) =>
+            selfState.should(equal(1))
+        }
+      }
+
       it("triggers multiple behaviors") {
         val node = Node(
           List(
-            BehaviorSpecUtil.TestBehavior(message1),
-            BehaviorSpecUtil.TestBehavior(message2)
+            TestMessageBehavior(message1),
+            TestMessageBehavior(message2)
           ),
           emptyState,
           emptyQueue

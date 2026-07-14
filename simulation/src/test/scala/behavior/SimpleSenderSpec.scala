@@ -11,17 +11,24 @@ class SimpleSenderSpec extends UnitSpec {
 
   describe("trigger") {
     it("does nothing for earlier times") {
-      sender.trigger(4, nodeState, List.empty).outgoingMessages shouldBe empty
+      sender
+        .updated(4, nodeState, List.empty)
+        .sharedState
+        .outgoingMessages shouldBe empty
     }
 
     it("does nothing for later times") {
       sender
-        .trigger(5, nodeState, List.empty)
+        .updated(5, nodeState, List.empty)
+        .sharedState
         .outgoingMessages should contain theSameElementsAs List(message)
     }
 
     it("does sends the message at the specified time") {
-      sender.trigger(6, nodeState, List.empty).outgoingMessages shouldBe empty
+      sender
+        .updated(6, nodeState, List.empty)
+        .sharedState
+        .outgoingMessages shouldBe empty
     }
   }
 }
