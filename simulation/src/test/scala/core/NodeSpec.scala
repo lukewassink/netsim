@@ -5,17 +5,19 @@ import test_utils.UnitSpec
 import test_utils.NodeSpecUtil.testNodeState
 
 class NodeSpec extends UnitSpec {
-  val message1 = Message(MessageHeader(0, 0, 7, 0, 9), MessageContent("One"))
-  val message2 = Message(MessageHeader(0, 0, 8, 0, 5), MessageContent("Two"))
+  val message1 =
+    Message(MessageHeader(0, 0, 7, 0, Some(9)), MessageContent("One"))
+  val message2 =
+    Message(MessageHeader(0, 0, 8, 0, Some(5)), MessageContent("Two"))
   val emptyState: NodeState = testNodeState(NodeHeader(3, 1), List.empty)
 
   describe("NodeState") {
     describe("withOutgoingMessage") {
       it("adds the message to the list and sets node metadata correctly") {
         val messageWithMetadata1 =
-          Message(MessageHeader(1, 3, 7, 4, 9), MessageContent("One"))
+          Message(MessageHeader(1, 3, 7, 4, Some(9)), MessageContent("One"))
         val messageWithMetadata2 =
-          Message(MessageHeader(2, 3, 8, 5, 5), MessageContent("Two"))
+          Message(MessageHeader(2, 3, 8, 5, Some(5)), MessageContent("Two"))
 
         assert(emptyState.outgoingMessages.isEmpty)
         val state2 = emptyState.withOutgoingMessage(4, message1)
@@ -71,11 +73,11 @@ class NodeSpec extends UnitSpec {
 
     describe("withIncomingMessage") {
       it("adds an incoming message to the queue") {
-        emptyNode.incomingMessages.currentMessages(10) shouldBe empty
+        emptyNode.incomingMessages.currentMessages(9) shouldBe empty
         emptyNode
           .withIncomingMessage(message1)
           .incomingMessages
-          .currentMessages(10) should contain theSameElementsAs List(message1)
+          .currentMessages(9) should contain theSameElementsAs List(message1)
       }
     }
 
@@ -143,13 +145,13 @@ class NodeSpec extends UnitSpec {
           MessageQueue(message1, message2)
         )
         node.incomingMessages.currentMessages(
-          10
-        ) should contain theSameElementsAs List(message1, message2)
+          5
+        ) should contain theSameElementsAs List(message2)
         node
           .nextNode(5)
           .incomingMessages
-          .currentMessages(10) should contain theSameElementsAs List(message1)
-        node.nextNode(10).incomingMessages.currentMessages(10) shouldBe empty
+          .currentMessages(9) should contain theSameElementsAs List(message1)
+        node.nextNode(9).incomingMessages.currentMessages(9) shouldBe empty
       }
     }
   }

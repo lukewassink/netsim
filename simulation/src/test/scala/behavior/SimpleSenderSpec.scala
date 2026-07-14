@@ -5,7 +5,7 @@ import test_utils.NodeSpecUtil.testNodeState
 import test_utils.UnitSpec
 
 class SimpleSenderSpec extends UnitSpec {
-  val message = Message(MessageHeader(0, 1, 2, 5, 9), MessageContent(""))
+  val message = Message(MessageHeader(0, 1, 2, 5, Some(9)), MessageContent(""))
   val sender = SimpleSender(5, message)
   val nodeState: NodeState = testNodeState(NodeHeader(1, 0), List.empty)
 

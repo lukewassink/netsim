@@ -58,7 +58,7 @@ case class Node(
       }
 
     // Clear delivered messages now that they have been processed.
-    val updatedMessages = incomingMessages.withoutDeliveredMessages(time)
+    val updatedMessages = incomingMessages.withoutPastMessages(time)
 
     // Reverse nextBehaviors because triggering the behaviors reverses it.
     Node(nextBehaviors.reverse, nextState, updatedMessages)

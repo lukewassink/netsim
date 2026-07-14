@@ -3,14 +3,14 @@ package behavior
 import core.{Message, MessageContent, MessageHeader, NodeBehavior, NodeState}
 
 case class SimpleResponder() extends NodeBehavior {
-  private def createResponse(message: Message): Message = {
+  private def createResponse(time: Int)(message: Message): Message = {
     val header = message.header
     val responseHeader = MessageHeader(
       header.messageId,
       header.receiverId,
       header.senderId,
-      header.deliveryTime,
-      header.deliveryTime + 1
+      time,
+      None
     )
     val responseContent = MessageContent(
       "Response to: " + message.content.stringContent
@@ -24,6 +24,8 @@ case class SimpleResponder() extends NodeBehavior {
       deliveredMessages: List[Message]
   ): NodeState =
     deliveredMessages
-      .map(createResponse)
-      .foldLeft(state)((state, response) => state.withOutgoingMessage(time, response))
+      .map(createResponse(time))
+      .foldLeft(state)((state, response) =>
+        state.withOutgoingMessage(time, response)
+      )
 }

@@ -10,9 +10,9 @@ class NetworkStateSpec extends UnitSpec {
     val emptyNetwork = testNetworkState(1, List.empty)
 
     val emptyContent = MessageContent("")
-    val messageAToB = Message(MessageHeader(1, 1, 2, 3, 10), emptyContent)
-    val messageAToC = Message(MessageHeader(4, 1, 3, 5, 10), emptyContent)
-    val messageBToA = Message(MessageHeader(9, 2, 1, 4, 10), emptyContent)
+    val messageAToB = Message(MessageHeader(1, 1, 2, 3, Some(10)), emptyContent)
+    val messageAToC = Message(MessageHeader(4, 1, 3, 5, Some(10)), emptyContent)
+    val messageBToA = Message(MessageHeader(9, 2, 1, 4, Some(10)), emptyContent)
     val nodeA = Node(
       List.empty,
       testNodeState(NodeHeader(1, 0), List(messageAToB, messageAToC)),

@@ -9,7 +9,7 @@ object MessageSpecUtil {
       content: String
   ): Message =
     Message(
-      MessageHeader(0, 0, receiverId, 0, deliveryTime),
+      MessageHeader(0, 0, receiverId, 0, Some(deliveryTime)),
       MessageContent(content)
     )
 }
