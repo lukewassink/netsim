@@ -1,11 +1,14 @@
 package core
 
 import test_utils.MessageSpecUtil.testMessage
+import test_utils.NetworkStateSpecUtil.testNetworkState
 import test_utils.{BehaviorSpecUtil, UnitSpec}
+import test_utils.NodeSpecUtil.testNodeState
+import test_utils.RandomSpecUtil.InertRandom
 
 class NetworkStateSpec extends UnitSpec {
   describe("NetworkState") {
-    val emptyNetwork = NetworkState(1, Map.empty)
+    val emptyNetwork = testNetworkState(1, List.empty)
 
     val emptyContent = MessageContent("")
     val messageAToB = Message(MessageHeader(1, 1, 2, 3, 10), emptyContent)
@@ -14,20 +17,20 @@ class NetworkStateSpec extends UnitSpec {
     val messageCToB = Message(MessageHeader(0, 3, 2, 2, 16), emptyContent)
     val nodeA = Node(
       List.empty,
-      NodeState(NodeHeader(1, 0), List(messageAToB, messageAToC)),
+      testNodeState(NodeHeader(1, 0), List(messageAToB, messageAToC)),
       MessageQueue.empty
     )
     val nodeB = Node(
       List.empty,
-      NodeState(NodeHeader(2, 0), List(messageBToA)),
+      testNodeState(NodeHeader(2, 0), List(messageBToA)),
       MessageQueue.empty
     )
     val nodeC = Node(
       List(BehaviorSpecUtil.TestBehavior(messageCToB)),
-      NodeState(NodeHeader(3, 0), List.empty),
+      testNodeState(NodeHeader(3, 0), List.empty),
       MessageQueue.empty
     )
-    val network = NetworkState(1, List(nodeA, nodeB, nodeC))
+    val network = testNetworkState(1, List(nodeA, nodeB, nodeC))
     val nextNetwork = network.nextState()
 
     describe("NextState") {
@@ -63,11 +66,11 @@ class NetworkStateSpec extends UnitSpec {
 
     describe("List constructor") {
       it("handles an empty list") {
-        NetworkState(0, List.empty).nodes shouldBe empty
+        testNetworkState(0, List.empty).nodes shouldBe empty
       }
 
       it("handles a list of nodes") {
-        NetworkState(
+        testNetworkState(
           0,
           List(nodeA, nodeB, nodeC)
         ).nodes should contain theSameElementsAs Map(

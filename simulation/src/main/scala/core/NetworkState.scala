@@ -1,9 +1,9 @@
 package core
 
-import scala.annotation.tailrec
+import util.Random
 
 // The total state of the network. The network consists of nodes and the current time.
-case class NetworkState(time: Int, nodes: Map[Int, Node]):
+case class NetworkState(time: Int, nodes: Map[Int, Node], random: Random):
 
   // Logic:
   // 1) deliver any outgoing messages
@@ -19,20 +19,28 @@ case class NetworkState(time: Int, nodes: Map[Int, Node]):
     println("To Deliver:")
     println(toDeliver)
 
-    val nodesWithDeliveredMessages = toDeliver.foldLeft(nodes) { (nodes, message) =>
-      nodes.updatedWith(message.header.receiverId)(_.map(_.withIncomingMessage(message)))
+    val nodesWithDeliveredMessages = toDeliver.foldLeft(nodes) {
+      (nodes, message) =>
+        nodes.updatedWith(message.header.receiverId)(
+          _.map(_.withIncomingMessage(message))
+        )
     }
-    
+
     val nextTime = time + 1
 
-    val updatedNodes = nodesWithDeliveredMessages.map { (id, node) => (id, node.nextNode(nextTime)) }
-    
-    NetworkState(nextTime, updatedNodes)
+    val updatedNodes = nodesWithDeliveredMessages.map { (id, node) =>
+      (id, node.nextNode(nextTime))
+    }
+
+    NetworkState(nextTime, updatedNodes, random)
   }
 
 object NetworkState {
-  def apply(time: Int, nodes: List[Node]): NetworkState = {
-    val nodeMap = nodes.foldLeft(Map[Int, Node]()) { (map, node) => map.updated(node.state.header.id, node) }
-    NetworkState(time, nodeMap)
+  def apply(time: Int, nodes: List[Node], random: Random): NetworkState = {
+    val nodeMap: Map[Int, Node] = nodes.foldLeft(Map[Int, Node]()) {
+      (map, node) =>
+        map.updated(node.state.header.id, node)
+    }
+    NetworkState(time, nodeMap, random)
   }
 }

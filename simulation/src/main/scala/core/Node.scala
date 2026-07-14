@@ -1,11 +1,17 @@
 package core
 
+import util.Random
+
 // Metadata for a node.
 case class NodeHeader(id: Int, nextMessageId: Int)
 
 // The share internal state of the node. It contains incoming messages and any shared node history or data required by
 // the behaviors. Individual behaviors can also store their own state.
-case class NodeState(header: NodeHeader, outgoingMessages: List[Message]):
+case class NodeState(
+    header: NodeHeader,
+    outgoingMessages: List[Message],
+    random: Random
+):
   def clearOutgoingMessages: NodeState =
     copy(outgoingMessages = List.empty)
 
