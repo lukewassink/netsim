@@ -16,16 +16,20 @@ case class NetworkState(
 
   // Logic:
   // 1) tick the time forward
-  // 2) deliver messages
-  // 3) trigger node behaviors
-  // 4) collect outgoing messages from nodes
+  // 2) trigger pre-delivery node actions
+  // 3) deliver messages
+  // 4) trigger node behaviors
+  // 5) collect outgoing messages from nodes
   def nextState(): NetworkState = {
     // Tick time
     val newTime = time + 1
 
+    // Call node pre-delivery actions
+    val initializedNodes = nodes.map(_ -> _.preDeliveryAction(newTime))
+
     // Deliver messages
     val nodesWithDeliveredMessages =
-      messagesInTransit.currentMessages(newTime).foldLeft(nodes) {
+      messagesInTransit.currentMessages(newTime).foldLeft(initializedNodes) {
         (nodes, message) =>
           nodes.updatedWith(message.header.receiverId)(
             _.map(_.withIncomingMessage(message))
@@ -34,7 +38,7 @@ case class NetworkState(
 
     // Trigger node behavior
     val updatedNodes = nodesWithDeliveredMessages.map { (id, node) =>
-      (id, node.nextNode(newTime))
+      (id, node.postDeliveryAction(newTime))
     }
 
     // New messages to deliver

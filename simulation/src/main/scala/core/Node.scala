@@ -45,8 +45,14 @@ case class Node(
     sharedState: NodeState
 ):
 
-  // Returns the node with updated shared and behavior state, including outgoing messages.
-  def nextNode(time: Int): Node =
+  // Updates the node before receiving new messages. Used for cleanup and initialization. No behaviors execute here.
+  def preDeliveryAction(time: Int): Node = {
+    // Clear sent messages from the last tick.
+    Node(behaviors, sharedState.clearIncomingMessages)
+  }
+
+  // Updates the node based on delivered messages. Behaviors are triggered here.
+  def postDeliveryAction(time: Int): Node =
 
     // Clear messages that were sent last tick.
     val clearedState = sharedState.clearOutgoingMessages
@@ -64,7 +70,7 @@ case class Node(
 
     // Reverse nextBehaviors because triggering the behaviors reverses it, and clear incoming messages now that they
     // have been read.
-    Node(nextBehaviors.reverse, nextState.clearIncomingMessages)
+    Node(nextBehaviors.reverse, nextState)
 
   // Returns all outgoing messages.
   def outgoingMessages: List[Message] =

@@ -42,32 +42,30 @@ class NetworkStateSpec extends UnitSpec {
         assert(nextNetwork.time - network.time === 1)
       }
 
-      // TODO(#22): Make this test work once delivered messages are visible.
-//      it("delivers current messages") {
-//        val readyToSend = NetworkState(
-//          9,
-//          Map[Int, Node](1 -> stubNodeA, 2 -> stubNodeB, 3 -> stubNodeC),
-//          MessageQueue(List(messageAToB, messageAToC, messageBToA)),
-//          InertRandom
-//        )
-//        val withSentMessages = readyToSend.nextState()
-//
-//        readyToSend.nodes(1).sharedState.incomingMessages shouldBe empty
-//        readyToSend.nodes(2).sharedState.incomingMessages shouldBe empty
-//        readyToSend.nodes(3).sharedState.incomingMessages shouldBe empty
-//        withSentMessages
-//          .nodes(1)
-//          .sharedState
-//          .incomingMessages should contain theSameElementsAs List(messageBToA)
-//        withSentMessages
-//          .nodes(2)
-//          .sharedState
-//          .incomingMessages should contain theSameElementsAs List(messageAToB)
-//        withSentMessages
-//          .nodes(3)
-//          .sharedState
-//          .incomingMessages should contain theSameElementsAs List(messageAToC)
-//      }
+      it("delivers current messages") {
+        val readyToSend = testNetworkState(
+          9,
+          List(nodeA, nodeB, nodeC),
+          List(messageAToB, messageAToC, messageBToA)
+        )
+        val withSentMessages = readyToSend.nextState()
+
+        readyToSend.nodes(1).sharedState.incomingMessages shouldBe empty
+        readyToSend.nodes(2).sharedState.incomingMessages shouldBe empty
+        readyToSend.nodes(3).sharedState.incomingMessages shouldBe empty
+        withSentMessages
+          .nodes(1)
+          .sharedState
+          .incomingMessages should contain theSameElementsAs List(messageBToA)
+        withSentMessages
+          .nodes(2)
+          .sharedState
+          .incomingMessages should contain theSameElementsAs List(messageAToB)
+        withSentMessages
+          .nodes(3)
+          .sharedState
+          .incomingMessages should contain theSameElementsAs List(messageAToC)
+      }
 
       it("triggers node behavior") {
         network.nodes(3).behaviors.head match {

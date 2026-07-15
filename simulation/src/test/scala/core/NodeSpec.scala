@@ -112,9 +112,28 @@ class NodeSpec extends UnitSpec {
       }
     }
 
-    describe("nextNode") {
+    describe("preDeliveryAction") {
+      it("clears sent messages from the last tick") {
+        val node = Node(
+          List.empty,
+          testNodeState(NodeHeader(4, 0), List.empty, List(message1, message2))
+        )
+        node.sharedState.incomingMessages should contain theSameElementsAs List(
+          message1,
+          message2
+        )
+        node
+          .preDeliveryAction(5)
+          .sharedState
+          .incomingMessages shouldBe empty
+      }
+    }
+
+    describe("postDeliveryAction") {
       it("clears outgoing messages") {
-        nodeWithOutgoingMessages.nextNode(1).outgoingMessages shouldBe empty
+        nodeWithOutgoingMessages
+          .postDeliveryAction(1)
+          .outgoingMessages shouldBe empty
       }
 
       it("triggers a behavior to update the shared state") {
@@ -123,7 +142,7 @@ class NodeSpec extends UnitSpec {
           emptyState
         )
         node.outgoingMessages shouldBe empty
-        val nextMessages = node.nextNode(10).outgoingMessages
+        val nextMessages = node.postDeliveryAction(10).outgoingMessages
         nextMessages should have size 1
         all(nextMessages) should matchPattern {
           case Message(_, MessageContent("One")) =>
@@ -139,7 +158,7 @@ class NodeSpec extends UnitSpec {
           case TestSelfUpdateBehavior(selfState) =>
             selfState.should(equal(0))
         }
-        node.nextNode(10).behaviors.head match {
+        node.postDeliveryAction(10).behaviors.head match {
           case TestSelfUpdateBehavior(selfState) =>
             selfState.should(equal(1))
         }
@@ -155,7 +174,7 @@ class NodeSpec extends UnitSpec {
         )
         node.outgoingMessages shouldBe empty
         val outgoingMessages = node
-          .nextNode(10)
+          .postDeliveryAction(10)
           .outgoingMessages
         outgoingMessages should have size 2
         exactly(1, outgoingMessages) should matchPattern {
@@ -164,21 +183,6 @@ class NodeSpec extends UnitSpec {
         exactly(1, outgoingMessages) should matchPattern {
           case Message(_, MessageContent("Two")) =>
         }
-      }
-
-      it("clears incoming messages") {
-        val node = Node(
-          List.empty,
-          testNodeState(NodeHeader(4, 0), List.empty, List(message1, message2))
-        )
-        node.sharedState.incomingMessages should contain theSameElementsAs List(
-          message1,
-          message2
-        )
-        node
-          .nextNode(5)
-          .sharedState
-          .incomingMessages shouldBe empty
       }
     }
   }
