@@ -20,10 +20,9 @@ case class SimpleResponder() extends NodeBehavior {
 
   override def updatedNodeState(
       time: Int,
-      state: NodeState,
-      deliveredMessages: List[Message]
+      state: NodeState
   ): NodeState =
-    deliveredMessages
+    state.incomingMessages
       .map(createResponse(time))
       .foldLeft(state)((state, response) =>
         state.withOutgoingMessage(time, response)

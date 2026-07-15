@@ -10,13 +10,17 @@ case class NodeHeader(id: Int, nextMessageId: Int)
 case class NodeState(
     header: NodeHeader,
     outgoingMessages: List[Message],
+    incomingMessages: List[Message],
     random: Random
 ):
   def clearOutgoingMessages: NodeState =
     copy(outgoingMessages = List.empty)
 
+  def clearIncomingMessages: NodeState =
+    copy(incomingMessages = List.empty)
+
+  // Sets the message ID, sender ID, and send time for outgoing messages and adds it to the list.
   def withOutgoingMessage(time: Int, message: Message): NodeState = {
-    // Automatically set message ID, sender ID, and send time for outgoing messages.
     val messageWithNodeMetadata = message.copy(header =
       message.header.copy(
         messageId = header.nextMessageId,
@@ -31,12 +35,14 @@ case class NodeState(
     )
   }
 
+  def withIncomingMessage(message: Message): NodeState =
+    copy(incomingMessages = message :: incomingMessages)
+
 // The fundamental abstraction of the simulation. It can send and receive messages in response to incoming
 // messages and top its own state.
 case class Node(
     behaviors: List[NodeBehavior],
-    sharedState: NodeState,
-    incomingMessages: MessageQueue
+    sharedState: NodeState
 ):
 
   // Returns the node with updated shared and behavior state, including outgoing messages.
@@ -51,22 +57,19 @@ case class Node(
         case ((curState, processedBehaviors), behavior) =>
           val UpdatedState(nextS, nextB) = behavior.updated(
             time,
-            curState,
-            incomingMessages.currentMessages(time)
+            curState
           )
           (nextS, nextB :: processedBehaviors)
       }
 
-    // Clear delivered messages now that they have been processed.
-    val updatedMessages = incomingMessages.withoutPastMessages(time)
-
-    // Reverse nextBehaviors because triggering the behaviors reverses it.
-    Node(nextBehaviors.reverse, nextState, updatedMessages)
+    // Reverse nextBehaviors because triggering the behaviors reverses it, and clear incoming messages now that they
+    // have been read.
+    Node(nextBehaviors.reverse, nextState.clearIncomingMessages)
 
   // Returns all outgoing messages.
   def outgoingMessages: List[Message] =
     sharedState.outgoingMessages
 
-  // Adds an incoming messages.
+  // Adds an incoming message.
   def withIncomingMessage(message: Message): Node =
-    Node(behaviors, sharedState, incomingMessages.withMessage(message))
+    Node(behaviors, sharedState.withIncomingMessage(message))

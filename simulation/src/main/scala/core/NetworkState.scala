@@ -2,45 +2,68 @@ package core
 
 import util.Random
 
+// The time it takes for a message to be delivered. Hardcoded for now. Later this should be changed to be config
+// based.
+final val DeliveryTime = 10
+
 // The total state of the network. The network consists of nodes and the current time.
-case class NetworkState(time: Int, nodes: Map[Int, Node], random: Random):
+case class NetworkState(
+    time: Int,
+    nodes: Map[Int, Node],
+    messagesInTransit: MessageQueue,
+    random: Random
+):
 
   // Logic:
-  // 1) deliver any outgoing messages
-  // 2) tick the time forward
+  // 1) tick the time forward
+  // 2) deliver messages
   // 3) trigger node behaviors
+  // 4) collect outgoing messages from nodes
   def nextState(): NetworkState = {
+    // Tick time
+    val newTime = time + 1
+
+    // Deliver messages
+    val nodesWithDeliveredMessages =
+      messagesInTransit.currentMessages(newTime).foldLeft(nodes) {
+        (nodes, message) =>
+          nodes.updatedWith(message.header.receiverId)(
+            _.map(_.withIncomingMessage(message))
+          )
+      }
+
+    // Trigger node behavior
+    val updatedNodes = nodesWithDeliveredMessages.map { (id, node) =>
+      (id, node.nextNode(newTime))
+    }
+
+    // New messages to deliver
     val toDeliver = for {
       (_, node) <- nodes
       message <- node.outgoingMessages
-    } yield message
+    } yield message.copy(header =
+      message.header.copy(deliveryTime = Some(newTime + DeliveryTime))
+    )
 
-    println()
-    println("To Deliver:")
-    println(toDeliver)
+    // Clear delivered messages and add new messages
+    val updatedMessages =
+      messagesInTransit.withoutPastMessages(newTime).withMessages(toDeliver)
 
-    val nodesWithDeliveredMessages = toDeliver.foldLeft(nodes) {
-      (nodes, message) =>
-        nodes.updatedWith(message.header.receiverId)(
-          _.map(_.withIncomingMessage(message))
-        )
-    }
-
-    val nextTime = time + 1
-
-    val updatedNodes = nodesWithDeliveredMessages.map { (id, node) =>
-      (id, node.nextNode(nextTime))
-    }
-
-    NetworkState(nextTime, updatedNodes, random)
+    NetworkState(newTime, updatedNodes, updatedMessages, random)
   }
 
 object NetworkState {
-  def apply(time: Int, nodes: List[Node], random: Random): NetworkState = {
+  // A convenience method to initialize NetworkState using a list of nodes and list of messages.
+  def apply(
+      time: Int,
+      nodes: List[Node],
+      messages: List[Message],
+      random: Random
+  ): NetworkState = {
     val nodeMap: Map[Int, Node] = nodes.foldLeft(Map[Int, Node]()) {
       (map, node) =>
         map.updated(node.sharedState.header.id, node)
     }
-    NetworkState(time, nodeMap, random)
+    NetworkState(time, nodeMap, MessageQueue(messages), random)
   }
 }

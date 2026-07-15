@@ -11,23 +11,20 @@ trait NodeBehavior:
   // Overwrite if a behavior wants to update the shared state.
   protected def updatedNodeState(
       time: Int,
-      sharedState: NodeState,
-      deliveredMessages: List[Message]
+      sharedState: NodeState
   ): NodeState = sharedState
 
   // Overwrite if a behavior wants to update its own state.
   protected def updatedSelfState(
       time: Int,
-      sharedState: NodeState,
-      deliveredMessages: List[Message]
+      sharedState: NodeState
   ): NodeBehavior = this
 
   final def updated(
       time: Int,
-      sharedState: NodeState,
-      deliveredMessages: List[Message]
+      sharedState: NodeState
   ): UpdatedState =
     UpdatedState(
-      updatedNodeState(time, sharedState, deliveredMessages),
-      updatedSelfState(time, sharedState, deliveredMessages)
+      updatedNodeState(time, sharedState),
+      updatedSelfState(time, sharedState)
     )

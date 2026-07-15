@@ -9,7 +9,8 @@ class NodeSpec extends UnitSpec {
     Message(MessageHeader(0, 0, 7, 0, Some(9)), MessageContent("One"))
   val message2 =
     Message(MessageHeader(0, 0, 8, 0, Some(5)), MessageContent("Two"))
-  val emptyState: NodeState = testNodeState(NodeHeader(3, 1), List.empty)
+  val emptyState: NodeState =
+    testNodeState(NodeHeader(3, 1), List.empty, List.empty)
 
   describe("NodeState") {
     describe("withOutgoingMessage") {
@@ -36,8 +37,9 @@ class NodeSpec extends UnitSpec {
         assert(emptyState.clearOutgoingMessages.outgoingMessages.isEmpty)
       }
 
-      it("clears only the outgoing messages") {
-        val state = testNodeState(NodeHeader(0, 0), List(message1, message2))
+      it("clears the outgoing messages") {
+        val state =
+          testNodeState(NodeHeader(0, 0), List(message1, message2), List.empty)
         state.outgoingMessages should contain theSameElementsAs List(
           message1,
           message2
@@ -45,17 +47,46 @@ class NodeSpec extends UnitSpec {
         state.clearOutgoingMessages.outgoingMessages shouldBe empty
       }
     }
+
+    describe("withIncomingMessage") {
+      it("adds the message to the inbox") {
+        emptyState.incomingMessages shouldBe empty
+        val state1 = emptyState.withIncomingMessage(message1)
+        state1.incomingMessages should contain theSameElementsAs List(message1)
+        val state2 = state1.withIncomingMessage(message2)
+        state2.incomingMessages should contain theSameElementsAs List(
+          message1,
+          message2
+        )
+      }
+    }
+
+    describe("clearIncomingMessages") {
+      it("does nothing if incoming messages are already empty") {
+        assert(emptyState.incomingMessages.isEmpty)
+        assert(emptyState.clearIncomingMessages.incomingMessages.isEmpty)
+      }
+
+      it("clears the incoming messages") {
+        val state =
+          testNodeState(NodeHeader(0, 0), List.empty, List(message1, message2))
+        state.incomingMessages should contain theSameElementsAs List(
+          message1,
+          message2
+        )
+        state.clearIncomingMessages.incomingMessages shouldBe empty
+      }
+    }
   }
 
   describe("Node") {
     val emptyQueue = MessageQueue.empty
-    val emptyState = testNodeState(NodeHeader(0, 0), List.empty)
+    val emptyState = testNodeState(NodeHeader(0, 0), List.empty, List.empty)
 
-    val emptyNode = Node(List.empty, emptyState, emptyQueue)
-    val nodeWithIncomingMessages = Node(
+    val emptyNode = Node(List.empty, emptyState)
+    val nodeWithOutgoingMessages = Node(
       List.empty,
-      testNodeState(NodeHeader(4, 0), List(message1, message2)),
-      emptyQueue
+      testNodeState(NodeHeader(4, 0), List(message1, message2), List.empty)
     )
 
     describe("outgoingMessages") {
@@ -64,7 +95,7 @@ class NodeSpec extends UnitSpec {
       }
 
       it("returns outgoing messages") {
-        nodeWithIncomingMessages.outgoingMessages should contain theSameElementsAs List(
+        nodeWithOutgoingMessages.outgoingMessages should contain theSameElementsAs List(
           message1,
           message2
         )
@@ -72,25 +103,24 @@ class NodeSpec extends UnitSpec {
     }
 
     describe("withIncomingMessage") {
-      it("adds an incoming message to the queue") {
-        emptyNode.incomingMessages.currentMessages(9) shouldBe empty
+      it("adds an incoming message to the state") {
+        emptyNode.sharedState.incomingMessages shouldBe empty
         emptyNode
           .withIncomingMessage(message1)
-          .incomingMessages
-          .currentMessages(9) should contain theSameElementsAs List(message1)
+          .sharedState
+          .incomingMessages should contain theSameElementsAs List(message1)
       }
     }
 
     describe("nextNode") {
       it("clears outgoing messages") {
-        nodeWithIncomingMessages.nextNode(1).outgoingMessages shouldBe empty
+        nodeWithOutgoingMessages.nextNode(1).outgoingMessages shouldBe empty
       }
 
       it("triggers a behavior to update the shared state") {
         val node = Node(
           List(TestMessageBehavior(message1)),
-          emptyState,
-          emptyQueue
+          emptyState
         )
         node.outgoingMessages shouldBe empty
         val nextMessages = node.nextNode(10).outgoingMessages
@@ -103,8 +133,7 @@ class NodeSpec extends UnitSpec {
       it("triggers a behavior to update the behavior's state") {
         val node = Node(
           List(TestSelfUpdateBehavior(0)),
-          emptyState,
-          emptyQueue
+          emptyState
         )
         node.behaviors.head match {
           case TestSelfUpdateBehavior(selfState) =>
@@ -122,8 +151,7 @@ class NodeSpec extends UnitSpec {
             TestMessageBehavior(message1),
             TestMessageBehavior(message2)
           ),
-          emptyState,
-          emptyQueue
+          emptyState
         )
         node.outgoingMessages shouldBe empty
         val outgoingMessages = node
@@ -138,20 +166,19 @@ class NodeSpec extends UnitSpec {
         }
       }
 
-      it("clears delivered messages") {
+      it("clears incoming messages") {
         val node = Node(
           List.empty,
-          testNodeState(NodeHeader(4, 0), List.empty),
-          MessageQueue(message1, message2)
+          testNodeState(NodeHeader(4, 0), List.empty, List(message1, message2))
         )
-        node.incomingMessages.currentMessages(
-          5
-        ) should contain theSameElementsAs List(message2)
+        node.sharedState.incomingMessages should contain theSameElementsAs List(
+          message1,
+          message2
+        )
         node
           .nextNode(5)
-          .incomingMessages
-          .currentMessages(9) should contain theSameElementsAs List(message1)
-        node.nextNode(9).incomingMessages.currentMessages(9) shouldBe empty
+          .sharedState
+          .incomingMessages shouldBe empty
       }
     }
   }

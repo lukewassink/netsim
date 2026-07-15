@@ -1,4 +1,4 @@
-scalaVersion := "3.3.8"
+scalaVersion := "3.8.2"
 organization := "com.lukewassink"
 ThisBuild / version := "0.0.0-SNAPSHOT"
 

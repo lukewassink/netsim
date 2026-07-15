@@ -19,6 +19,9 @@ case class MessageQueue(messages: List[Message]):
   def withMessage(message: Message): MessageQueue =
     MessageQueue(message :: messages)
 
+  def withMessages(messages: Iterable[Message]): MessageQueue =
+    messages.foldLeft(this)(_.withMessage(_))
+
   // Returns messages to be delivered at the current time.
   def currentMessages(time: Int): List[Message] =
     messages.filter {
@@ -38,6 +41,9 @@ case class MessageQueue(messages: List[Message]):
     }
     MessageQueue(filteredMessages)
   }
+
+  // Returns a list of all messages. For use in testing.
+  def allMessages: List[Message] = messages
 
 object MessageQueue {
   def empty: MessageQueue =

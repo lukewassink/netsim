@@ -31,8 +31,24 @@ class MessageSpec extends UnitSpec {
       it("adds a message") {
         val queue = MessageQueue.empty
         assert(queue.currentMessages(9).isEmpty)
-        val queueWithMeassage = queue.withMessage(message1)
-        assert(queueWithMeassage.currentMessages(9) === List(message1))
+        val queueWithMessage = queue.withMessage(message1)
+        assert(queueWithMessage.currentMessages(9) === List(message1))
+      }
+    }
+
+    describe("withMessages") {
+      it("adds the messages") {
+        MessageQueue.empty.withMessages(List.empty).allMessages shouldBe empty
+        MessageQueue.empty
+          .withMessages(List(message1))
+          .allMessages should contain theSameElementsAs List(message1)
+        MessageQueue.empty
+          .withMessages(List(message1, message2, message3))
+          .allMessages should contain theSameElementsAs List(
+          message1,
+          message2,
+          message3
+        )
       }
     }
 
@@ -45,6 +61,24 @@ class MessageSpec extends UnitSpec {
         sampleQueue
           .withoutPastMessages(8)
           .currentMessages(9) should contain theSameElementsAs List(message1)
+      }
+    }
+
+    describe("allMessages") {
+      it("returns all messages") {
+        MessageQueue.empty.allMessages shouldBe empty
+        MessageQueue(
+          message1
+        ).allMessages should contain theSameElementsAs List(message1)
+        MessageQueue(
+          message1,
+          message2,
+          message3
+        ).allMessages should contain theSameElementsAs List(
+          message1,
+          message2,
+          message3
+        )
       }
     }
   }

@@ -8,8 +8,7 @@ object BehaviorSpecUtil {
   case class TestMessageBehavior(message: Message) extends NodeBehavior {
     override def updatedNodeState(
         time: Int,
-        state: NodeState,
-        deliveredMessages: List[Message]
+        state: NodeState
     ): NodeState =
       state.withOutgoingMessage(time, message)
   }
@@ -18,8 +17,7 @@ object BehaviorSpecUtil {
   case class TestSelfUpdateBehavior(selfState: Int) extends NodeBehavior {
     override def updatedSelfState(
         time: Int,
-        state: NodeState,
-        deliveredMessages: List[Message]
+        state: NodeState
     ): NodeBehavior =
       TestSelfUpdateBehavior(selfState + 1)
   }
