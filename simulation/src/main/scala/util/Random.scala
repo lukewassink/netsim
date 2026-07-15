@@ -1,7 +1,7 @@
 package util
 
 // A purely functional random number generator that returns the random number and the next state of the generator.
-abstract class Random {
+trait Random {
   def next: (Int, Random)
 }
 
