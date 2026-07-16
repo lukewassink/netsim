@@ -4,7 +4,7 @@ import util.Random
 
 // The time it takes for a message to be delivered. Hardcoded for now. Later this should be changed to be config
 // based.
-final val DeliveryTime = 10
+final val DeliveryLatency = 10
 
 // The total state of the network. The network consists of nodes and the current time.
 case class NetworkState(
@@ -43,10 +43,10 @@ case class NetworkState(
 
     // New messages to deliver
     val toDeliver = for {
-      (_, node) <- nodes
+      (_, node) <- updatedNodes
       message <- node.outgoingMessages
     } yield message.copy(header =
-      message.header.copy(deliveryTime = Some(newTime + DeliveryTime))
+      message.header.copy(deliveryTime = Some(newTime + DeliveryLatency))
     )
 
     // Clear delivered messages and add new messages

@@ -78,7 +78,7 @@ class NetworkStateSpec extends UnitSpec {
         }
       }
 
-      it("collects new messages") {}
+      it("collects new messages and sets the delivery time") {}
     }
 
     describe("List constructor") {
