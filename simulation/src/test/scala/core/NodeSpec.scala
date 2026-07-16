@@ -164,7 +164,7 @@ class NodeSpec extends UnitSpec {
         }
       }
 
-      it("triggers multiple behaviors") {
+      describe("sending multiple messages") {
         val node = Node(
           List(
             TestMessageBehavior(message1),
@@ -176,12 +176,24 @@ class NodeSpec extends UnitSpec {
         val outgoingMessages = node
           .postDeliveryAction(10)
           .outgoingMessages
-        outgoingMessages should have size 2
-        exactly(1, outgoingMessages) should matchPattern {
-          case Message(_, MessageContent("One")) =>
+
+        it("triggers multiple behaviors") {
+          outgoingMessages should have size 2
+          exactly(1, outgoingMessages) should matchPattern {
+            case Message(_, MessageContent("One")) =>
+          }
+          exactly(1, outgoingMessages) should matchPattern {
+            case Message(_, MessageContent("Two")) =>
+          }
         }
-        exactly(1, outgoingMessages) should matchPattern {
-          case Message(_, MessageContent("Two")) =>
+
+        it("increments the message ID") {
+          exactly(1, outgoingMessages) should matchPattern {
+            case Message(MessageHeader(0, _, _, _, _), _) =>
+          }
+          exactly(1, outgoingMessages) should matchPattern {
+            case Message(MessageHeader(1, _, _, _, _), _) =>
+          }
         }
       }
     }

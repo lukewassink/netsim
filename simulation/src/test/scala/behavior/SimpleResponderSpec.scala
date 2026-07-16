@@ -1,6 +1,6 @@
 package behavior
 
-import core.{Message, MessageContent, MessageHeader, NodeHeader, NodeState}
+import core.{Message, MessageContent, NodeHeader}
 import test_utils.MessageSpecUtil.testMessage
 import test_utils.NodeSpecUtil.testNodeState
 import test_utils.UnitSpec

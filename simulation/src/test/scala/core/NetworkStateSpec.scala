@@ -1,6 +1,6 @@
 package core
 
-import test_utils.BehaviorSpecUtil.TestSelfUpdateBehavior
+import test_utils.BehaviorSpecUtil.{TestMessageBehavior, TestSelfUpdateBehavior}
 import test_utils.NetworkStateSpecUtil.testNetworkState
 import test_utils.{BehaviorSpecUtil, UnitSpec}
 import test_utils.NodeSpecUtil.testNodeState
@@ -78,7 +78,30 @@ class NetworkStateSpec extends UnitSpec {
         }
       }
 
-      it("collects new messages and sets the delivery time") {}
+      it("collects new messages and sets the delivery time") {
+        val message =
+          Message(MessageHeader(9, 2, 1, 4, Some(10)), MessageContent(""))
+        val node = Node(
+          List(TestMessageBehavior(message)),
+          testNodeState(
+            NodeHeader(1, 0),
+            List.empty,
+            List.empty
+          )
+        )
+        val network = testNetworkState(
+          0,
+          List(node),
+          List.empty
+        )
+
+        network.messagesInTransit.allMessages shouldBe empty
+        val withMessage = network.nextState()
+        withMessage.messagesInTransit.allMessages should have size 1
+        withMessage.messagesInTransit.allMessages.head.header.deliveryTime should equal(
+          Some(11)
+        )
+      }
     }
 
     describe("List constructor") {
