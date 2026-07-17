@@ -1,6 +1,6 @@
-scalaVersion := "3.8.4"
-organization := "com.lukewassink"
-ThisBuild / version := "0.0.0-SNAPSHOT"
+ThisBuild / scalaVersion := "3.8.4"
+ThisBuild / organization := "com.lukewassink"
+version := "0.0.0-SNAPSHOT"
 
 val toolkitV = "0.9.2"
 val toolkit = "org.scala-lang" %% "toolkit" % toolkitV
@@ -16,7 +16,8 @@ val sharedDependencies = Seq(
   "org.scalatest" %% "scalatest" % "3.2.20" % "test"
 )
 
-lazy val root = rootProject.autoAggregate
+lazy val root = (project in file("."))
+  .aggregate(simulation, runner)
   .settings(
     publish / skip := true
   )
