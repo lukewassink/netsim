@@ -1,3 +1,5 @@
+import org.scalajs.linker.interface.ModuleSplitStyle
+
 ThisBuild / scalaVersion := "3.8.4"
 ThisBuild / organization := "com.lukewassink"
 version := "0.0.0-SNAPSHOT"
@@ -17,7 +19,7 @@ val sharedDependencies = Seq(
 )
 
 lazy val root = (project in file("."))
-  .aggregate(simulation, runner)
+  .aggregate(simulation, runner, visualizer)
   .settings(
     publish / skip := true
   )
@@ -31,3 +33,19 @@ lazy val runner = (project in file("runner"))
     libraryDependencies ++= sharedDependencies
   )
   .dependsOn(simulation % "compile->compile;test->test")
+
+lazy val visualizer = (project in file("visualizer"))
+  .enablePlugins(ScalaJSPlugin)
+  .settings(
+    scalaJSUseMainModuleInitializer := true,
+    scalaJSLinkerConfig ~= {
+      _.withModuleKind(ModuleKind.ESModule)
+        .withModuleSplitStyle(
+          ModuleSplitStyle.SmallModulesFor(List("visualizer"))
+        )
+    },
+    libraryDependencies ++= sharedDependencies,
+    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "2.8.1",
+    libraryDependencies += "com.raquo" %%% "laminar" % "17.2.1"
+  )
+  .dependsOn(runner)

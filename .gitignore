@@ -38,6 +38,7 @@ project/plugins/project/
 *.log
 *.tmp
 *.class
+node_modules/
 
 # ==========================================
 # Environment Variables and Secrets
