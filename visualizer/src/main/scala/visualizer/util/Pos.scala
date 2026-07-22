@@ -1,5 +1,7 @@
 package visualizer.util
 
+import scala.math.Numeric.Implicits.infixNumericOps
+
 // Represents a position in Cartesian (x, y) coordinates.
 case class Pos(x: Float, y: Float) {
   // Interpolate a point between the current point and endPoint.
@@ -7,7 +9,7 @@ case class Pos(x: Float, y: Float) {
   // t = 1 => endPoint
   def interpolate[T: Numeric](scalar: T, endPoint: Pos): Pos = {
     val Pos(x2, y2) = endPoint
-    val t = summon[Numeric[T]].toFloat(scalar)
+    val t = scalar.toFloat
     Pos((1 - t) * x + t * x2, (1 - t) * y + t * y2)
   }
 
@@ -17,21 +19,24 @@ case class Pos(x: Float, y: Float) {
 }
 
 object Pos {
+  // Allow scalar multiplication.
   extension [T: Numeric](scalar: T)
     infix def *(pos: Pos): Pos = {
-      val s = summon[Numeric[T]].toFloat(scalar)
+      val s = scalar.toFloat
       Pos(s * pos.x, s * pos.y)
     }
 
   infix def -(pos: Pos): Pos = -1 * pos
 
   // Returns the coordinates of a point rotated by angle around center with radius.
-  def fromPolar(angle: Double, radius: Double): Pos = {
-    val x = Math.cos(angle) * radius
-    val y = Math.sin(angle) * radius
-    Pos(x.toFloat, y.toFloat)
+  def fromPolar[S: Numeric, T: Numeric](angle: S, radius: T): Pos = {
+    val a = angle.toDouble
+    val r = radius.toFloat
+    val x = Math.cos(a) * r
+    val y = Math.sin(a) * r
+    Pos(x, y)
   }
 
   def apply[S: Numeric, T: Numeric](x: S, y: T): Pos =
-    Pos(summon[Numeric[S]].toFloat(x), summon[Numeric[T]].toFloat(y))
+    Pos(x.toFloat, y.toFloat)
 }
