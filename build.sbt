@@ -4,32 +4,37 @@ ThisBuild / scalaVersion := "3.8.4"
 ThisBuild / organization := "com.lukewassink"
 version := "0.0.0-SNAPSHOT"
 
-val toolkitV = "0.9.2"
-val toolkit = "org.scala-lang" %% "toolkit" % toolkitV
-val toolkitTest = "org.scala-lang" %% "toolkit-test" % toolkitV
-
 // Silence errors when I run the unit tests.
 javaOptions += "--sun-misc-unsafe-memory-access=allow"
 
+val toolkitV = "0.9.2"
+
 val sharedDependencies = Seq(
-  toolkit,
-  toolkitTest % Test,
+  "org.scala-lang" %% "toolkit" % toolkitV,
+  "org.scala-lang" %% "toolkit-test" % toolkitV % Test,
   "org.scalactic" %% "scalactic" % "3.2.20",
   "org.scalatest" %% "scalatest" % "3.2.20" % "test"
 )
 
 lazy val root = (project in file("."))
-  .aggregate(simulation, runner, visualizer)
+  .aggregate(simulation.js, simulation.jvm, runner.js, runner.jvm, visualizer)
   .settings(
     publish / skip := true
   )
 
-lazy val simulation = (project in file("simulation")).settings(
-  libraryDependencies ++= sharedDependencies
-)
-
-lazy val runner = (project in file("runner"))
+lazy val simulation = crossProject(JSPlatform, JVMPlatform)
+  .crossType(CrossType.Pure)
+  .in(file("simulation"))
   .settings(
+    name := "simulation",
+    libraryDependencies ++= sharedDependencies
+  )
+
+lazy val runner = crossProject(JSPlatform, JVMPlatform)
+  .crossType(CrossType.Pure)
+  .in(file("runner"))
+  .settings(
+    name := "runner",
     libraryDependencies ++= sharedDependencies
   )
   .dependsOn(simulation % "compile->compile;test->test")
@@ -37,6 +42,7 @@ lazy val runner = (project in file("runner"))
 lazy val visualizer = (project in file("visualizer"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
+    name := "visualizer",
     scalaJSUseMainModuleInitializer := true,
     scalaJSLinkerConfig ~= {
       _.withModuleKind(ModuleKind.ESModule)
@@ -44,8 +50,9 @@ lazy val visualizer = (project in file("visualizer"))
           ModuleSplitStyle.SmallModulesFor(List("visualizer"))
         )
     },
-    libraryDependencies ++= sharedDependencies,
     libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "2.8.1",
-    libraryDependencies += "com.raquo" %%% "laminar" % "17.2.1"
+    libraryDependencies += "com.raquo" %%% "laminar" % "17.2.1",
+    libraryDependencies += "org.scalactic" %%% "scalactic" % "3.2.20",
+    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.2.20" % "test"
   )
-  .dependsOn(runner)
+  .dependsOn(runner.js, simulation.js)

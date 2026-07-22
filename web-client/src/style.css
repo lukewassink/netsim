@@ -1,6 +1,14 @@
+:root {
+  --viewer-size: 700px;
+}
+
 div {
-  height: 90vh;
+  height: auto;
   width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column
 }
 
 h1 {
@@ -12,11 +20,9 @@ h1 {
 }
 
 .root-svg {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  width: 100%;
+  height: var(--viewer-size);
+  width: var(--viewer-size);
+  y: 10px;
 }
 
 .network-background-rect {
@@ -24,5 +30,18 @@ h1 {
   rx: 10px;
   ry: 10px;
   stroke: gray;
-  stroke-width: 3px;
+  stroke-width: 5px;
+  height: var(--viewer-size);
+  width: var(--viewer-size);
 }
+
+.node {
+  fill: mediumblue;
+  r: 15px;
+}
+
+.message {
+  fill: mediumpurple;
+  r: 10px;
+}
+

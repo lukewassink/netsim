@@ -6,9 +6,8 @@ import test_utils.NetworkStateSpecUtil.testNetworkState
 import test_utils.NodeSpecUtil.testNodeState
 import test_utils.{MessageMatchers, UnitSpec}
 
-class RunnerSpec extends UnitSpec with MessageMatchers {
+class RunnerSpec extends UnitSpec {
   describe("run") {
-    val emptyContent = MessageContent("")
     val messageAToB =
       Message(MessageHeader(1, 1, 2, 3, Some(10)), MessageContent("AToB"))
     val messageAToC =
