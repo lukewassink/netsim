@@ -16,16 +16,19 @@ def RenderRoot(): Unit =
 
 // Render the root element of the page. All other elements descend from it.
 object Root:
+  // Side length for the square the network renders in of, in px.
+  // We can't set this in CSS because we need it to calculate the network layout.
+  val NetworkPanelSideLength = 700
+
   def rootElement(): Element =
     div(
       h1("NetSim"),
       svg.svg(
-        svg.cls := "root-svg",
-        svg.rect(
-          svg.cls := "network-background-rect"
-        ),
-        children <-- Network.renderedNodes,
-        children <-- Network.renderedMessages
+        svg.cls := "network-panel",
+        svg.height := NetworkPanelSideLength.toString,
+        svg.width := NetworkPanelSideLength.toString,
+        children <-- Network.nodeElements,
+        children <-- Network.messageElements
       )
     )
   end rootElement

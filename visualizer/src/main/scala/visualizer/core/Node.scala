@@ -2,18 +2,18 @@ package visualizer.core
 
 import com.raquo.laminar.api.L.{*, given}
 import core.{NetworkState, Node}
+import visualizer.core.Root.NetworkPanelSideLength
 import visualizer.util.Pos
 import visualizer.util.Pos.fromPolar
-import visualizer.core.Network.SquareSideLength
 
 // A node along with its rendering data.
-case class RenderableNode(node: Node, center: Pos)
+case class NodeData(node: Node, center: Pos)
 
 object NodeRenderer {
   // Radius of the circle of nodes, in px.
   private val NodesRadius = 300
 
-  def toRenderable(network: NetworkState): Map[Int, RenderableNode] = {
+  def addData(network: NetworkState): Map[Int, NodeData] = {
     val n = network.nodes.size
 
     network.nodes.zipWithIndex
@@ -23,13 +23,13 @@ object NodeRenderer {
         // Start at pi/2 so the first node is at 12 o'clock.
         val angle = (2 * math.Pi * i / n) - (math.Pi / 2)
         val center =
-          Pos(SquareSideLength / 2, SquareSideLength / 2)
-        id -> RenderableNode(node, center + fromPolar(angle, NodesRadius))
+          Pos(NetworkPanelSideLength / 2, NetworkPanelSideLength / 2)
+        id -> NodeData(node, center + fromPolar(angle, NodesRadius))
       })
       .toMap
   }
 
-  def render(node: RenderableNode): SvgElement = {
+  def render(node: NodeData): SvgElement = {
     val Pos(x, y) = node.center
     svg.circle(
       svg.cls := "node",

@@ -1,7 +1,3 @@
-:root {
-  --viewer-size: 700px;
-}
-
 div {
   height: auto;
   width: 100vw;
@@ -19,20 +15,10 @@ h1 {
   text-align: center;
 }
 
-.root-svg {
-  height: var(--viewer-size);
-  width: var(--viewer-size);
+.network-panel {
   y: 10px;
-}
-
-.network-background-rect {
-  fill: white;
-  rx: 10px;
-  ry: 10px;
-  stroke: gray;
-  stroke-width: 5px;
-  height: var(--viewer-size);
-  width: var(--viewer-size);
+  border-radius: 10px;
+  border: 4px solid darkgray;
 }
 
 .node {
