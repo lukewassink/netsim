@@ -1,7 +1,18 @@
 package com.lukewassink.simulation.core
 
-import com.lukewassink.simulation.core.{Message, MessageContent, MessageHeader, MessageQueue, NetworkState, Node, NodeHeader}
-import com.lukewassink.simulation.test_utils.BehaviorSpecUtil.{TestMessageBehavior, TestSelfUpdateBehavior}
+import com.lukewassink.simulation.core.{
+  Message,
+  MessageContent,
+  MessageHeader,
+  MessageQueue,
+  NetworkState,
+  Node,
+  NodeHeader
+}
+import com.lukewassink.simulation.test_utils.BehaviorSpecUtil.{
+  TestMessageBehavior,
+  TestSelfUpdateBehavior
+}
 import com.lukewassink.simulation.test_utils.NetworkStateSpecUtil.testNetworkState
 import com.lukewassink.simulation.test_utils.NodeSpecUtil.testNodeState
 import com.lukewassink.simulation.test_utils.RandomSpecUtil.InertRandom
@@ -119,9 +130,9 @@ class NetworkStateSpec extends UnitSpec {
           List.empty,
           InertRandom()
         ).nodes should contain theSameElementsAs Map(
-          1 -> nodeA,
-          2 -> nodeB,
-          3 -> nodeC
+          NodeID(1) -> nodeA,
+          NodeID(2) -> nodeB,
+          NodeID(3) -> nodeC
         )
       }
 

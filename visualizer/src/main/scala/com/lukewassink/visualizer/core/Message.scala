@@ -1,6 +1,11 @@
 package com.lukewassink.visualizer.core
 
-import com.lukewassink.simulation.core.{Message, MessageHeader, NetworkState}
+import com.lukewassink.simulation.core.{
+  Message,
+  MessageHeader,
+  NetworkState,
+  NodeID
+}
 import com.lukewassink.visualizer.util.Pos
 import com.raquo.laminar.api.L.{*, given}
 
@@ -10,8 +15,8 @@ case class MessageData(message: Message, center: Pos)
 object MessageRenderer {
   // Wrap messages up along with their rendering data.
   def addData(
-               network: NetworkState,
-               nodeData: Map[Int, NodeData]
+      network: NetworkState,
+      nodeData: Map[NodeID, NodeData]
   ): List[MessageData] = {
     network.messagesInTransit.allMessages
       .map(message => {

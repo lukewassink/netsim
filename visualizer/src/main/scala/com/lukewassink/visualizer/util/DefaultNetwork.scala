@@ -1,13 +1,25 @@
 package com.lukewassink.visualizer.util
 
 import com.lukewassink.simulation.behavior.SimpleSender
-import com.lukewassink.simulation.core.{Message, MessageContent, MessageHeader, NetworkState, Node, NodeHeader, NodeState}
+import com.lukewassink.simulation.core.{
+  Message,
+  MessageContent,
+  MessageHeader,
+  NetworkState,
+  Node,
+  NodeHeader,
+  NodeID,
+  NodeState
+}
 import com.lukewassink.simulation.util.XORRandom
 
 // The default network to display in the visualizer.
 //
 // TODO(#32) delete this once we can load the network from a config.
 object DefaultNetwork {
+  given Conversion[Int, NodeID] with
+    def apply(id: Int): NodeID = NodeID(id)
+
   val messageAToB =
     Message(MessageHeader(1, 1, 2, 0, Some(10)), MessageContent("AToB"))
   val messageAToC =

@@ -60,4 +60,4 @@ lazy val visualizer = (project in file("visualizer"))
         .withModuleSplitStyle(ModuleSplitStyle.FewestModules)
     }
   )
-  .dependsOn(runner.js, simulation.js)
+  .dependsOn(runner.js, simulation.js % "compile->compile;test->test")

@@ -8,7 +8,9 @@ import com.raquo.domtestutils.matching.*
 import com.raquo.laminar.keys.*
 import com.raquo.laminar.nodes.*
 import com.raquo.laminar.tags.Tag
+import com.lukewassink.simulation.test_utils.ImplicitConversions
 
+// Don't generate compiler warnings for the implicit conversions below. They are required for domtestutils.
 import scala.language.implicitConversions
 
 class UnitSpec
@@ -26,6 +28,8 @@ class UnitSpec
       StyleProp,
       CompositeAttr[?]
     ] {
+
+  export ImplicitConversions.given
 
   override implicit def makeTagTestable(tag: Tag.Base): ExpectedNode = {
     ExpectedNode.element(tag.name)

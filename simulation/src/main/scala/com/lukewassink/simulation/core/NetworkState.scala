@@ -9,7 +9,7 @@ final val DeliveryLatency = 10
 // The total state of the network. The network consists of nodes and the current time.
 case class NetworkState(
     time: Int,
-    nodes: Map[Int, Node],
+    nodes: Map[NodeID, Node],
     messagesInTransit: MessageQueue,
     random: Random
 ):
@@ -64,7 +64,7 @@ object NetworkState {
       messages: List[Message],
       random: Random
   ): NetworkState = {
-    val nodeMap: Map[Int, Node] = nodes.foldLeft(Map[Int, Node]()) {
+    val nodeMap: Map[NodeID, Node] = nodes.foldLeft(Map[NodeID, Node]()) {
       (map, node) =>
         map.updated(node.sharedState.header.id, node)
     }

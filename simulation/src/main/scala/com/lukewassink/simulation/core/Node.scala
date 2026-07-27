@@ -2,8 +2,11 @@ package com.lukewassink.simulation.core
 
 import com.lukewassink.simulation.util.Random
 
+// A node ID. It should uniquely identify the node.
+case class NodeID(id: Int)
+
 // Metadata for a node.
-case class NodeHeader(id: Int, nextMessageId: Int)
+case class NodeHeader(id: NodeID, nextMessageId: Int)
 
 // The shared internal state of the node. It contains incoming messages and any shared node history or data required by
 // the behaviors. Individual behaviors can also store their own state.

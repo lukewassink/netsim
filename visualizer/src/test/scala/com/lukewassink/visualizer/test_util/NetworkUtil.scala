@@ -1,8 +1,17 @@
 package com.lukewassink.visualizer.test_util
 
 import com.lukewassink.simulation.behavior.SimpleSender
-import com.lukewassink.simulation.core.{Message, MessageContent, MessageHeader, NetworkState, Node, NodeHeader, NodeState}
+import com.lukewassink.simulation.core.{
+  Message,
+  MessageContent,
+  MessageHeader,
+  NetworkState,
+  Node,
+  NodeHeader,
+  NodeState
+}
 import com.lukewassink.simulation.util.XORRandom
+import com.lukewassink.simulation.test_utils.ImplicitConversions.given
 import com.raquo.laminar.api.L.{*, given}
 
 // At preconfigured network for testing purposes.

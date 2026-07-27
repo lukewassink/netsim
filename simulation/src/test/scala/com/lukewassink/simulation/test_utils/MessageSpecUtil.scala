@@ -2,6 +2,8 @@ package com.lukewassink.simulation.test_utils
 
 import com.lukewassink.simulation.core.{Message, MessageContent, MessageHeader}
 import org.scalatest.matchers.{HavePropertyMatcher, HavePropertyMatchResult}
+import com.lukewassink.simulation.core.NodeID
+import ImplicitConversions.given
 
 object MessageSpecUtil {
   def testMessage(

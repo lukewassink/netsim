@@ -5,8 +5,8 @@ case class Message(header: MessageHeader, content: MessageContent)
 
 case class MessageHeader(
     messageId: Int,
-    senderId: Int,
-    receiverId: Int,
+    senderId: NodeID,
+    receiverId: NodeID,
     sendTime: Int,
     deliveryTime: Option[Int]
 )
