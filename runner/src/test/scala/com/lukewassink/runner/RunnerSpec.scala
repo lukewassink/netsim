@@ -2,7 +2,13 @@ package com.lukewassink.runner
 
 import com.lukewassink.runner.Runner
 import com.lukewassink.simulation.behavior.SimpleSender
-import com.lukewassink.simulation.core.{Message, MessageContent, MessageHeader, Node, NodeHeader}
+import com.lukewassink.simulation.core.{
+  Message,
+  MessageContent,
+  MessageHeader,
+  Node,
+  NodeHeader
+}
 import com.lukewassink.simulation.test_utils.NetworkStateSpecUtil.testNetworkState
 import com.lukewassink.simulation.test_utils.NodeSpecUtil.testNodeState
 import com.lukewassink.simulation.test_utils.{MessageMatchers, UnitSpec}

@@ -9,6 +9,8 @@ javaOptions += "--sun-misc-unsafe-memory-access=allow"
 
 val toolkitV = "0.9.2"
 
+wartremoverErrors ++= Warts.unsafe
+
 val sharedDependencies = Seq(
   "org.scala-lang" %% "toolkit" % toolkitV,
   "org.scala-lang" %% "toolkit-test" % toolkitV % Test,

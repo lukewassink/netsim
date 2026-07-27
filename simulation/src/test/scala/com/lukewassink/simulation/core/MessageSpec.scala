@@ -1,6 +1,11 @@
 package com.lukewassink.simulation.core
 
-import com.lukewassink.simulation.core.{Message, MessageContent, MessageHeader, MessageQueue}
+import com.lukewassink.simulation.core.{
+  Message,
+  MessageContent,
+  MessageHeader,
+  MessageQueue
+}
 import com.lukewassink.simulation.test_utils.UnitSpec
 
 class MessageSpec extends UnitSpec {

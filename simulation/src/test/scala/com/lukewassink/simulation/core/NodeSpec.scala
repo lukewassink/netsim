@@ -1,8 +1,19 @@
 package com.lukewassink.simulation.core
 
-import com.lukewassink.simulation.core.{Message, MessageContent, MessageHeader, MessageQueue, Node, NodeHeader, NodeState}
+import com.lukewassink.simulation.core.{
+  Message,
+  MessageContent,
+  MessageHeader,
+  MessageQueue,
+  Node,
+  NodeHeader,
+  NodeState
+}
 import com.lukewassink.simulation.test_utils.UnitSpec
-import com.lukewassink.simulation.test_utils.BehaviorSpecUtil.{TestMessageBehavior, TestSelfUpdateBehavior}
+import com.lukewassink.simulation.test_utils.BehaviorSpecUtil.{
+  TestMessageBehavior,
+  TestSelfUpdateBehavior
+}
 import com.lukewassink.simulation.test_utils.NodeSpecUtil.testNodeState
 
 class NodeSpec extends UnitSpec {

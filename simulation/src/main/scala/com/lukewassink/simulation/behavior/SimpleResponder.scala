@@ -1,6 +1,12 @@
 package com.lukewassink.simulation.behavior
 
-import com.lukewassink.simulation.core.{Message, MessageContent, MessageHeader, NodeBehavior, NodeState}
+import com.lukewassink.simulation.core.{
+  Message,
+  MessageContent,
+  MessageHeader,
+  NodeBehavior,
+  NodeState
+}
 
 case class SimpleResponder() extends NodeBehavior {
   private def createResponse(time: Int)(message: Message): Message = {

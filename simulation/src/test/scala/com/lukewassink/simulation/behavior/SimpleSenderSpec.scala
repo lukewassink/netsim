@@ -1,7 +1,13 @@
 package com.lukewassink.simulation.behavior
 
 import com.lukewassink.simulation.behavior.SimpleSender
-import com.lukewassink.simulation.core.{Message, MessageContent, MessageHeader, NodeHeader, NodeState}
+import com.lukewassink.simulation.core.{
+  Message,
+  MessageContent,
+  MessageHeader,
+  NodeHeader,
+  NodeState
+}
 import com.lukewassink.simulation.test_utils.UnitSpec
 import com.lukewassink.simulation.test_utils.NodeSpecUtil.testNodeState
 
