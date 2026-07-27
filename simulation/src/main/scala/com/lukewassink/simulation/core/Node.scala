@@ -26,7 +26,7 @@ case class NodeState(
   def withOutgoingMessage(time: Int, message: Message): NodeState = {
     val messageWithNodeMetadata = message.copy(header =
       message.header.copy(
-        messageId = header.nextMessageId,
+        id = MessageID(header.nextMessageId),
         senderId = header.id,
         sendTime = time
       )

@@ -201,10 +201,10 @@ class NodeSpec extends UnitSpec {
 
         it("increments the message ID") {
           exactly(1, outgoingMessages) should matchPattern {
-            case Message(MessageHeader(0, _, _, _, _), _) =>
+            case Message(MessageHeader(MessageID(0), _, _, _, _), _) =>
           }
           exactly(1, outgoingMessages) should matchPattern {
-            case Message(MessageHeader(1, _, _, _, _), _) =>
+            case Message(MessageHeader(MessageID(1), _, _, _, _), _) =>
           }
         }
       }

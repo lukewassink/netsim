@@ -5,6 +5,7 @@ import com.lukewassink.simulation.core.{
   Message,
   MessageContent,
   MessageHeader,
+  MessageID,
   NetworkState,
   Node,
   NodeHeader,
@@ -17,8 +18,12 @@ import com.lukewassink.simulation.util.XORRandom
 //
 // TODO(#32) delete this once we can load the network from a config.
 object DefaultNetwork {
+
   given Conversion[Int, NodeID] with
     def apply(id: Int): NodeID = NodeID(id)
+
+  given Conversion[Int, MessageID] with
+    def apply(id: Int): MessageID = MessageID(id)
 
   val messageAToB =
     Message(MessageHeader(1, 1, 2, 0, Some(10)), MessageContent("AToB"))

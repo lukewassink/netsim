@@ -12,7 +12,7 @@ case class SimpleResponder() extends NodeBehavior {
   private def createResponse(time: Int)(message: Message): Message = {
     val header = message.header
     val responseHeader = MessageHeader(
-      header.messageId,
+      header.id,
       header.receiverId,
       header.senderId,
       time,
