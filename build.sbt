@@ -12,7 +12,6 @@ val toolkitV = "0.9.2"
 val sharedDependencies = Seq(
   "org.scala-lang" %% "toolkit" % toolkitV,
   "org.scala-lang" %% "toolkit-test" % toolkitV % Test,
-  "org.scalactic" %% "scalactic" % "3.2.20",
   "org.scalatest" %% "scalatest" % "3.2.20" % "test"
 )
 
@@ -51,8 +50,14 @@ lazy val visualizer = (project in file("visualizer"))
         )
     },
     libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "2.8.1",
-    libraryDependencies += "com.raquo" %%% "laminar" % "17.2.1",
-    libraryDependencies += "org.scalactic" %%% "scalactic" % "3.2.20",
-    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.2.20" % "test"
+    libraryDependencies += "com.raquo" %%% "laminar" % "18.0.0-M5",
+    libraryDependencies += "com.raquo" %%% "laminar" % "18.0.0-M5" % Test,
+    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.2.20" % Test,
+    libraryDependencies += "com.raquo" %%% "domtestutils" % "19.0.0" % Test,
+    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
+    Test / scalaJSLinkerConfig ~= {
+      _.withModuleKind(ModuleKind.NoModule)
+        .withModuleSplitStyle(ModuleSplitStyle.FewestModules)
+    }
   )
   .dependsOn(runner.js, simulation.js)
