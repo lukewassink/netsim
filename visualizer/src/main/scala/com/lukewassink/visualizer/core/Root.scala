@@ -4,7 +4,6 @@ import com.lukewassink.simulation.behavior.SimpleSender
 import com.lukewassink.simulation.core.Node
 import com.lukewassink.simulation.util.XORRandom
 import com.raquo.laminar.api.L.{*, given}
-import core.*
 import org.scalajs.dom
 
 // Hook into the document and render the root element.
