@@ -1,7 +1,6 @@
 package visualizer.test_util
 
 import com.raquo.domtestutils.matching.RuleImplicits
-import org.scalactic.Tolerance
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 import com.raquo.domtestutils.scalatest.MountSpec
@@ -9,6 +8,8 @@ import com.raquo.domtestutils.matching.*
 import com.raquo.laminar.keys.*
 import com.raquo.laminar.nodes.*
 import com.raquo.laminar.tags.Tag
+
+import scala.language.implicitConversions
 
 class UnitSpec
     extends AnyFunSpec
