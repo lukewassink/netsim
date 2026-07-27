@@ -17,6 +17,7 @@ import com.lukewassink.simulation.test_utils.NetworkStateSpecUtil.testNetworkSta
 import com.lukewassink.simulation.test_utils.NodeSpecUtil.testNodeState
 import com.lukewassink.simulation.test_utils.RandomSpecUtil.InertRandom
 import com.lukewassink.simulation.test_utils.{BehaviorSpecUtil, UnitSpec}
+import com.lukewassink.simulation.util.Time
 
 class NetworkStateSpec extends UnitSpec {
   describe("NetworkState") {
@@ -51,7 +52,7 @@ class NetworkStateSpec extends UnitSpec {
 
     describe("NextState") {
       it("ticks the time forward") {
-        assert(nextNetwork.time - network.time === 1)
+        assert(nextNetwork.time.ticks - network.time.ticks === 1)
       }
 
       it("delivers current messages") {
@@ -111,7 +112,7 @@ class NetworkStateSpec extends UnitSpec {
         val withMessage = network.nextState()
         withMessage.messagesInTransit.allMessages should have size 1
         withMessage.messagesInTransit.allMessages.head.header.deliveryTime should equal(
-          Some(11)
+          Some(Time(11))
         )
       }
     }

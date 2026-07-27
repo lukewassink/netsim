@@ -12,18 +12,24 @@ import com.lukewassink.simulation.core.{
   NodeID,
   NodeState
 }
-import com.lukewassink.simulation.util.XORRandom
+import com.lukewassink.simulation.util.{Time, XORRandom}
 
 // The default network to display in the visualizer.
 //
 // TODO(#32) delete this once we can load the network from a config.
 object DefaultNetwork {
 
+  // Implicit conversions to allow simply passing Int values to message, node, and network constructors.
+  // It's OK to just copy/paste these in here because this whole file will be deleted as soon as we can load
+  // networks from config.
   given Conversion[Int, NodeID] with
     def apply(id: Int): NodeID = NodeID(id)
 
   given Conversion[Int, MessageID] with
     def apply(id: Int): MessageID = MessageID(id)
+
+  given Conversion[Int, Time] with
+    def apply(ticks: Int): Time = Time(ticks)
 
   val messageAToB =
     Message(MessageHeader(1, 1, 2, 0, Some(10)), MessageContent("AToB"))

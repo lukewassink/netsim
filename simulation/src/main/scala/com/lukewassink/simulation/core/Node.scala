@@ -1,6 +1,6 @@
 package com.lukewassink.simulation.core
 
-import com.lukewassink.simulation.util.Random
+import com.lukewassink.simulation.util.{Random, Time}
 
 // A node ID. It should uniquely identify the node.
 case class NodeID(id: Int)
@@ -23,7 +23,7 @@ case class NodeState(
     copy(incomingMessages = List.empty)
 
   // Sets the message ID, sender ID, and send time for outgoing messages and adds it to the list.
-  def withOutgoingMessage(time: Int, message: Message): NodeState = {
+  def withOutgoingMessage(time: Time, message: Message): NodeState = {
     val messageWithNodeMetadata = message.copy(header =
       message.header.copy(
         id = MessageID(header.nextMessageId),
@@ -49,13 +49,13 @@ case class Node(
 ):
 
   // Updates the node before receiving new messages. Used for cleanup and initialization. No behaviors execute here.
-  def preDeliveryAction(time: Int): Node = {
+  def preDeliveryAction(time: Time): Node = {
     // Clear sent messages from the last tick.
     Node(behaviors, sharedState.clearIncomingMessages)
   }
 
   // Updates the node based on delivered messages. Behaviors are triggered here.
-  def postDeliveryAction(time: Int): Node =
+  def postDeliveryAction(time: Time): Node =
 
     // Clear messages that were sent last tick.
     val clearedState = sharedState.clearOutgoingMessages

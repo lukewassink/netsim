@@ -1,6 +1,7 @@
 package com.lukewassink.simulation.test_utils
 
 import com.lukewassink.simulation.core.{MessageID, NodeID}
+import com.lukewassink.simulation.util.Time
 
 object ImplicitConversions {
   given Conversion[Int, NodeID] with
@@ -8,4 +9,7 @@ object ImplicitConversions {
 
   given Conversion[Int, MessageID] with
     def apply(id: Int): MessageID = MessageID(id)
+
+  given Conversion[Int, Time] with
+    def apply(ticks: Int): Time = Time(ticks)
 }

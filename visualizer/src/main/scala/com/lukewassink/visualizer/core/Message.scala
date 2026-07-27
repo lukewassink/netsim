@@ -27,7 +27,7 @@ object MessageRenderer {
 
         // The portion of its journey the message has completed.
         val t =
-          (network.time.toFloat - startTime) / (endTime - startTime)
+          (network.time - startTime) / (endTime - startTime)
         MessageData(
           message,
           sender.center.interpolate(t, receiver.center)

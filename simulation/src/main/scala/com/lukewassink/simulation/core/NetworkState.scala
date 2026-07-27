@@ -1,14 +1,14 @@
 package com.lukewassink.simulation.core
 
-import com.lukewassink.simulation.util.Random
+import com.lukewassink.simulation.util.{Duration, Random, Time}
 
 // The time it takes for a message to be delivered. Hardcoded for now. Later this should be changed to be config
 // based.
-final val DeliveryLatency = 10
+final val DeliveryLatency = Duration(10)
 
 // The total state of the network. The network consists of nodes and the current time.
 case class NetworkState(
-    time: Int,
+    time: Time,
     nodes: Map[NodeID, Node],
     messagesInTransit: MessageQueue,
     random: Random
@@ -22,7 +22,7 @@ case class NetworkState(
   // 5) collect outgoing messages from nodes
   def nextState(): NetworkState = {
     // Tick time
-    val newTime = time + 1
+    val newTime = time.next
 
     // Call node pre-delivery actions
     val initializedNodes = nodes.map(_ -> _.preDeliveryAction(newTime))
@@ -59,7 +59,7 @@ case class NetworkState(
 object NetworkState {
   // A convenience method to initialize NetworkState using a list of nodes and list of messages.
   def apply(
-      time: Int,
+      time: Time,
       nodes: List[Node],
       messages: List[Message],
       random: Random

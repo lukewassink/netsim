@@ -1,11 +1,12 @@
 package com.lukewassink.simulation.behavior
 
 import com.lukewassink.simulation.core.{Message, NodeBehavior, NodeState}
+import com.lukewassink.simulation.util.Time
 
-case class SimpleSender(timeToSend: Int, message: Message)
+case class SimpleSender(timeToSend: Time, message: Message)
     extends NodeBehavior {
   override def updatedNodeState(
-      time: Int,
+      time: Time,
       state: NodeState
   ): NodeState =
     if time == timeToSend then state.withOutgoingMessage(time, message)

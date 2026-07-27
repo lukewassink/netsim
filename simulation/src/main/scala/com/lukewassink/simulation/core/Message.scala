@@ -1,5 +1,7 @@
 package com.lukewassink.simulation.core
 
+import com.lukewassink.simulation.util.Time
+
 // NOTE: a message ID uniquely identifies a message withing a node.
 // The pair (message ID, node ID) is required to uniquely identify the message within the network.
 case class MessageID(id: Int)
@@ -8,8 +10,8 @@ case class MessageHeader(
     id: MessageID,
     senderId: NodeID,
     receiverId: NodeID,
-    sendTime: Int,
-    deliveryTime: Option[Int]
+    sendTime: Time,
+    deliveryTime: Option[Time]
 )
 
 // A unit of data that can be sent between nodes.
@@ -27,7 +29,7 @@ case class MessageQueue(messages: List[Message]):
     messages.foldLeft(this)(_.withMessage(_))
 
   // Returns messages to be delivered at the current time.
-  def currentMessages(time: Int): List[Message] =
+  def currentMessages(time: Time): List[Message] =
     messages.filter {
       _.header.deliveryTime match {
         case None    => false
@@ -36,7 +38,7 @@ case class MessageQueue(messages: List[Message]):
     }
 
   // Returns the queue with all messages with past or present delivery times removed.
-  def withoutPastMessages(time: Int): MessageQueue = {
+  def withoutPastMessages(time: Time): MessageQueue = {
     val filteredMessages = messages.filter {
       _.header.deliveryTime match {
         case None    => true

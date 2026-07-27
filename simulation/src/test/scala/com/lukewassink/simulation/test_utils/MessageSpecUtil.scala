@@ -1,18 +1,29 @@
 package com.lukewassink.simulation.test_utils
 
-import com.lukewassink.simulation.core.{Message, MessageContent, MessageHeader}
-import org.scalatest.matchers.{HavePropertyMatcher, HavePropertyMatchResult}
-import com.lukewassink.simulation.core.NodeID
-import ImplicitConversions.given
+import com.lukewassink.simulation.core.{
+  Message,
+  MessageContent,
+  MessageHeader,
+  MessageID,
+  NodeID
+}
+import org.scalatest.matchers.{HavePropertyMatchResult, HavePropertyMatcher}
+import com.lukewassink.simulation.util.Time
 
 object MessageSpecUtil {
   def testMessage(
-      receiverId: Int,
-      deliveryTime: Int,
+      receiverId: NodeID,
+      deliveryTime: Time,
       content: String
   ): Message =
     Message(
-      MessageHeader(0, 0, receiverId, 0, Some(deliveryTime)),
+      MessageHeader(
+        MessageID(0),
+        NodeID(0),
+        receiverId,
+        Time(0),
+        Some(deliveryTime)
+      ),
       MessageContent(content)
     )
 }

@@ -7,9 +7,10 @@ import com.lukewassink.simulation.core.{
   NodeBehavior,
   NodeState
 }
+import com.lukewassink.simulation.util.Time
 
 case class SimpleResponder() extends NodeBehavior {
-  private def createResponse(time: Int)(message: Message): Message = {
+  private def createResponse(time: Time)(message: Message): Message = {
     val header = message.header
     val responseHeader = MessageHeader(
       header.id,
@@ -25,7 +26,7 @@ case class SimpleResponder() extends NodeBehavior {
   }
 
   override def updatedNodeState(
-      time: Int,
+      time: Time,
       state: NodeState
   ): NodeState =
     state.incomingMessages
