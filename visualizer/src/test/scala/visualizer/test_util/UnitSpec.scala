@@ -13,7 +13,6 @@ import com.raquo.laminar.tags.Tag
 class UnitSpec
     extends AnyFunSpec
     with Matchers
-    with Tolerance
     with MountSpec
     with RuleImplicits[
       Tag.Base,
