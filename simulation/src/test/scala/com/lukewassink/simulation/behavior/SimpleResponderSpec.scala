@@ -3,13 +3,13 @@ package com.lukewassink.simulation.behavior
 import com.lukewassink.simulation.behavior.SimpleResponder
 import com.lukewassink.simulation.core.{Message, MessageContent, NodeHeader}
 import com.lukewassink.simulation.test_utils.UnitSpec
-import com.lukewassink.simulation.test_utils.MessageSpecUtil.testMessage
-import com.lukewassink.simulation.test_utils.NodeSpecUtil.testNodeState
+import com.lukewassink.simulation.test_utils.MessageSpecUtil.scheduledMessage
+import com.lukewassink.simulation.test_utils.NodeStateSpecUtil.testNodeState
 
 class SimpleResponderSpec extends UnitSpec {
   describe("trigger") {
-    val message1 = testMessage(2, 5, "One")
-    val message2 = testMessage(2, 5, "Two")
+    val message1 = scheduledMessage(2, 5, "One")
+    val message2 = scheduledMessage(2, 5, "Two")
     val responder = SimpleResponder()
     val noMessagesState =
       testNodeState(NodeHeader(2, 0), List.empty, List.empty)
@@ -32,9 +32,7 @@ class SimpleResponderSpec extends UnitSpec {
           .sharedState
           .outgoingMessages
       outgoingMessages should have size 1
-      all(outgoingMessages) should matchPattern {
-        case Message(_, MessageContent("Response to: One")) =>
-      }
+      all(outgoingMessages) should have(stringContent("Response to: One"))
     }
 
     it("responds to multiple messages") {
@@ -44,12 +42,12 @@ class SimpleResponderSpec extends UnitSpec {
           .sharedState
           .outgoingMessages
       outgoingMessages should have size 2
-      exactly(1, outgoingMessages) should matchPattern {
-        case Message(_, MessageContent("Response to: One")) =>
-      }
-      exactly(1, outgoingMessages) should matchPattern {
-        case Message(_, MessageContent("Response to: Two")) =>
-      }
+      exactly(1, outgoingMessages) should have(
+        stringContent("Response to: One")
+      )
+      exactly(1, outgoingMessages) should have(
+        stringContent("Response to: Two")
+      )
     }
   }
 }

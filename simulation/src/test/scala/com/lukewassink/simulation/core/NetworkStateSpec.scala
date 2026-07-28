@@ -1,10 +1,9 @@
 package com.lukewassink.simulation.core
 
 import com.lukewassink.simulation.core.{
+  DeliveryQueue,
   Message,
   MessageContent,
-  MessageHeader,
-  MessageQueue,
   NetworkState,
   Node,
   NodeHeader
@@ -14,30 +13,38 @@ import com.lukewassink.simulation.test_utils.BehaviorSpecUtil.{
   TestSelfUpdateBehavior
 }
 import com.lukewassink.simulation.test_utils.NetworkStateSpecUtil.testNetworkState
-import com.lukewassink.simulation.test_utils.NodeSpecUtil.testNodeState
+import com.lukewassink.simulation.test_utils.NodeStateSpecUtil.testNodeState
 import com.lukewassink.simulation.test_utils.RandomSpecUtil.InertRandom
 import com.lukewassink.simulation.test_utils.{BehaviorSpecUtil, UnitSpec}
 import com.lukewassink.simulation.util.Time
+import com.lukewassink.simulation.test_utils.MessageSpecUtil.{
+  draftedMessage,
+  pendingMessage
+}
 
 class NetworkStateSpec extends UnitSpec {
   describe("NetworkState") {
     val emptyNetwork = testNetworkState(1, List.empty, List.empty)
 
     val emptyContent = MessageContent("")
-    val messageAToB = Message(MessageHeader(1, 1, 2, 3, Some(10)), emptyContent)
-    val messageAToC = Message(MessageHeader(4, 1, 3, 5, Some(10)), emptyContent)
-    val messageBToA = Message(MessageHeader(9, 2, 1, 4, Some(10)), emptyContent)
+    val pendingMessageAToB = pendingMessage(1, 1, 2, 3, "")
+    val pendingMessageAToC = pendingMessage(4, 1, 3, 5, "")
+    val pendingMessageBToA = pendingMessage(9, 2, 1, 4, "")
+    val scheduledMessageAToB = pendingMessageAToB.schedule(10)
+    val scheduledMessageAToC = pendingMessageAToC.schedule(10)
+    val scheduledMessageBToA = pendingMessageBToA.schedule(10)
+
     val nodeA = Node(
       List.empty,
       testNodeState(
         NodeHeader(1, 0),
-        List(messageAToB, messageAToC),
+        List(pendingMessageAToB, pendingMessageAToC),
         List.empty
       )
     )
     val nodeB = Node(
       List.empty,
-      testNodeState(NodeHeader(2, 0), List(messageBToA), List.empty)
+      testNodeState(NodeHeader(2, 0), List(pendingMessageBToA), List.empty)
     )
     val nodeC = Node(
       List(BehaviorSpecUtil.TestSelfUpdateBehavior(0)),
@@ -46,7 +53,7 @@ class NetworkStateSpec extends UnitSpec {
     val network = testNetworkState(
       1,
       List(nodeA, nodeB, nodeC),
-      List(messageAToB, messageAToC, messageBToA)
+      List(scheduledMessageAToB, scheduledMessageAToC, scheduledMessageBToA)
     )
     val nextNetwork = network.nextState()
 
@@ -59,7 +66,7 @@ class NetworkStateSpec extends UnitSpec {
         val readyToSend = testNetworkState(
           9,
           List(nodeA, nodeB, nodeC),
-          List(messageAToB, messageAToC, messageBToA)
+          List(scheduledMessageAToB, scheduledMessageAToC, scheduledMessageBToA)
         )
         val withSentMessages = readyToSend.nextState()
 
@@ -69,15 +76,21 @@ class NetworkStateSpec extends UnitSpec {
         withSentMessages
           .nodes(1)
           .sharedState
-          .incomingMessages should contain theSameElementsAs List(messageBToA)
+          .incomingMessages should contain theSameElementsAs List(
+          scheduledMessageBToA
+        )
         withSentMessages
           .nodes(2)
           .sharedState
-          .incomingMessages should contain theSameElementsAs List(messageAToB)
+          .incomingMessages should contain theSameElementsAs List(
+          scheduledMessageAToB
+        )
         withSentMessages
           .nodes(3)
           .sharedState
-          .incomingMessages should contain theSameElementsAs List(messageAToC)
+          .incomingMessages should contain theSameElementsAs List(
+          scheduledMessageAToC
+        )
       }
 
       it("triggers node behavior") {
@@ -92,27 +105,18 @@ class NetworkStateSpec extends UnitSpec {
       }
 
       it("collects new messages and sets the delivery time") {
-        val message =
-          Message(MessageHeader(9, 2, 1, 4, Some(10)), MessageContent(""))
+        val message = draftedMessage(1, "")
         val node = Node(
           List(TestMessageBehavior(message)),
-          testNodeState(
-            NodeHeader(1, 0),
-            List.empty,
-            List.empty
-          )
+          testNodeState(NodeHeader(1, 0), List.empty, List.empty)
         )
-        val network = testNetworkState(
-          0,
-          List(node),
-          List.empty
-        )
+        val network = testNetworkState(0, List(node), List.empty)
 
-        network.messagesInTransit.allMessages shouldBe empty
-        val withMessage = network.nextState()
-        withMessage.messagesInTransit.allMessages should have size 1
-        withMessage.messagesInTransit.allMessages.head.header.deliveryTime should equal(
-          Some(Time(11))
+        network.messagesInTransit.messages shouldBe empty
+        val nextNetwork = network.nextState()
+        nextNetwork.messagesInTransit.messages should have size 1
+        nextNetwork.messagesInTransit.messages.head.messageStage.deliveryTime should equal(
+          Time(11)
         )
       }
     }
@@ -120,7 +124,7 @@ class NetworkStateSpec extends UnitSpec {
     describe("List constructor") {
       it("handles an empty list") {
         NetworkState(0, List.empty, List.empty, InertRandom()) should equal(
-          NetworkState(0, Map.empty, MessageQueue.empty, InertRandom())
+          NetworkState(0, Map.empty, DeliveryQueue.empty, InertRandom())
         )
       }
 
@@ -141,12 +145,16 @@ class NetworkStateSpec extends UnitSpec {
         NetworkState(
           0,
           List.empty,
-          List(messageAToB, messageAToC, messageBToA),
+          List(
+            scheduledMessageAToB,
+            scheduledMessageAToC,
+            scheduledMessageBToA
+          ),
           InertRandom()
-        ).messagesInTransit.allMessages should contain theSameElementsAs List(
-          messageAToB,
-          messageAToC,
-          messageBToA
+        ).messagesInTransit.messages should contain theSameElementsAs List(
+          scheduledMessageAToB,
+          scheduledMessageAToC,
+          scheduledMessageBToA
         )
       }
     }

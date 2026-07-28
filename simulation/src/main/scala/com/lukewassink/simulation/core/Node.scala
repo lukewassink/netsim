@@ -1,5 +1,6 @@
 package com.lukewassink.simulation.core
 
+import com.lukewassink.simulation.core.MessageStage.{Pending, Scheduled}
 import com.lukewassink.simulation.util.Time
 
 // The fundamental abstraction of the simulation. It can send and receive messages in response to incoming
@@ -37,9 +38,9 @@ case class Node(
     Node(nextBehaviors.reverse, nextState)
 
   // Returns all outgoing messages.
-  def outgoingMessages: List[Message] =
+  def outgoingMessages: List[Message[Pending]] =
     sharedState.outgoingMessages
 
   // Adds an incoming message.
-  def withIncomingMessage(message: Message): Node =
+  def withIncomingMessage(message: Message[Scheduled]): Node =
     Node(behaviors, sharedState.withIncomingMessage(message))

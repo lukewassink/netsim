@@ -1,10 +1,11 @@
 package com.lukewassink.visualizer.util
 
 import com.lukewassink.simulation.behavior.SimpleSender
+import com.lukewassink.simulation.core.ResponseState.Request
+import com.lukewassink.simulation.core.MessageStage.{Drafted, Scheduled}
 import com.lukewassink.simulation.core.{
   Message,
   MessageContent,
-  MessageHeader,
   MessageID,
   NetworkState,
   Node,
@@ -32,13 +33,26 @@ object DefaultNetwork {
     def apply(ticks: Int): Time = Time(ticks)
 
   val messageAToB =
-    Message(MessageHeader(1, 1, 2, 0, Some(10)), MessageContent("AToB"))
+    Message[Scheduled](
+      Scheduled(1, 1, 2, 0, 10),
+      Request(),
+      MessageContent("AToB")
+    )
   val messageAToC =
-    Message(MessageHeader(4, 1, 3, 0, Some(8)), MessageContent("AToC"))
+    Message[Scheduled](
+      Scheduled(4, 1, 3, 0, 8),
+      Request(),
+      MessageContent("AToC")
+    )
   val messageBToA =
-    Message(MessageHeader(9, 2, 1, 0, Some(15)), MessageContent("BToA"))
+    Message[Scheduled](
+      Scheduled(9, 2, 1, 0, 15),
+      Request(),
+      MessageContent("BToA")
+    )
+
   val messageCToB =
-    Message(MessageHeader(0, 0, 2, 0, None), MessageContent("CToB"))
+    Message[Drafted](Drafted(2), Request(), MessageContent("CToB"))
 
   val nodeA = Node(
     List.empty,

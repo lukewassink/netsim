@@ -1,12 +1,14 @@
 package com.lukewassink.simulation.test_utils
 
+import com.lukewassink.simulation.core.MessageStage.Drafted
 import com.lukewassink.simulation.core.{Message, NodeBehavior, NodeState}
 import com.lukewassink.simulation.util.Time
 
 object BehaviorSpecUtil {
 
   // Sends the specified message.
-  case class TestMessageBehavior(message: Message) extends NodeBehavior {
+  case class TestMessageBehavior(message: Message[Drafted])
+      extends NodeBehavior {
     override def updatedNodeState(
         time: Time,
         state: NodeState

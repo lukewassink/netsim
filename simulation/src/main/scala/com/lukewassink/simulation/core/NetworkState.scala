@@ -1,5 +1,6 @@
 package com.lukewassink.simulation.core
 
+import com.lukewassink.simulation.core.MessageStage.Scheduled
 import com.lukewassink.simulation.util.{Duration, Random, Time}
 
 // The time it takes for a message to be delivered. Hardcoded for now. Later this should be changed to be config
@@ -10,7 +11,7 @@ final val DeliveryLatency = Duration(10)
 case class NetworkState(
     time: Time,
     nodes: Map[NodeID, Node],
-    messagesInTransit: MessageQueue,
+    messagesInTransit: DeliveryQueue,
     random: Random
 ):
 
@@ -29,12 +30,13 @@ case class NetworkState(
 
     // Deliver messages
     val nodesWithDeliveredMessages =
-      messagesInTransit.readyToDeliver(newTime).foldLeft(initializedNodes) {
-        (nodes, message) =>
-          nodes.updatedWith(message.header.receiverId)(
+      messagesInTransit
+        .deliverableMessages(newTime)
+        .foldLeft(initializedNodes) { (nodes, message) =>
+          nodes.updatedWith(message.messageStage.receiverId)(
             _.map(_.withIncomingMessage(message))
           )
-      }
+        }
 
     // Trigger node behavior
     val updatedNodes = nodesWithDeliveredMessages.map { (id, node) =>
@@ -42,12 +44,10 @@ case class NetworkState(
     }
 
     // New messages to deliver
-    val toDeliver = for {
+    val toDeliver: Iterable[Message[Scheduled]] = for {
       (_, node) <- updatedNodes
       message <- node.outgoingMessages
-    } yield message.copy(header =
-      message.header.copy(deliveryTime = Some(newTime + DeliveryLatency))
-    )
+    } yield message.schedule(newTime + DeliveryLatency)
 
     // Clear delivered messages and add new messages
     val updatedMessages =
@@ -61,13 +61,13 @@ object NetworkState {
   def apply(
       time: Time,
       nodes: List[Node],
-      messages: List[Message],
+      messages: List[Message[Scheduled]],
       random: Random
   ): NetworkState = {
     val nodeMap: Map[NodeID, Node] = nodes.foldLeft(Map[NodeID, Node]()) {
       (map, node) =>
         map.updated(node.sharedState.header.id, node)
     }
-    NetworkState(time, nodeMap, MessageQueue(messages), random)
+    NetworkState(time, nodeMap, DeliveryQueue(messages), random)
   }
 }

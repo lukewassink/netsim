@@ -6,7 +6,7 @@ import com.lukewassink.visualizer.test_util.NetworkUtil.testNetwork
 class MessageSpec extends UnitSpec {
 
   describe("addData") {
-    val numMessages = testNetwork.messagesInTransit.allMessages.size
+    val numMessages = testNetwork.messagesInTransit.messages.size
     val nodeData = NodeRenderer.addData(testNetwork)
     val messageData = MessageRenderer.addData(testNetwork, nodeData)
 
@@ -15,7 +15,7 @@ class MessageSpec extends UnitSpec {
     }
 
     it("copies the message to the message data") {
-      val messagesInFlight = testNetwork.messagesInTransit.allMessages
+      val messagesInFlight = testNetwork.messagesInTransit.messages
       messageData.map(
         _.message
       ) should contain theSameElementsAs messagesInFlight

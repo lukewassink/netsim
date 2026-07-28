@@ -1,30 +1,32 @@
 package com.lukewassink.simulation.core
 
-import com.lukewassink.simulation.test_utils.NodeSpecUtil.testNodeState
+import com.lukewassink.simulation.test_utils.MessageSpecUtil.{
+  draftedMessage,
+  pendingMessage
+}
+import com.lukewassink.simulation.test_utils.NodeStateSpecUtil.testNodeState
 import com.lukewassink.simulation.test_utils.UnitSpec
 
 class NodeStateSpec extends UnitSpec {
-  val message1 =
-    Message(MessageHeader(0, 0, 7, 0, Some(9)), MessageContent("One"))
-  val message2 =
-    Message(MessageHeader(0, 0, 8, 0, Some(5)), MessageContent("Two"))
-  val emptyState: NodeState =
+  private val draftedMessage1 = draftedMessage(7, "One")
+  private val draftedMessage2 = draftedMessage(8, "Two")
+  private val sentMessage1 = pendingMessage(1, 3, 7, 4, "One")
+  private val sentMessage2 = pendingMessage(2, 3, 8, 5, "Two")
+  private val scheduledMessage1 = sentMessage1.schedule(5)
+  private val scheduledMessage2 = sentMessage2.schedule(9)
+
+  private val emptyState =
     testNodeState(NodeHeader(3, 1), List.empty, List.empty)
 
   describe("withOutgoingMessage") {
     it("adds the message to the list and sets node metadata correctly") {
-      val messageWithMetadata1 =
-        Message(MessageHeader(1, 3, 7, 4, Some(9)), MessageContent("One"))
-      val messageWithMetadata2 =
-        Message(MessageHeader(2, 3, 8, 5, Some(5)), MessageContent("Two"))
-
       assert(emptyState.outgoingMessages.isEmpty)
-      val state2 = emptyState.withOutgoingMessage(4, message1)
-      assert(state2.outgoingMessages === List(messageWithMetadata1))
-      val state3 = state2.withOutgoingMessage(5, message2)
+      val state2 = emptyState.withOutgoingMessage(4, draftedMessage1)
+      assert(state2.outgoingMessages === List(sentMessage1))
+      val state3 = state2.withOutgoingMessage(5, draftedMessage2)
       state3.outgoingMessages should contain theSameElementsAs List(
-        messageWithMetadata1,
-        messageWithMetadata2
+        sentMessage1,
+        sentMessage2
       )
     }
   }
@@ -37,10 +39,14 @@ class NodeStateSpec extends UnitSpec {
 
     it("clears the outgoing messages") {
       val state =
-        testNodeState(NodeHeader(0, 0), List(message1, message2), List.empty)
+        testNodeState(
+          NodeHeader(0, 0),
+          List(sentMessage1, sentMessage2),
+          List.empty
+        )
       state.outgoingMessages should contain theSameElementsAs List(
-        message1,
-        message2
+        sentMessage1,
+        sentMessage2
       )
       state.clearOutgoingMessages.outgoingMessages shouldBe empty
     }
@@ -49,12 +55,15 @@ class NodeStateSpec extends UnitSpec {
   describe("withIncomingMessage") {
     it("adds the message to the inbox") {
       emptyState.incomingMessages shouldBe empty
-      val state1 = emptyState.withIncomingMessage(message1)
-      state1.incomingMessages should contain theSameElementsAs List(message1)
-      val state2 = state1.withIncomingMessage(message2)
+      val state1 = emptyState.withIncomingMessage(scheduledMessage1)
+      state1.incomingMessages should contain theSameElementsAs List(
+        scheduledMessage1
+      )
+
+      val state2 = state1.withIncomingMessage(scheduledMessage2)
       state2.incomingMessages should contain theSameElementsAs List(
-        message1,
-        message2
+        scheduledMessage1,
+        scheduledMessage2
       )
     }
   }
@@ -67,10 +76,14 @@ class NodeStateSpec extends UnitSpec {
 
     it("clears the incoming messages") {
       val state =
-        testNodeState(NodeHeader(0, 0), List.empty, List(message1, message2))
+        testNodeState(
+          NodeHeader(0, 0),
+          List.empty,
+          List(scheduledMessage1, scheduledMessage2)
+        )
       state.incomingMessages should contain theSameElementsAs List(
-        message1,
-        message2
+        scheduledMessage1,
+        scheduledMessage2
       )
       state.clearIncomingMessages.incomingMessages shouldBe empty
     }

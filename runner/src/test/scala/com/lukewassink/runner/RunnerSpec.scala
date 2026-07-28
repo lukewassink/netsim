@@ -2,35 +2,33 @@ package com.lukewassink.runner
 
 import com.lukewassink.runner.Runner
 import com.lukewassink.simulation.behavior.SimpleSender
+import com.lukewassink.simulation.core.ResponseState.Request
+import com.lukewassink.simulation.core.MessageStage.{Pending, Scheduled}
 import com.lukewassink.simulation.core.{
   Message,
   MessageContent,
-  MessageHeader,
   Node,
   NodeHeader
 }
 import com.lukewassink.simulation.test_utils.NetworkStateSpecUtil.testNetworkState
-import com.lukewassink.simulation.test_utils.NodeSpecUtil.testNodeState
+import com.lukewassink.simulation.test_utils.NodeStateSpecUtil.testNodeState
 import com.lukewassink.simulation.test_utils.{MessageMatchers, UnitSpec}
+import com.lukewassink.simulation.test_utils.MessageSpecUtil.{
+  draftedMessage,
+  scheduledMessage
+}
 
 class RunnerSpec extends UnitSpec {
   describe("run") {
-    val messageAToB =
-      Message(MessageHeader(1, 1, 2, 3, Some(10)), MessageContent("AToB"))
-    val messageAToC =
-      Message(MessageHeader(4, 1, 3, 5, Some(8)), MessageContent("AToC"))
-    val messageBToA =
-      Message(MessageHeader(9, 2, 1, 4, Some(11)), MessageContent("BToA"))
-    val messageCToB =
-      Message(MessageHeader(0, 0, 2, 0, None), MessageContent("CToB"))
+    val messageAToB = scheduledMessage(1, 1, 2, 3, 10, "AToB")
+    val messageAToC = scheduledMessage(4, 1, 3, 5, 8, "AToC")
+    val messageBToA = scheduledMessage(9, 2, 1, 4, 11, "BToA")
+
+    val messageCToB = draftedMessage(2, "CToB")
 
     val nodeA = Node(
       List.empty,
-      testNodeState(
-        NodeHeader(1, 2),
-        List.empty,
-        List.empty
-      )
+      testNodeState(NodeHeader(1, 2), List.empty, List.empty)
     )
     val nodeB = Node(
       List.empty,
@@ -72,23 +70,23 @@ class RunnerSpec extends UnitSpec {
 
     describe("the detailed trajectory of a message sending behavior") {
       it("adds an outgoing message to the queue") {
-        no(states(2).messagesInTransit.allMessages) should have(
+        no(states(2).messagesInTransit.messages) should have(
           stringContent("CToB")
         )
 
-        exactly(1, states(3).messagesInTransit.allMessages) should have(
+        exactly(1, states(3).messagesInTransit.messages) should have(
           stringContent("CToB")
         )
       }
 
       it("has the message in the queue before delivery") {
-        exactly(1, states(12).messagesInTransit.allMessages) should have(
+        exactly(1, states(12).messagesInTransit.messages) should have(
           stringContent("CToB")
         )
       }
 
       it("does not have the message in the queue on delivery") {
-        no(states(13).messagesInTransit.allMessages) should have(
+        no(states(13).messagesInTransit.messages) should have(
           stringContent("CToB")
         )
       }

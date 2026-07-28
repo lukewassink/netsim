@@ -2,6 +2,7 @@ package com.lukewassink.simulation.test_utils
 
 import com.lukewassink.simulation.core.{Message, NetworkState, Node}
 import RandomSpecUtil.InertRandom
+import com.lukewassink.simulation.core.MessageStage.Scheduled
 import com.lukewassink.simulation.util.Time
 
 object NetworkStateSpecUtil {
@@ -9,7 +10,7 @@ object NetworkStateSpecUtil {
   def testNetworkState(
       time: Time,
       nodes: List[Node],
-      messages: List[Message]
+      messages: List[Message[Scheduled]]
   ): NetworkState =
     NetworkState(time, nodes, messages, InertRandom())
 }

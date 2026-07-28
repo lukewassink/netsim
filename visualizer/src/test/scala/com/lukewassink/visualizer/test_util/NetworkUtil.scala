@@ -4,7 +4,6 @@ import com.lukewassink.simulation.behavior.SimpleSender
 import com.lukewassink.simulation.core.{
   Message,
   MessageContent,
-  MessageHeader,
   NetworkState,
   Node,
   NodeHeader,
@@ -12,19 +11,20 @@ import com.lukewassink.simulation.core.{
 }
 import com.lukewassink.simulation.util.XORRandom
 import com.lukewassink.simulation.test_utils.ImplicitConversions.given
+import com.lukewassink.simulation.test_utils.MessageSpecUtil.{
+  draftedMessage,
+  scheduledMessage
+}
 import com.raquo.laminar.api.L.{*, given}
 
 // At preconfigured network for testing purposes.
 object NetworkUtil {
 
-  val messageAToB =
-    Message(MessageHeader(1, 1, 2, 0, Some(10)), MessageContent("AToB"))
-  val messageAToC =
-    Message(MessageHeader(4, 1, 3, 0, Some(8)), MessageContent("AToC"))
-  val messageBToA =
-    Message(MessageHeader(9, 2, 1, 0, Some(15)), MessageContent("BToA"))
-  val messageCToB =
-    Message(MessageHeader(0, 0, 2, 0, None), MessageContent("CToB"))
+  private val messageAToB = scheduledMessage(1, 1, 2, 0, 10, "AToB")
+  private val messageAToC = scheduledMessage(4, 1, 3, 0, 8, "AToC")
+  private val messageBToA = scheduledMessage(9, 2, 1, 0, 11, "BToA")
+
+  private val messageCToB = draftedMessage(2, "CToB")
 
   val nodeA = Node(
     List.empty,
