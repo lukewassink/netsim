@@ -2,12 +2,12 @@ package com.lukewassink.visualizer.core
 
 import com.raquo.laminar.api.L.{*, given}
 import NodeRenderer.addData
-import com.lukewassink.simulation.core.{NetworkState, NodeID}
+import com.lukewassink.simulation.core.{Network, NodeID}
 import com.lukewassink.visualizer.util.DefaultNetwork.defaultNetwork
 
 // Render the nodes and messages in the network as lists of SVG elements.
 object Network {
-  private val currentState: Var[NetworkState] = Var(defaultNetwork)
+  private val currentState: Var[Network] = Var(defaultNetwork)
 
   val nodeData: Signal[Map[NodeID, NodeData]] =
     currentState.signal.map(addData)

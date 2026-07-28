@@ -10,7 +10,7 @@ import com.lukewassink.simulation.core.{
   Node,
   NodeHeader
 }
-import com.lukewassink.simulation.test_utils.NetworkStateSpecUtil.testNetworkState
+import com.lukewassink.simulation.test_utils.NetworkSpecUtil.testNetwork
 import com.lukewassink.simulation.test_utils.NodeStateSpecUtil.testNodeState
 import com.lukewassink.simulation.test_utils.{MessageMatchers, UnitSpec}
 import com.lukewassink.simulation.test_utils.MessageSpecUtil.{
@@ -39,7 +39,7 @@ class RunnerSpec extends UnitSpec {
       testNodeState(NodeHeader(3, 10), List.empty, List.empty)
     )
 
-    val network = testNetworkState(
+    val network = testNetwork(
       0,
       List(nodeA, nodeB, nodeC),
       List(messageAToB, messageAToC, messageBToA)

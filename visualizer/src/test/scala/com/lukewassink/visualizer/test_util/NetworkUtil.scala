@@ -4,7 +4,7 @@ import com.lukewassink.simulation.behavior.SimpleSender
 import com.lukewassink.simulation.core.{
   Message,
   MessageContent,
-  NetworkState,
+  Network,
   Node,
   NodeHeader,
   NodeState
@@ -44,12 +44,12 @@ object NetworkUtil {
     NodeState(NodeHeader(3, 10), List.empty, List.empty, XORRandom.fromSeed(1L))
   )
 
-  val testNetwork = NetworkState(
+  val testNetwork = Network(
     7,
     List(nodeA, nodeB, nodeC),
     List(messageAToB, messageAToC, messageBToA),
     XORRandom.fromSeed(1L)
   )
 
-  val testNetworkVar: Var[NetworkState] = Var(testNetwork)
+  val testNetworkVar: Var[Network] = Var(testNetwork)
 }

@@ -7,7 +7,7 @@ import com.lukewassink.simulation.core.{
   Message,
   MessageContent,
   MessageID,
-  NetworkState,
+  Network,
   Node,
   NodeHeader,
   NodeID,
@@ -72,7 +72,7 @@ object DefaultNetwork {
     NodeState(NodeHeader(3, 10), List.empty, List.empty, XORRandom.fromSeed(1L))
   )
 
-  val defaultNetwork = NetworkState(
+  val defaultNetwork = Network(
     7,
     List(nodeA, nodeB, nodeC),
     List(messageAToB, messageAToC, messageBToA),

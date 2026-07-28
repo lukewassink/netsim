@@ -1,8 +1,8 @@
 package com.lukewassink.runner
 
-import com.lukewassink.simulation.core.NetworkState
+import com.lukewassink.simulation.core.Network
 
 object Runner {
-  def run(initialState: NetworkState): LazyList[NetworkState] =
-    initialState #:: run(initialState.nextState())
+  def run(initialState: Network): LazyList[Network] =
+    initialState #:: run(initialState.next())
 }

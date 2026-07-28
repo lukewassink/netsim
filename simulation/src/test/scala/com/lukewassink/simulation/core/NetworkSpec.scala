@@ -4,7 +4,7 @@ import com.lukewassink.simulation.core.{
   DeliveryQueue,
   Message,
   MessageContent,
-  NetworkState,
+  Network,
   Node,
   NodeHeader
 }
@@ -12,7 +12,7 @@ import com.lukewassink.simulation.test_utils.BehaviorSpecUtil.{
   TestMessageBehavior,
   TestSelfUpdateBehavior
 }
-import com.lukewassink.simulation.test_utils.NetworkStateSpecUtil.testNetworkState
+import com.lukewassink.simulation.test_utils.NetworkSpecUtil.testNetwork
 import com.lukewassink.simulation.test_utils.NodeStateSpecUtil.testNodeState
 import com.lukewassink.simulation.test_utils.RandomSpecUtil.InertRandom
 import com.lukewassink.simulation.test_utils.{BehaviorSpecUtil, UnitSpec}
@@ -22,9 +22,9 @@ import com.lukewassink.simulation.test_utils.MessageSpecUtil.{
   pendingMessage
 }
 
-class NetworkStateSpec extends UnitSpec {
-  describe("NetworkState") {
-    val emptyNetwork = testNetworkState(1, List.empty, List.empty)
+class NetworkSpec extends UnitSpec {
+  describe("Network") {
+    val emptyNetwork = testNetwork(1, List.empty, List.empty)
 
     val emptyContent = MessageContent("")
     val pendingMessageAToB = pendingMessage(1, 1, 2, 3, "")
@@ -50,12 +50,12 @@ class NetworkStateSpec extends UnitSpec {
       List(BehaviorSpecUtil.TestSelfUpdateBehavior(0)),
       testNodeState(NodeHeader(3, 0), List.empty, List.empty)
     )
-    val network = testNetworkState(
+    val network = testNetwork(
       1,
       List(nodeA, nodeB, nodeC),
       List(scheduledMessageAToB, scheduledMessageAToC, scheduledMessageBToA)
     )
-    val nextNetwork = network.nextState()
+    val nextNetwork = network.next()
 
     describe("NextState") {
       it("ticks the time forward") {
@@ -63,12 +63,12 @@ class NetworkStateSpec extends UnitSpec {
       }
 
       it("delivers current messages") {
-        val readyToSend = testNetworkState(
+        val readyToSend = testNetwork(
           9,
           List(nodeA, nodeB, nodeC),
           List(scheduledMessageAToB, scheduledMessageAToC, scheduledMessageBToA)
         )
-        val withSentMessages = readyToSend.nextState()
+        val withSentMessages = readyToSend.next()
 
         readyToSend.nodes(1).sharedState.incomingMessages shouldBe empty
         readyToSend.nodes(2).sharedState.incomingMessages shouldBe empty
@@ -110,10 +110,10 @@ class NetworkStateSpec extends UnitSpec {
           List(TestMessageBehavior(message)),
           testNodeState(NodeHeader(1, 0), List.empty, List.empty)
         )
-        val network = testNetworkState(0, List(node), List.empty)
+        val network = testNetwork(0, List(node), List.empty)
 
         network.messagesInTransit.messages shouldBe empty
-        val nextNetwork = network.nextState()
+        val nextNetwork = network.next()
         nextNetwork.messagesInTransit.messages should have size 1
         nextNetwork.messagesInTransit.messages.head.messageStage.deliveryTime should equal(
           Time(11)
@@ -123,13 +123,13 @@ class NetworkStateSpec extends UnitSpec {
 
     describe("List constructor") {
       it("handles an empty list") {
-        NetworkState(0, List.empty, List.empty, InertRandom()) should equal(
-          NetworkState(0, Map.empty, DeliveryQueue.empty, InertRandom())
+        Network(0, List.empty, List.empty, InertRandom()) should equal(
+          Network(0, Map.empty, DeliveryQueue.empty, InertRandom())
         )
       }
 
       it("handles a list of nodes") {
-        NetworkState(
+        Network(
           0,
           List(nodeA, nodeB, nodeC),
           List.empty,
@@ -142,7 +142,7 @@ class NetworkStateSpec extends UnitSpec {
       }
 
       it("handles a list of messages") {
-        NetworkState(
+        Network(
           0,
           List.empty,
           List(

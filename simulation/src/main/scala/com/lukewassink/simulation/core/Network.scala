@@ -8,7 +8,7 @@ import com.lukewassink.simulation.util.{Duration, Random, Time}
 final val DeliveryLatency = Duration(10)
 
 // The total state of the network. The network consists of nodes and the current time.
-case class NetworkState(
+case class Network(
     time: Time,
     nodes: Map[NodeID, Node],
     messagesInTransit: DeliveryQueue,
@@ -21,7 +21,7 @@ case class NetworkState(
   // 3) deliver messages
   // 4) trigger node behaviors
   // 5) collect outgoing messages from nodes
-  def nextState(): NetworkState = {
+  def next(): Network = {
     // Tick time
     val newTime = time.next
 
@@ -53,21 +53,21 @@ case class NetworkState(
     val updatedMessages =
       messagesInTransit.withoutPastMessages(newTime).withMessages(toDeliver)
 
-    NetworkState(newTime, updatedNodes, updatedMessages, random)
+    Network(newTime, updatedNodes, updatedMessages, random)
   }
 
-object NetworkState {
-  // A convenience method to initialize NetworkState using a list of nodes and list of messages.
+object Network {
+  // A convenience method to initialize Network using a list of nodes and list of messages.
   def apply(
       time: Time,
       nodes: List[Node],
       messages: List[Message[Scheduled]],
       random: Random
-  ): NetworkState = {
+  ): Network = {
     val nodeMap: Map[NodeID, Node] = nodes.foldLeft(Map[NodeID, Node]()) {
       (map, node) =>
         map.updated(node.sharedState.header.id, node)
     }
-    NetworkState(time, nodeMap, DeliveryQueue(messages), random)
+    Network(time, nodeMap, DeliveryQueue(messages), random)
   }
 }
