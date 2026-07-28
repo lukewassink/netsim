@@ -28,12 +28,12 @@ case class MessageQueue(messages: List[Message]):
   def withMessages(messages: Iterable[Message]): MessageQueue =
     messages.foldLeft(this)(_.withMessage(_))
 
-  // Returns messages to be delivered at the current time.
-  def currentMessages(time: Time): List[Message] =
+  // Returns messages to be delivered by the specified time.
+  def readyToDeliver(time: Time): List[Message] =
     messages.filter {
       _.header.deliveryTime match {
         case None    => false
-        case Some(t) => t == time
+        case Some(t) => t <= time
       }
     }
 

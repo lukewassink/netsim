@@ -1,23 +1,30 @@
 package com.lukewassink.simulation.util
 
-// A class that represents moments of time, measured in ticks.
-final case class Time(ticks: Int):
+// A class that represents moments of time.
+final case class Time(time: Double):
 
   // Tick forward to the next moment.
-  def next: Time = Time(ticks + 1)
+  def next: Time = Time(time + 1)
 
-  infix def >(other: Time): Boolean = ticks > other.ticks
+  infix def >(other: Time): Boolean = time > other.time
 
-  infix def +(other: Duration): Time = Time(ticks + other.ticks)
+  // All defined in terms of >.
+  infix def >=(other: Time): Boolean =
+    (time > other.time) || (time == other.time)
+  infix def <=(other: Time): Boolean = !(time > other.time)
+  infix def <(other: Time): Boolean =
+    (time <= other.time) && (time != other.time)
 
-  infix def -(other: Time): Duration = Duration(ticks - other.ticks)
+  infix def +(other: Duration): Time = Time(time + other.time)
+
+  infix def -(other: Time): Duration = Duration(time - other.time)
 
 // A class that represents the duration between two moments of time, measured in ticks.
-final case class Duration(ticks: Int):
+final case class Duration(time: Double):
 
-  infix def +(other: Duration): Duration = Duration(ticks + other.ticks)
+  infix def +(other: Duration): Duration = Duration(time + other.time)
 
-  infix def -(other: Duration): Duration = Duration(ticks - other.ticks)
+  infix def -(other: Duration): Duration = Duration(time - other.time)
 
   // The ratio between two durations.
-  infix def /(other: Duration): Float = ticks.toFloat / other.ticks.toFloat
+  infix def /(other: Duration): Float = time.toFloat / other.time.toFloat

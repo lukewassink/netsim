@@ -29,7 +29,7 @@ case class NetworkState(
 
     // Deliver messages
     val nodesWithDeliveredMessages =
-      messagesInTransit.currentMessages(newTime).foldLeft(initializedNodes) {
+      messagesInTransit.readyToDeliver(newTime).foldLeft(initializedNodes) {
         (nodes, message) =>
           nodes.updatedWith(message.header.receiverId)(
             _.map(_.withIncomingMessage(message))

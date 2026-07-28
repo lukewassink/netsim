@@ -16,19 +16,21 @@ class MessageSpec extends UnitSpec {
     val message3 = Message(MessageHeader(19, 1, 2, 5, Some(8)), content)
     val sampleQueue = MessageQueue(message1, message2, message3)
 
-    describe("currentMessages") {
+    describe("readyToDeliver") {
       it("can return no messages") {
-        assert(MessageQueue.empty.currentMessages(10).isEmpty)
-        assert(sampleQueue.currentMessages(1).isEmpty)
+        assert(MessageQueue.empty.readyToDeliver(10).isEmpty)
+        assert(sampleQueue.readyToDeliver(1).isEmpty)
       }
 
-      it("can return current messages") {
-        sampleQueue.currentMessages(8) should contain theSameElementsAs List(
+      it("can return messages that are ready to deliver") {
+        sampleQueue.readyToDeliver(8) should contain theSameElementsAs List(
           message2,
           message3
         )
-        sampleQueue.currentMessages(9) should contain theSameElementsAs List(
-          message1
+        sampleQueue.readyToDeliver(9) should contain theSameElementsAs List(
+          message1,
+          message2,
+          message3
         )
       }
     }
@@ -36,9 +38,9 @@ class MessageSpec extends UnitSpec {
     describe("withMessage") {
       it("adds a message") {
         val queue = MessageQueue.empty
-        assert(queue.currentMessages(9).isEmpty)
+        assert(queue.readyToDeliver(9).isEmpty)
         val queueWithMessage = queue.withMessage(message1)
-        assert(queueWithMessage.currentMessages(9) === List(message1))
+        assert(queueWithMessage.readyToDeliver(9) === List(message1))
       }
     }
 
@@ -60,13 +62,13 @@ class MessageSpec extends UnitSpec {
 
     describe("withoutDeliveredMessages") {
       it("removes delivered messages") {
-        sampleQueue.currentMessages(8) should contain theSameElementsAs List(
+        sampleQueue.readyToDeliver(8) should contain theSameElementsAs List(
           message2,
           message3
         )
         sampleQueue
           .withoutPastMessages(8)
-          .currentMessages(9) should contain theSameElementsAs List(message1)
+          .readyToDeliver(9) should contain theSameElementsAs List(message1)
       }
     }
 

@@ -52,7 +52,7 @@ class NetworkStateSpec extends UnitSpec {
 
     describe("NextState") {
       it("ticks the time forward") {
-        assert(nextNetwork.time.ticks - network.time.ticks === 1)
+        assert(nextNetwork.time.time - network.time.time === 1)
       }
 
       it("delivers current messages") {
