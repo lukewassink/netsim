@@ -16,22 +16,19 @@ case class Network(
 ):
 
   // Logic:
-  // 1) tick the time forward
-  // 2) trigger pre-delivery node actions
-  // 3) deliver messages
-  // 4) trigger node behaviors
-  // 5) collect outgoing messages from nodes
+  // 1) trigger pre-delivery node actions
+  // 2) deliver messages
+  // 3) trigger node behaviors
+  // 4) collect outgoing messages from nodes
+  // 5) tick the time forward
   def next(): Network = {
-    // Tick time
-    val newTime = time.next
-
     // Call node pre-delivery actions
-    val initializedNodes = nodes.map(_ -> _.preDeliveryAction(newTime))
+    val initializedNodes = nodes.map(_ -> _.preDeliveryAction(time))
 
     // Deliver messages
     val nodesWithDeliveredMessages =
       messagesInTransit
-        .deliverableMessages(newTime)
+        .deliverableMessages(time)
         .foldLeft(initializedNodes) { (nodes, message) =>
           nodes.updatedWith(message.messageStage.receiverId)(
             _.map(_.withIncomingMessage(message))
@@ -40,20 +37,20 @@ case class Network(
 
     // Trigger node behavior
     val updatedNodes = nodesWithDeliveredMessages.map { (id, node) =>
-      (id, node.postDeliveryAction(newTime))
+      (id, node.postDeliveryAction(time))
     }
 
     // New messages to deliver
     val toDeliver: Iterable[Message[Scheduled]] = for {
       (_, node) <- updatedNodes
       message <- node.outgoingMessages
-    } yield message.schedule(newTime + DeliveryLatency)
+    } yield message.schedule(time + DeliveryLatency)
 
     // Clear delivered messages and add new messages
     val updatedMessages =
-      messagesInTransit.withoutPastMessages(newTime).withMessages(toDeliver)
+      messagesInTransit.withoutPastMessages(time).withMessages(toDeliver)
 
-    Network(newTime, updatedNodes, updatedMessages, random)
+    Network(time.next, updatedNodes, updatedMessages, random)
   }
 
 object Network {

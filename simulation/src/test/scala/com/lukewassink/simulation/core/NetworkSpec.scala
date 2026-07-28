@@ -64,7 +64,7 @@ class NetworkSpec extends UnitSpec {
 
       it("delivers current messages") {
         val readyToSend = testNetwork(
-          9,
+          10,
           List(nodeA, nodeB, nodeC),
           List(scheduledMessageAToB, scheduledMessageAToC, scheduledMessageBToA)
         )
@@ -116,7 +116,7 @@ class NetworkSpec extends UnitSpec {
         val nextNetwork = network.next()
         nextNetwork.messagesInTransit.messages should have size 1
         nextNetwork.messagesInTransit.messages.head.messageStage.deliveryTime should equal(
-          Time(11)
+          Time(10)
         )
       }
     }
