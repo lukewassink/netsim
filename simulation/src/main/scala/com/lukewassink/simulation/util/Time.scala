@@ -11,7 +11,8 @@ final case class Time(time: Double):
   // All defined in terms of >.
   infix def >=(other: Time): Boolean =
     (time > other.time) || (time == other.time)
-  infix def <=(other: Time): Boolean = !(time > other.time)
+  infix def <=(other: Time): Boolean =
+    !(time > other.time)
   infix def <(other: Time): Boolean =
     (time <= other.time) && (time != other.time)
 
