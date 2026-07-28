@@ -8,8 +8,8 @@ import com.lukewassink.simulation.core.{
 }
 import com.lukewassink.simulation.test_utils.UnitSpec
 
-class MessageSpec extends UnitSpec {
-  describe("A MessageQueue") {
+class MessageQueueSpec extends UnitSpec {
+  describe("MessageQueue") {
     val content = MessageContent("")
     val message1 = Message(MessageHeader(0, 1, 2, 1, Some(9)), content)
     val message2 = Message(MessageHeader(12, 5, 2, 2, Some(8)), content)
