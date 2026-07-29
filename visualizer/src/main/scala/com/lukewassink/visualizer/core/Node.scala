@@ -1,7 +1,7 @@
 package com.lukewassink.visualizer.core
 
 import com.raquo.laminar.api.L.{*, given}
-import Root.NetworkPanelSideLength
+import Root.NetworkViewBoxSize
 import com.lukewassink.visualizer.util.Pos
 import Pos.fromPolar
 import com.lukewassink.simulation.core.{Network, Node, NodeID}
@@ -11,7 +11,7 @@ case class NodeData(node: Node, center: Pos)
 
 object NodeRenderer {
   // Radius of the circle of nodes, in px.
-  private val NodesRadius = 300
+  private val NodesRadius = 0.45 * NetworkViewBoxSize
 
   def addData(network: Network): Map[NodeID, NodeData] = {
     val n = network.nodes.size
@@ -23,7 +23,7 @@ object NodeRenderer {
         // Start at pi/2 so the first node is at 12 o'clock.
         val angle = (2 * math.Pi * i / n) - (math.Pi / 2)
         val center =
-          Pos(NetworkPanelSideLength / 2, NetworkPanelSideLength / 2)
+          Pos(NetworkViewBoxSize / 2, NetworkViewBoxSize / 2)
         id -> NodeData(node, center + fromPolar(angle, NodesRadius))
       })
       .toMap

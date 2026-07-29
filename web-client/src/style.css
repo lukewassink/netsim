@@ -19,15 +19,17 @@ h1 {
   y: 10px;
   border-radius: 10px;
   border: 4px solid darkgray;
+  height: 700px;
+  width: 700px;
 }
 
 .node {
   fill: mediumblue;
-  r: 15px;
+  r: 25px;
 }
 
 .message {
   fill: mediumpurple;
-  r: 10px;
+  r: 15px;
 }
 
