@@ -3,6 +3,7 @@ package com.lukewassink.visualizer.core
 import com.lukewassink.simulation.behavior.SimpleSender
 import com.lukewassink.simulation.core.Node
 import com.lukewassink.simulation.util.XORRandom
+import com.lukewassink.visualizer.core.Network.currentTick
 import com.raquo.laminar.api.L.{*, given}
 import org.scalajs.dom
 
@@ -19,10 +20,12 @@ object Root:
   // Size of the viewBox for the network root SVG.
   val NetworkViewBoxSize = 1000
 
+  // Amount of time between ticks in milliseconds.
+  val FrameLength = 200
+
   def rootElement(): Element = {
     val viewBox =
       s"0, 0, $NetworkViewBoxSize, $NetworkViewBoxSize"
-    println(NetworkViewBoxSize)
 
     div(
       h1("NetSim"),
@@ -31,6 +34,9 @@ object Root:
         svg.viewBox := viewBox,
         children <-- Network.nodeElements,
         children <-- Network.messageElements
+//        onMountCallback(_ =>
+//          dom.window.setInterval(() => currentTick.update(_ + 1), FrameLength)
+//        )
       )
     )
   }

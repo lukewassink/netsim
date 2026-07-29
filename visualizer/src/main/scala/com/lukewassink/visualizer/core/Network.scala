@@ -2,24 +2,36 @@ package com.lukewassink.visualizer.core
 
 import com.raquo.laminar.api.L.{*, given}
 import NodeRenderer.addData
-import com.lukewassink.simulation.core.{Network, NodeID}
+import com.lukewassink.runner.Runner
+import com.lukewassink.simulation.core.MessageStage.Scheduled
+import com.lukewassink.simulation.core.{Message, MessageID, Network, NodeID}
 import com.lukewassink.visualizer.util.DefaultNetwork.defaultNetwork
 
 // Render the nodes and messages in the network as lists of SVG elements.
 object Network {
-  private val currentState: Var[Network] = Var(defaultNetwork)
+  private val historyLength = 10_000
+
+  private val initialNetwork = defaultNetwork
+
+  private val networkHistory =
+    Runner.run(initialNetwork).take(historyLength).toVector
+
+  val currentTick: Var[Int] = Var[Int](0)
+
+  private val currentState: Signal[Network] =
+    currentTick.signal.map(networkHistory(_))
 
   val nodeData: Signal[Map[NodeID, NodeData]] =
-    currentState.signal.map(addData)
+    currentState.map(addData)
 
   val nodeElements: Signal[List[SvgElement]] =
     nodeData.map(_.values.map(NodeRenderer.render).toList)
 
   private val messageData: Signal[List[MessageData]] =
-    currentState.signal
+    currentState
       .combineWith(nodeData)
       .mapN(MessageRenderer.addData)
 
   val messageElements: Signal[List[SvgElement]] =
-    messageData.map(_.map(MessageRenderer.render))
+    messageData.split(_.message.uniqueID)(MessageRenderer.render)
 }

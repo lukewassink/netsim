@@ -3,7 +3,7 @@ package com.lukewassink.simulation.core
 import com.lukewassink.simulation.util.Time
 
 // NOTE: a message ID uniquely identifies a message withing a node.
-// The pair (message ID, node ID) is required to uniquely identify the message within the network.
+// The message's UniqueID(message ID, node ID) is required to uniquely identify the message within the network.
 final case class MessageID(id: Int):
   def next: MessageID = MessageID(id + 1)
 
@@ -51,6 +51,9 @@ final case class Message[S <: MessageStage](
         nodeId == other.messageStage.senderId && messageId == other.messageStage.messageId
   }
 
+// Contains the sender ID and message ID, which uniquely identify the message withing the network history.
+final case class MessageUniqueID(senderID: NodeID, messageID: MessageID)
+
 case object Message {
   // Methods for Drafted messages.
   extension (message: Message[Drafted])
@@ -71,7 +74,7 @@ case object Message {
       )
 
   // Methods for Pending messages.
-  extension (message: Message[Pending])
+  extension (message: Message[Pending]) {
     def schedule(deliveryTime: Time): Message[Scheduled] = {
       val messageStage = message.messageStage
       Message(
@@ -86,6 +89,7 @@ case object Message {
         message.content
       )
     }
+  }
 
   // Methods for Scheduled messages.
   extension (message: Message[Scheduled]) {
@@ -103,5 +107,12 @@ case object Message {
 
     def stillWaiting(time: Time): Boolean =
       message.messageStage.deliveryTime > time
+
+    // Note: if this is also needed for Pending messages, move it to an extension of Pending | Scheduled,
+    // and use pattern matching to extract the unique ID.
+    def uniqueID: MessageUniqueID = MessageUniqueID(
+      message.messageStage.senderId,
+      message.messageStage.messageId
+    )
   }
 }

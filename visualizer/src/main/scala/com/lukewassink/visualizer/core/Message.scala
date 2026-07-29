@@ -1,12 +1,23 @@
 package com.lukewassink.visualizer.core
 
 import com.lukewassink.simulation.core.MessageStage.Scheduled
-import com.lukewassink.simulation.core.{Message, Network, NodeID}
+import com.lukewassink.simulation.core.{
+  Message,
+  MessageUniqueID,
+  Network,
+  NodeID
+}
 import com.lukewassink.visualizer.util.Pos
 import com.raquo.laminar.api.L.{*, given}
+import com.lukewassink.visualizer.core.Root.FrameLength
 
 // A message along with rendering data needed to render it.
-case class MessageData(message: Message[Scheduled], center: Pos)
+case class MessageData(
+    message: Message[Scheduled],
+    center: Pos,
+    beginning: Boolean,
+    end: Boolean
+)
 
 object MessageRenderer {
   // Wrap messages up along with their rendering data.
@@ -16,27 +27,33 @@ object MessageRenderer {
   ): List[MessageData] = {
     network.messagesInTransit.messages
       .map(message => {
+        val time = network.time
         val Scheduled(_, from, to, startTime, endTime) = message.messageStage
         val sender = nodeData(from)
         val receiver = nodeData(to)
 
         // The portion of its journey the message has completed.
-        val t =
-          (network.time - startTime) / (endTime - startTime)
-        MessageData(
-          message,
-          sender.center.interpolate(t, receiver.center)
-        )
+        val t = (time - startTime) / (endTime - startTime)
+        val center = sender.center.interpolate(t, receiver.center)
+
+        MessageData(message, center, time == startTime, time == endTime)
       })
   }
 
   // Render an individual message.
-  def render(message: MessageData): SvgElement = {
-    val Pos(x, y) = message.center
+  def render(
+      id: MessageUniqueID,
+      original: MessageData,
+      message: Signal[MessageData]
+  ): SvgElement = {
+    val x = message.map(_.center.x.toString)
+    val y = message.map(_.center.y.toString)
+
     svg.circle(
       svg.cls := "message",
-      svg.cx := x.toString,
-      svg.cy := y.toString
+      svg.style := s"transition-duration: ${FrameLength}ms",
+      svg.cx <-- x,
+      svg.cy <-- y
     )
   }
 }

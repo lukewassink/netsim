@@ -26,10 +26,14 @@ h1 {
 .node {
   fill: mediumblue;
   r: 25px;
+  stroke-width: 5px;
+  stroke: darkblue;
 }
 
 .message {
   fill: mediumpurple;
   r: 15px;
+  transition-property: cx, cy;
+  transition-timing-function: linear;
 }
 
