@@ -54,6 +54,10 @@ class TimeSpec extends UnitSpec {
     it("subtracts another time to get a Duration") {
       assert(three - one === durTwo)
     }
+
+    it("subtracts a duration to get another time") {
+      assert(three - durTwo === one)
+    }
   }
 
   describe("Duration") {

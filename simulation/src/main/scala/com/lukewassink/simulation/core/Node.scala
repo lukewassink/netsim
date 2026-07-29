@@ -8,8 +8,7 @@ import com.lukewassink.simulation.util.Time
 case class Node(
     behaviors: List[NodeBehavior],
     sharedState: NodeState
-):
-
+) {
   // Updates the node before receiving new messages. Used for cleanup and initialization. No behaviors execute here.
   def preDeliveryAction(time: Time): Node = {
     // Clear sent messages from the last tick.
@@ -44,3 +43,6 @@ case class Node(
   // Adds an incoming message.
   def withIncomingMessage(message: Message[Scheduled]): Node =
     Node(behaviors, sharedState.withIncomingMessage(message))
+
+  def id: NodeID = sharedState.header.id
+}

@@ -137,4 +137,20 @@ class NodeSpec extends UnitSpec {
       exactly(1, outgoingMessages) should have(messageID(1))
     }
   }
+
+  describe("id") {
+    it("returns the node ID") {
+      val node1 = Node(
+        List.empty,
+        testNodeState(NodeHeader(1, 0), List.empty, List.empty)
+      )
+      val node2 = Node(
+        List.empty,
+        testNodeState(NodeHeader(2, 0), List.empty, List.empty)
+      )
+
+      node1.id shouldEqual NodeID(1)
+      node2.id shouldEqual NodeID(2)
+    }
+  }
 }

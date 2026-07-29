@@ -5,11 +5,11 @@ import scala.math.Numeric.Implicits.infixNumericOps
 // Represents a position in Cartesian (x, y) coordinates.
 case class Pos(x: Float, y: Float) {
   // Interpolate a point between the current point and endPoint.
-  // t = 0 => this point
-  // t = 1 => endPoint
+  // t <= 0 -> this point
+  // t >= 1 -> endPoint
   def interpolate[T: Numeric](scalar: T, endPoint: Pos): Pos = {
     val Pos(x2, y2) = endPoint
-    val t = scalar.toFloat
+    val t = scalar.toFloat.max(0).min(1)
     Pos((1 - t) * x + t * x2, (1 - t) * y + t * y2)
   }
 

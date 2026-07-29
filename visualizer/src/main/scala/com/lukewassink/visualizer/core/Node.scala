@@ -29,12 +29,18 @@ object NodeRenderer {
       .toMap
   }
 
-  def render(node: NodeData): SvgElement = {
-    val Pos(x, y) = node.center
+  def render(
+      id: NodeID,
+      original: NodeData,
+      data: Signal[NodeData]
+  ): SvgElement = {
+    val x = data.map(_.center.x.toString)
+    val y = data.map(_.center.y.toString)
+
     svg.circle(
       svg.cls := "node",
-      svg.cx := x.toString,
-      svg.cy := y.toString
+      svg.cx <-- x,
+      svg.cy <-- y
     )
   }
 }

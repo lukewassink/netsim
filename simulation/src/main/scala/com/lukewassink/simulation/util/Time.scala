@@ -16,9 +16,11 @@ final case class Time(time: Double):
   infix def <(other: Time): Boolean =
     (time <= other.time) && (time != other.time)
 
-  infix def +(other: Duration): Time = Time(time + other.time)
+  infix def +(duration: Duration): Time = Time(time + duration.time)
 
   infix def -(other: Time): Duration = Duration(time - other.time)
+
+  infix def -(duration: Duration): Time = Time(time - duration.time)
 
 // A class that represents the duration between two moments of time, measured in ticks.
 final case class Duration(time: Double):

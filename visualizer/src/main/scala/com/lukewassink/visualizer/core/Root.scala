@@ -33,10 +33,10 @@ object Root:
         svg.cls := "network-panel",
         svg.viewBox := viewBox,
         children <-- Network.nodeElements,
-        children <-- Network.messageElements
-//        onMountCallback(_ =>
-//          dom.window.setInterval(() => currentTick.update(_ + 1), FrameLength)
-//        )
+        children <-- Network.messageElements,
+        onMountCallback(_ =>
+          dom.window.setInterval(() => currentTick.update(_ + 1), FrameLength)
+        )
       )
     )
   }

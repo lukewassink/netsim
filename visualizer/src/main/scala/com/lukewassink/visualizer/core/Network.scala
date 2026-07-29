@@ -25,7 +25,7 @@ object Network {
     currentState.map(addData)
 
   val nodeElements: Signal[List[SvgElement]] =
-    nodeData.map(_.values.map(NodeRenderer.render).toList)
+    nodeData.map(_.values.toList).split(_.node.id)(NodeRenderer.render)
 
   private val messageData: Signal[List[MessageData]] =
     currentState

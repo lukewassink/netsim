@@ -34,7 +34,7 @@ object DefaultNetwork {
 
   val messageAToB =
     Message[Scheduled](
-      Scheduled(0, 1, 2, 0, 10),
+      Scheduled(0, 1, 2, 0, 1000),
       Request(),
       MessageContent("AToB")
     )

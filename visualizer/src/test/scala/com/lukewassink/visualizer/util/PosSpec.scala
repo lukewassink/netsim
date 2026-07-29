@@ -18,6 +18,11 @@ class PosSpec extends UnitSpec {
     it("interpolates to a point in the middle") {
       Pos(1.1, 2.3).interpolate(0.3, Pos(3, 5.7)) shouldEqual Pos(1.67, 3.32)
     }
+
+    it("handles numbers outside of [0, 1]") {
+      Pos(1, 2).interpolate(-1, Pos(3, 5)) shouldEqual Pos(1, 2)
+      Pos(1, 2).interpolate(2, Pos(3, 5)) shouldEqual Pos(3, 5)
+    }
   }
 
   describe("operation +") {
