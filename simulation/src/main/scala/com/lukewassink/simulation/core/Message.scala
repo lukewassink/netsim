@@ -43,7 +43,13 @@ final case class Message[S <: MessageStage](
     messageStage: S,
     responseState: ResponseState,
     content: MessageContent
-)
+):
+  def isResponseTo(other: Message[Scheduled]): Boolean = {
+    responseState match
+      case Request()                   => false
+      case Response(nodeId, messageId) =>
+        nodeId == other.messageStage.senderId && messageId == other.messageStage.messageId
+  }
 
 case object Message {
   // Methods for Drafted messages.
@@ -97,13 +103,5 @@ case object Message {
 
     def stillWaiting(time: Time): Boolean =
       message.messageStage.deliveryTime > time
-
-    def isResponseTo(other: Message[Scheduled]): Boolean = {
-      val messageStage = message.messageStage
-      message.responseState match
-        case Request()                   => false
-        case Response(nodeId, messageId) =>
-          nodeId == messageStage.senderId && messageId == messageStage.messageId
-    }
   }
 }

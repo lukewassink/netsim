@@ -12,4 +12,7 @@ object ImplicitConversions {
 
   given Conversion[Int, Time] with
     def apply(ticks: Int): Time = Time(ticks)
+
+  given Conversion[Double, Time] with
+    def apply(ticks: Double): Time = Time(ticks)
 }
