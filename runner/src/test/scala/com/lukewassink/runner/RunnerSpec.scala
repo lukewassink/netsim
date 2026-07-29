@@ -2,10 +2,17 @@ package com.lukewassink.runner
 
 import com.lukewassink.runner.Runner
 import com.lukewassink.simulation.behavior.SimpleSender
-import com.lukewassink.simulation.core.{Node, NodeHeader}
+import com.lukewassink.simulation.core.ResponseState.Request
+import com.lukewassink.simulation.core.MessageStage.{Pending, Scheduled}
+import com.lukewassink.simulation.core.{
+  Message,
+  MessageContent,
+  Node,
+  NodeHeader
+}
 import com.lukewassink.simulation.test_utils.NetworkSpecUtil.testNetwork
 import com.lukewassink.simulation.test_utils.NodeStateSpecUtil.testNodeState
-import com.lukewassink.simulation.test_utils.UnitSpec
+import com.lukewassink.simulation.test_utils.{MessageMatchers, UnitSpec}
 import com.lukewassink.simulation.test_utils.MessageSpecUtil.{
   draftedMessage,
   scheduledMessage
@@ -38,24 +45,24 @@ class RunnerSpec extends UnitSpec {
       List(messageAToB, messageAToC, messageBToA)
     )
 
-    val states = Runner.run(network).take(20).toVector
+    val states = Runner.run(network).take(15).toVector
 
     it("starts in the initial state") {
       states(0) should equal(network)
     }
 
     it("sends queued messages at their delivery times") {
-      states(9)
+      states(8)
         .nodes(3)
         .sharedState
         .incomingMessages should contain theSameElementsAs List(messageAToC)
 
-      states(11)
+      states(10)
         .nodes(2)
         .sharedState
         .incomingMessages should contain theSameElementsAs List(messageAToB)
 
-      states(12)
+      states(11)
         .nodes(1)
         .sharedState
         .incomingMessages should contain theSameElementsAs List(messageBToA)
@@ -63,11 +70,11 @@ class RunnerSpec extends UnitSpec {
 
     describe("the detailed trajectory of a message sending behavior") {
       it("adds an outgoing message to the queue") {
-        no(states(3).messagesInTransit.messages) should have(
+        no(states(2).messagesInTransit.messages) should have(
           stringContent("CToB")
         )
 
-        exactly(1, states(4).messagesInTransit.messages) should have(
+        exactly(1, states(3).messagesInTransit.messages) should have(
           stringContent("CToB")
         )
       }
@@ -79,24 +86,24 @@ class RunnerSpec extends UnitSpec {
       }
 
       it("does not have the message in the queue on delivery") {
-        no(states(14).messagesInTransit.messages) should have(
+        no(states(13).messagesInTransit.messages) should have(
           stringContent("CToB")
         )
       }
 
       it("delivers the added message") {
-        no(states(13).nodes(2).sharedState.incomingMessages) should have(
+        no(states(12).nodes(2).sharedState.incomingMessages) should have(
           stringContent("CToB")
         )
 
         exactly(
           1,
-          states(14).nodes(2).sharedState.incomingMessages
+          states(13).nodes(2).sharedState.incomingMessages
         ) should have(
           stringContent("CToB")
         )
 
-        no(states(15).nodes(2).sharedState.incomingMessages) should have(
+        no(states(14).nodes(2).sharedState.incomingMessages) should have(
           stringContent("CToB")
         )
       }
