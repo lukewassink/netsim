@@ -52,8 +52,8 @@ lazy val visualizer = (project in file("visualizer"))
         )
     },
     libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "2.8.1",
-    libraryDependencies += "com.raquo" %%% "laminar" % "18.0.0-M5",
-    libraryDependencies += "com.raquo" %%% "laminar" % "18.0.0-M5" % Test,
+    libraryDependencies += "com.raquo" %%% "laminar" % "18.0.0-M2",
+    libraryDependencies += "com.raquo" %%% "laminar" % "18.0.0-M2" % Test,
     libraryDependencies += "org.scalatest" %%% "scalatest" % "3.2.20" % Test,
     libraryDependencies += "com.raquo" %%% "domtestutils" % "19.0.0" % Test,
     jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
