@@ -69,7 +69,8 @@ h1 {
 .play-button {
   background: transparent;
   box-sizing: border-box;
-  width: 0;
+  width: var(--playback-element-height);
+  padding: 0;
   height: var(--playback-element-height);
 
   border-color: transparent transparent transparent black;
