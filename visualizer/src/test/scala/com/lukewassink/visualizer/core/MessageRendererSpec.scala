@@ -3,7 +3,7 @@ package com.lukewassink.visualizer.core
 import com.lukewassink.visualizer.test_util.UnitSpec
 import com.lukewassink.visualizer.test_util.NetworkUtil.testNetwork
 
-class MessageSpec extends UnitSpec {
+class MessageRendererSpec extends UnitSpec {
 
   describe("addData") {
     val numMessages = testNetwork.messagesInTransit.messages.size

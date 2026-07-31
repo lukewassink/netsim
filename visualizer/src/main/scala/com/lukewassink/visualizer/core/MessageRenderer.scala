@@ -10,7 +10,7 @@ import com.lukewassink.simulation.core.{
 import com.lukewassink.simulation.util.Duration
 import com.lukewassink.visualizer.util.Pos
 import com.raquo.laminar.api.L.{*, given}
-import com.lukewassink.visualizer.core.Root.FrameLength
+import com.lukewassink.visualizer.core.NetworkRenderer.FrameLength
 
 // A message along with rendering data needed to render it.
 case class MessageData(
@@ -20,7 +20,7 @@ case class MessageData(
 )
 
 object MessageRenderer {
-  // Wrap messages up along with their rendering data.
+  // Package messages with their rendering data.
   def addData(
       network: Network,
       nodeData: Map[NodeID, NodeData]
@@ -53,15 +53,14 @@ object MessageRenderer {
     val x = data.map(_.center.x.toString)
     val y = data.map(_.center.y.toString)
 
-    svg
-      .circle(
-        svg.cls := "message",
-        svg.style := s"transition-duration: ${FrameLength}ms",
-        svg.cls <-- data
-          .map(_.firstOrLast)
-          .splitBoolean(_ => "", _ => "show"),
-        svg.cx <-- x,
-        svg.cy <-- y
-      )
+    svg.circle(
+      svg.cls := "message",
+      svg.style := s"transition-duration: ${FrameLength}ms",
+      svg.cls <-- data
+        .map(_.firstOrLast)
+        .splitBoolean(_ => "", _ => "show"),
+      svg.cx <-- x,
+      svg.cy <-- y
+    )
   }
 }

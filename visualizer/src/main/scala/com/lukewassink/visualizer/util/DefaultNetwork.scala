@@ -34,13 +34,13 @@ object DefaultNetwork {
 
   val messageAToB =
     Message[Scheduled](
-      Scheduled(0, 1, 2, 0, 1000),
+      Scheduled(0, 1, 2, 0, 25),
       Request(),
       MessageContent("AToB")
     )
   val messageAToC =
     Message[Scheduled](
-      Scheduled(1, 1, 3, 0, 20),
+      Scheduled(1, 1, 3, 0, 30),
       Request(),
       MessageContent("AToC")
     )
@@ -53,6 +53,15 @@ object DefaultNetwork {
 
   val messageCToB =
     Message[Drafted](Drafted(2), Request(), MessageContent("CToB"))
+
+  val messageCToA =
+    Message[Drafted](Drafted(1), Request(), MessageContent("CToB"))
+
+  val messageCToB2 =
+    Message[Drafted](Drafted(2), Request(), MessageContent("CToB"))
+
+  val messageCToA2 =
+    Message[Drafted](Drafted(1), Request(), MessageContent("CToB"))
 
   val nodeA = Node(
     List.empty,
@@ -68,7 +77,12 @@ object DefaultNetwork {
     NodeState(NodeHeader(2, 1), List.empty, List.empty, XORRandom.fromSeed(1L))
   )
   val nodeC = Node(
-    List(SimpleSender(12, messageCToB)),
+    List(
+      SimpleSender(12, messageCToB),
+      SimpleSender(24, messageCToA),
+      SimpleSender(40, messageCToB2),
+      SimpleSender(55, messageCToA2)
+    ),
     NodeState(NodeHeader(3, 0), List.empty, List.empty, XORRandom.fromSeed(1L))
   )
 

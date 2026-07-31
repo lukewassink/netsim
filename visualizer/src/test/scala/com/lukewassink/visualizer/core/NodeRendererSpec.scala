@@ -4,7 +4,7 @@ import com.lukewassink.visualizer.test_util.UnitSpec
 import com.raquo.laminar.api.L.{*, given}
 import com.lukewassink.visualizer.test_util.NetworkUtil.{nodeA, testNetwork}
 
-class NodeSpec extends UnitSpec {
+class NodeRendererSpec extends UnitSpec {
 
   describe("addData") {
     val numNodes = testNetwork.nodes.size
