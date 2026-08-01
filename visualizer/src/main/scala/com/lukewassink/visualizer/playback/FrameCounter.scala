@@ -1,26 +1,25 @@
 package com.lukewassink.visualizer.playback
 
-import com.lukewassink.visualizer.core.PlaybackState
 import com.lukewassink.visualizer.core.RootRenderer.given
 import com.raquo.laminar.api.L.{*, given}
+import com.lukewassink.visualizer.util.PlaybackState
 
 object FrameCounter {
   def render(using playbackState: PlaybackState): HtmlElement = {
-    val PlaybackState(playing, tick, historyLength) = playbackState
     input(
       typ("number"),
       cls("frame-counter control-element"),
-      cls <-- playing.signal
+      cls <-- playbackState.playing.signal
         .splitBoolean(_ => "disabled", _ => ""),
       minAttr("0"),
-      maxAttr((historyLength - 1).toString),
-      value <-- tick.signal.map(_.toString),
-      onChange.mapToValue.filterNot(_.isEmpty) --> (v =>
-        tick.set(Math.min(v.toInt, historyLength - 1))
-      ),
-      disabled <-- playing,
-      onBlur --> (_ => tick.update(identity)),
-      placeholder <-- tick.signal.map(t => t.toString)
+      maxAttr((playbackState.historyLength - 1).toString),
+      value <-- playbackState.tick.map(_.toString),
+      onChange.mapToValue
+        .filterNot(_.isEmpty)
+        .map(_.toInt) --> playbackState.tickWriter,
+      disabled <-- playbackState.playing,
+      onBlur --> (_ => playbackState.refreshTick()),
+      placeholder <-- playbackState.tick.map(_.toString)
     )
   }
 }
