@@ -2,7 +2,7 @@ package com.lukewassink.visualizer.core
 
 import com.lukewassink.visualizer.test_util.UnitSpec
 import com.raquo.laminar.api.L.{*, given}
-import com.lukewassink.visualizer.test_util.NetworkUtil.{nodeA, testNetwork}
+import com.lukewassink.visualizer.test_util.NetworkSpecUtil.{nodeA, testNetwork}
 
 class NodeRendererSpec extends UnitSpec {
 

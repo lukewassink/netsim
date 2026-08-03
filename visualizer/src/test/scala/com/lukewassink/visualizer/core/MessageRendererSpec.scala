@@ -1,7 +1,7 @@
 package com.lukewassink.visualizer.core
 
 import com.lukewassink.visualizer.test_util.UnitSpec
-import com.lukewassink.visualizer.test_util.NetworkUtil.testNetwork
+import com.lukewassink.visualizer.test_util.NetworkSpecUtil.testNetwork
 
 class MessageRendererSpec extends UnitSpec {
 

@@ -18,7 +18,7 @@ import com.lukewassink.simulation.test_utils.MessageSpecUtil.{
 import com.raquo.laminar.api.L.{*, given}
 
 // At preconfigured network for testing purposes.
-object NetworkUtil {
+object NetworkSpecUtil {
 
   private val messageAToB = scheduledMessage(1, 1, 2, 0, 10, "AToB")
   private val messageAToC = scheduledMessage(4, 1, 3, 0, 8, "AToC")
