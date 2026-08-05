@@ -4,15 +4,10 @@ sealed trait Result[T]
 
 final case class Success[T](value: T) extends Result[T]
 
-final case class Failure(errors: List[Error]) extends Result:
+final case class Failure[T](errors: List[Throwable]) extends Result[T]:
   def messages: String = errors
-    .map(error => error.getClass.toString + ": " + error.message + "\n")
+    .map(error => error.getClass.toString + ": " + error.getMessage + "\n")
     .foldLeft("")(_ + _)
 
-// Maybe add line no. if that's possible
-sealed trait Error:
-  def message: String
-
-final case class MissingField(field: String, requiredBy: String) extends Error:
-  def message: String =
-    s"missing the field ($field), which is required by ($requiredBy)"
+case object Failure:
+  def apply[T](errors: Throwable*): Failure[T] = Failure(errors.toList)

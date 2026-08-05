@@ -4,11 +4,13 @@ import com.lukewassink.runner.config.BehaviorNode.{
   SimpleResponderNode,
   SimpleSenderNode
 }
-import com.lukewassink.simulation.util.Time
+import com.lukewassink.runner.util.{Failure, Result, Success}
 import io.github.edadma.hocon.{Config, ConfigObject, Decoder, HoconException}
 
 object SyntaxTree {
-  def fromConfig(config: Config): SimulationNode = config.as[SimulationNode]
+  def fromConfig(config: Config): Result[SimulationNode] =
+    try Success(config.as[SimulationNode])
+    catch case e: HoconException => Failure(e)
 
   given Decoder[BehaviorNode] = (value, path) => {
     val config = value match {

@@ -5,7 +5,8 @@ import com.lukewassink.runner.config.BehaviorNode.{
   SimpleSenderNode
 }
 import com.lukewassink.simulation.test_utils.UnitSpec
-import io.github.edadma.hocon.Hocon
+import io.github.edadma.hocon.{Hocon, MissingPathException}
+import com.lukewassink.runner.util.{Success, Failure}
 
 class SyntaxTreeSpec extends UnitSpec {
   describe("fromConfig") {
@@ -18,10 +19,14 @@ class SyntaxTreeSpec extends UnitSpec {
              nodes = []
            }
         """.stripMargin)
-      val tree = SyntaxTree.fromConfig(config)
+      val result = SyntaxTree.fromConfig(config)
 
       val expectedTree =
         SimulationNode("simulation-name", 10, NetworkNode(List.empty))
+
+      inside(result) { case Success(tree) =>
+        tree should equal(expectedTree)
+      }
     }
 
     it("handles a node with zero behaviors") {
@@ -36,7 +41,7 @@ class SyntaxTreeSpec extends UnitSpec {
                    }]
                  }
               """.stripMargin)
-      val tree = SyntaxTree.fromConfig(config)
+      val result = SyntaxTree.fromConfig(config)
 
       val expectedTree =
         SimulationNode(
@@ -44,6 +49,10 @@ class SyntaxTreeSpec extends UnitSpec {
           10,
           NetworkNode(List(NodeNode("node-name", List.empty)))
         )
+
+      inside(result) { case Success(tree) =>
+        tree should equal(expectedTree)
+      }
     }
 
     it("builds a network") {
@@ -75,7 +84,7 @@ class SyntaxTreeSpec extends UnitSpec {
                          }]
                        }
                     """.stripMargin)
-      val tree = SyntaxTree.fromConfig(config)
+      val result = SyntaxTree.fromConfig(config)
 
       val expectedTree =
         SimulationNode(
@@ -96,6 +105,29 @@ class SyntaxTreeSpec extends UnitSpec {
             )
           )
         )
+
+      inside(result) { case Success(tree) =>
+        tree should equal(expectedTree)
+      }
+    }
+
+    it("returns a parse error as a Failure") {
+      val config = Hocon.parse("""
+                 nam = "simulation-name" // "nam" should be "name", so the path "name" is missing
+                 randomSeed = 10
+
+                 network {
+                   nodes = []
+                 }
+              """.stripMargin)
+      val result = SyntaxTree.fromConfig(config)
+
+      val expectedTree =
+        SimulationNode("simulation-name", 10, NetworkNode(List.empty))
+
+      inside(result) { case Failure(List(e)) =>
+        e shouldBe a[MissingPathException]
+      }
     }
   }
 }
