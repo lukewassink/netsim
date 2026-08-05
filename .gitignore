@@ -39,6 +39,10 @@ project/plugins/project/
 *.tmp
 *.class
 node_modules/
+js/
+jvm/
+.js/
+.jvm/
 
 # ==========================================
 # Environment Variables and Secrets

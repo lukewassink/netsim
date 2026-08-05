@@ -27,4 +27,14 @@ object XORRandom {
     val (_, r4) = r3.next
     r4
   }
+
+  // Return an XORRandom generator seeded with seed and salted with salt.
+  def fromSeed(seed: Long, salt: Int): XORRandom = {
+    // Warmup the generator with 4 iterations. This number was not based on research.
+    val (_, r1) = XORRandom(seed ^ salt).next
+    val (_, r2) = r1.next
+    val (_, r3) = r2.next
+    val (_, r4) = r3.next
+    r4
+  }
 }

@@ -1,6 +1,6 @@
 package com.lukewassink.visualizer.core
 
-import com.lukewassink.runner.Runner
+import com.lukewassink.runner.core.Runner
 import com.lukewassink.simulation.core.Network
 import com.lukewassink.visualizer.core.NetworkRenderer
 import com.lukewassink.visualizer.playback.PlaybackControls

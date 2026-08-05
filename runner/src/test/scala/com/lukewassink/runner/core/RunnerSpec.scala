@@ -1,22 +1,22 @@
-package com.lukewassink.runner
+package com.lukewassink.runner.core
 
-import com.lukewassink.runner.Runner
+import com.lukewassink.runner.core.Runner
 import com.lukewassink.simulation.behavior.SimpleSender
-import com.lukewassink.simulation.core.ResponseState.Request
 import com.lukewassink.simulation.core.MessageStage.{Pending, Scheduled}
+import com.lukewassink.simulation.core.ResponseState.Request
 import com.lukewassink.simulation.core.{
   Message,
   MessageContent,
   Node,
   NodeHeader
 }
-import com.lukewassink.simulation.test_utils.NetworkSpecUtil.testNetwork
-import com.lukewassink.simulation.test_utils.NodeStateSpecUtil.testNodeState
-import com.lukewassink.simulation.test_utils.{MessageMatchers, UnitSpec}
 import com.lukewassink.simulation.test_utils.MessageSpecUtil.{
   draftedMessage,
   scheduledMessage
 }
+import com.lukewassink.simulation.test_utils.NetworkSpecUtil.testNetwork
+import com.lukewassink.simulation.test_utils.NodeStateSpecUtil.testNodeState
+import com.lukewassink.simulation.test_utils.{MessageMatchers, UnitSpec}
 
 class RunnerSpec extends UnitSpec {
   describe("run") {

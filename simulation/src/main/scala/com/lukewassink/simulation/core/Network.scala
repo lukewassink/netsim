@@ -13,7 +13,10 @@ case class Network(
     nodes: Map[NodeID, Node],
     messagesInTransit: DeliveryQueue,
     random: Random
-):
+) {
+
+  // Returns a stream of network states showing the evolution of the network over time.
+  def toStream: LazyList[Network] = this #:: this.next().toStream
 
   // Logic:
   // 1) tick the time forward
@@ -55,6 +58,7 @@ case class Network(
 
     Network(newTime, updatedNodes, updatedMessages, random)
   }
+}
 
 object Network {
   // A convenience method to initialize Network using a list of nodes and list of messages.
