@@ -7,9 +7,9 @@ final case class Success[T](value: T) extends Result[T]:
   def flatMap(f: T => Result[T]): Result[T] = f(value)
 
 final case class Failure[T](errors: List[Throwable]) extends Result[T]:
-  def messagesToString: String = errors
+  override def toString: String = errors
     .map(error => s"${error.getClass.getSimpleName}: ${error.getMessage} \n")
-    .foldLeft("")(_ + _)
+    .mkString("\n")
 
   def flatMap(f: T => Result[T]): Result[T] = this
 

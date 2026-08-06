@@ -5,7 +5,7 @@ sealed class ConfigValidationException(message: String)
 
 final class DuplicateNodeNamesException(name: String, indices: List[Int])
     extends ConfigValidationException(
-      s"Nodes at indices $indices use the name: $name. Node names must be unique."
+      s"Nodes at indices ${indices.mkString(", ")} use the name $name. Node names must be unique."
     )
 
 case class MissingReferenceNameException(referenceLocation: ReferenceLocation)
