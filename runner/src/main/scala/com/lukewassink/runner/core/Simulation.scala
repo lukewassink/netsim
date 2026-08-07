@@ -6,6 +6,8 @@ import com.lukewassink.simulation.core.Network
 case class SimulationMetadata(name: String, randomSeed: Long)
 
 // Return type for the runner. Contains:
-// -- a stream of network states
+// -- the initial network state
 // -- additional metadata for logging, rendering, storage, etc.
-case class Simulation(metadata: SimulationMetadata, networks: LazyList[Network])
+case class Simulation(metadata: SimulationMetadata, initialNetwork: Network):
+  // Lazily compute and cache the network evolution over time.
+  lazy val history: LazyList[Network] = initialNetwork.toStream
