@@ -3,9 +3,7 @@ package com.lukewassink.simulation.core
 import com.lukewassink.simulation.core.MessageStage.{Drafted, Scheduled}
 import com.lukewassink.simulation.core.ResponseState.Response
 import com.lukewassink.simulation.test_utils.MessageSpecUtil.{
-  draftedMessage,
-  pendingMessage,
-  scheduledMessage
+  draftedMessage, pendingMessage, scheduledMessage
 }
 import com.lukewassink.simulation.test_utils.UnitSpec
 
@@ -14,8 +12,8 @@ class MessageSpec extends UnitSpec {
     describe("send") {
       it("adds node metadata to the message") {
         assert(
-          draftedMessage(1, "Hi!")
-            .send(2, 3, 4) === pendingMessage(2, 3, 1, 4, "Hi!")
+          draftedMessage(1, "Hi!").send(2, 3, 4) ===
+            pendingMessage(2, 3, 1, 4, "Hi!")
         )
       }
     }
@@ -25,8 +23,8 @@ class MessageSpec extends UnitSpec {
     describe("schedule") {
       it("adds the delivery time") {
         assert(
-          pendingMessage(0, 0, 0, 0, "Hi!")
-            .schedule(5) === scheduledMessage(0, 0, 0, 0, 5, "Hi!")
+          pendingMessage(0, 0, 0, 0, "Hi!").schedule(5) ===
+            scheduledMessage(0, 0, 0, 0, 5, "Hi!")
         )
       }
     }
@@ -37,13 +35,12 @@ class MessageSpec extends UnitSpec {
 
     describe("respond") {
       it("fills in the response fields") {
-        val response = message.respond(MessageContent("Hi to you too!"))
-        val expectedResponse =
-          Message[Drafted](
-            Drafted(2),
-            Response(2, 1),
-            MessageContent("Hi to you too!")
-          )
+        val response         = message.respond(MessageContent("Hi to you too!"))
+        val expectedResponse = Message[Drafted](
+          Drafted(2),
+          Response(2, 1),
+          MessageContent("Hi to you too!")
+        )
         assert(response === expectedResponse)
       }
     }

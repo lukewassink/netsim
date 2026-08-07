@@ -9,7 +9,7 @@ case class Pos(x: Float, y: Float) {
   // t >= 1 -> endPoint
   def interpolate[T: Numeric](scalar: T, endPoint: Pos): Pos = {
     val Pos(x2, y2) = endPoint
-    val t = scalar.toFloat.max(0).min(1)
+    val t           = scalar.toFloat.max(0).min(1)
     Pos((1 - t) * x + t * x2, (1 - t) * y + t * y2)
   }
 
@@ -37,6 +37,5 @@ object Pos {
     Pos(x, y)
   }
 
-  def apply[S: Numeric, T: Numeric](x: S, y: T): Pos =
-    Pos(x.toFloat, y.toFloat)
+  def apply[S: Numeric, T: Numeric](x: S, y: T): Pos = Pos(x.toFloat, y.toFloat)
 }

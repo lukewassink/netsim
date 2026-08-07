@@ -3,9 +3,7 @@ package com.lukewassink.visualizer.core
 import com.raquo.laminar.api.L.{*, given}
 import com.lukewassink.simulation.core.{Network, NodeID}
 import com.lukewassink.visualizer.core.{
-  NodeRenderer,
-  MessageRenderer,
-  NetworkState
+  NodeRenderer, MessageRenderer, NetworkState
 }
 import com.lukewassink.visualizer.core.RootRenderer.given
 
@@ -20,25 +18,22 @@ object NetworkRenderer {
   def render(using networkState: NetworkState): SvgElement = {
     val network = networkState.network
 
-    val viewBox =
-      s"0, 0, $NetworkViewBoxSize, $NetworkViewBoxSize"
+    val viewBox = s"0, 0, $NetworkViewBoxSize, $NetworkViewBoxSize"
 
-    val nodeData: Signal[Map[NodeID, NodeData]] =
-      network.map(NodeRenderer.addData)
+    val nodeData: Signal[Map[NodeID, NodeData]] = network
+      .map(NodeRenderer.addData)
 
-    val nodeElements: Signal[List[SvgElement]] =
-      nodeData.map(_.values.toList).split(_.node.id)(NodeRenderer.render)
+    val nodeElements: Signal[List[SvgElement]] = nodeData.map(_.values.toList)
+      .split(_.node.id)(NodeRenderer.render)
 
-    val messageData: Signal[List[MessageData]] =
-      network
-        .combineWith(nodeData)
-        .mapN(MessageRenderer.addData)
+    val messageData: Signal[List[MessageData]] = network.combineWith(nodeData)
+      .mapN(MessageRenderer.addData)
 
-    val messageElements: Signal[List[SvgElement]] =
-      messageData.split(_.message.uniqueID)(MessageRenderer.render)
+    val messageElements: Signal[List[SvgElement]] = messageData
+      .split(_.message.uniqueID)(MessageRenderer.render)
 
     svg.svg(
-      svg.cls := "network-panel",
+      svg.cls     := "network-panel",
       svg.viewBox := viewBox,
       children <-- nodeElements,
       children <-- messageElements

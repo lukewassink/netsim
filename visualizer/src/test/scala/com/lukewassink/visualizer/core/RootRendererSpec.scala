@@ -9,23 +9,13 @@ class RootRendererSpec extends UnitSpec {
     it("Renders the root SVG with a node and a message") {
       mount(RootRenderer.render().ref, "Root failed to mount")
 
-      expectNode(
+      expectNode(div.of(
+        h1 of textNode,
         div.of(
-          h1 of textNode,
-          div.of(
-            svg.svg of (
-              svg.cls is "network-panel",
-              comment,
-              comment
-            ),
-            div.of(
-              button,
-              input,
-              input
-            )
-          )
+          svg.svg of (svg.cls is "network-panel", comment, comment),
+          div.of(button, input, input)
         )
-      )
+      ))
     }
   }
 }

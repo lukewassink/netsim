@@ -4,13 +4,7 @@ import com.lukewassink.simulation.behavior.SimpleSender
 import com.lukewassink.simulation.core.ResponseState.Request
 import com.lukewassink.simulation.core.MessageStage.{Drafted, Scheduled}
 import com.lukewassink.simulation.core.{
-  Message,
-  MessageContent,
-  MessageID,
-  Network,
-  Node,
-  NodeHeader,
-  NodeID,
+  Message, MessageContent, MessageID, Network, Node, NodeHeader, NodeID,
   NodeState
 }
 import com.lukewassink.simulation.util.{Time, XORRandom}
@@ -32,24 +26,21 @@ object DefaultNetwork {
   given Conversion[Int, Time] with
     def apply(ticks: Int): Time = Time(ticks)
 
-  val messageAToB =
-    Message[Scheduled](
-      Scheduled(0, 1, 2, 0, 25),
-      Request(),
-      MessageContent("AToB")
-    )
-  val messageAToC =
-    Message[Scheduled](
-      Scheduled(1, 1, 3, 0, 30),
-      Request(),
-      MessageContent("AToC")
-    )
-  val messageBToA =
-    Message[Scheduled](
-      Scheduled(0, 2, 1, 0, 15),
-      Request(),
-      MessageContent("BToA")
-    )
+  val messageAToB = Message[Scheduled](
+    Scheduled(0, 1, 2, 0, 25),
+    Request(),
+    MessageContent("AToB")
+  )
+  val messageAToC = Message[Scheduled](
+    Scheduled(1, 1, 3, 0, 30),
+    Request(),
+    MessageContent("AToC")
+  )
+  val messageBToA = Message[Scheduled](
+    Scheduled(0, 2, 1, 0, 15),
+    Request(),
+    MessageContent("BToA")
+  )
 
   val messageCToB =
     Message[Drafted](Drafted(2), Request(), MessageContent("CToB"))
@@ -65,12 +56,7 @@ object DefaultNetwork {
 
   val nodeA = Node(
     List.empty,
-    NodeState(
-      NodeHeader(1, 2),
-      List.empty,
-      List.empty,
-      XORRandom.fromSeed(1L)
-    )
+    NodeState(NodeHeader(1, 2), List.empty, List.empty, XORRandom.fromSeed(1L))
   )
   val nodeB = Node(
     List.empty,

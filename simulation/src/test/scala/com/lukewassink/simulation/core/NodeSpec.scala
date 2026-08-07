@@ -3,34 +3,28 @@ package com.lukewassink.simulation.core
 import com.lukewassink.simulation.core.{Message, Node, NodeHeader, NodeState}
 import com.lukewassink.simulation.test_utils.UnitSpec
 import com.lukewassink.simulation.test_utils.BehaviorSpecUtil.{
-  TestMessageBehavior,
-  TestSelfUpdateBehavior
+  TestMessageBehavior, TestSelfUpdateBehavior
 }
 import com.lukewassink.simulation.test_utils.MessageSpecUtil.{
-  draftedMessage,
-  pendingMessage
+  draftedMessage, pendingMessage
 }
 import com.lukewassink.simulation.test_utils.NodeStateSpecUtil.testNodeState
 
 class NodeSpec extends UnitSpec {
-  private val draftedMessage1 = draftedMessage(7, "One")
-  private val draftedMessage2 = draftedMessage(8, "Two")
-  private val sentMessage1 = pendingMessage(1, 3, 7, 4, "One")
-  private val sentMessage2 = pendingMessage(2, 3, 8, 5, "Two")
+  private val draftedMessage1   = draftedMessage(7, "One")
+  private val draftedMessage2   = draftedMessage(8, "Two")
+  private val sentMessage1      = pendingMessage(1, 3, 7, 4, "One")
+  private val sentMessage2      = pendingMessage(2, 3, 8, 5, "Two")
   private val scheduledMessage1 = sentMessage1.schedule(5)
   private val scheduledMessage2 = sentMessage2.schedule(9)
 
   val emptyState: NodeState =
     testNodeState(NodeHeader(0, 0), List.empty, List.empty)
 
-  val emptyNode = Node(List.empty, emptyState)
+  val emptyNode                = Node(List.empty, emptyState)
   val nodeWithOutgoingMessages = Node(
     List.empty,
-    testNodeState(
-      NodeHeader(4, 0),
-      List(sentMessage1, sentMessage2),
-      List.empty
-    )
+    testNodeState(NodeHeader(4, 0), List(sentMessage1, sentMessage2), List.empty)
   )
 
   describe("outgoingMessages") {
@@ -39,22 +33,17 @@ class NodeSpec extends UnitSpec {
     }
 
     it("returns outgoing messages") {
-      nodeWithOutgoingMessages.outgoingMessages should contain theSameElementsAs List(
-        sentMessage1,
-        sentMessage2
-      )
+      nodeWithOutgoingMessages.outgoingMessages should contain theSameElementsAs
+        List(sentMessage1, sentMessage2)
     }
   }
 
   describe("withIncomingMessage") {
     it("adds an incoming message to the state") {
       emptyNode.sharedState.incomingMessages shouldBe empty
-      emptyNode
-        .withIncomingMessage(scheduledMessage1)
-        .sharedState
-        .incomingMessages should contain theSameElementsAs List(
-        scheduledMessage1
-      )
+      emptyNode.withIncomingMessage(scheduledMessage1).sharedState
+        .incomingMessages should contain theSameElementsAs
+        List(scheduledMessage1)
     }
   }
 
@@ -68,29 +57,20 @@ class NodeSpec extends UnitSpec {
           List(scheduledMessage1, scheduledMessage2)
         )
       )
-      node.sharedState.incomingMessages should contain theSameElementsAs List(
-        scheduledMessage1,
-        scheduledMessage2
-      )
-      node
-        .preDeliveryAction(5)
-        .sharedState
-        .incomingMessages shouldBe empty
+      node.sharedState.incomingMessages should contain theSameElementsAs
+        List(scheduledMessage1, scheduledMessage2)
+      node.preDeliveryAction(5).sharedState.incomingMessages shouldBe empty
     }
   }
 
   describe("postDeliveryAction") {
     it("clears outgoing messages") {
-      nodeWithOutgoingMessages
-        .postDeliveryAction(1)
-        .outgoingMessages shouldBe empty
+      nodeWithOutgoingMessages.postDeliveryAction(1).outgoingMessages shouldBe
+        empty
     }
 
     it("triggers a behavior to update the shared state") {
-      val node = Node(
-        List(TestMessageBehavior(draftedMessage1)),
-        emptyState
-      )
+      val node         = Node(List(TestMessageBehavior(draftedMessage1)), emptyState)
       node.outgoingMessages shouldBe empty
       val nextMessages = node.postDeliveryAction(10).outgoingMessages
       nextMessages should have size 1
@@ -99,22 +79,17 @@ class NodeSpec extends UnitSpec {
   }
 
   it("triggers a behavior to update the behavior's state") {
-    val node = Node(
-      List(TestSelfUpdateBehavior(0)),
-      emptyState
-    )
+    val node = Node(List(TestSelfUpdateBehavior(0)), emptyState)
     node.behaviors.head match {
-      case TestSelfUpdateBehavior(selfState) =>
-        selfState.should(equal(0))
+      case TestSelfUpdateBehavior(selfState) => selfState.should(equal(0))
     }
     node.postDeliveryAction(10).behaviors.head match {
-      case TestSelfUpdateBehavior(selfState) =>
-        selfState.should(equal(1))
+      case TestSelfUpdateBehavior(selfState) => selfState.should(equal(1))
     }
   }
 
   describe("sending multiple messages") {
-    val node = Node(
+    val node             = Node(
       List(
         TestMessageBehavior(draftedMessage1),
         TestMessageBehavior(draftedMessage2)
@@ -122,9 +97,7 @@ class NodeSpec extends UnitSpec {
       emptyState
     )
     node.outgoingMessages shouldBe empty
-    val outgoingMessages = node
-      .postDeliveryAction(10)
-      .outgoingMessages
+    val outgoingMessages = node.postDeliveryAction(10).outgoingMessages
 
     it("triggers multiple behaviors") {
       outgoingMessages should have size 2
@@ -140,14 +113,10 @@ class NodeSpec extends UnitSpec {
 
   describe("id") {
     it("returns the node ID") {
-      val node1 = Node(
-        List.empty,
-        testNodeState(NodeHeader(1, 0), List.empty, List.empty)
-      )
-      val node2 = Node(
-        List.empty,
-        testNodeState(NodeHeader(2, 0), List.empty, List.empty)
-      )
+      val node1 =
+        Node(List.empty, testNodeState(NodeHeader(1, 0), List.empty, List.empty))
+      val node2 =
+        Node(List.empty, testNodeState(NodeHeader(2, 0), List.empty, List.empty))
 
       node1.id shouldEqual NodeID(1)
       node2.id shouldEqual NodeID(2)

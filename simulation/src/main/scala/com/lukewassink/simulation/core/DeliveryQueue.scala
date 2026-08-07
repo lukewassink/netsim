@@ -13,17 +13,15 @@ case class DeliveryQueue(messages: List[Message[Scheduled]]):
     messages.foldLeft(this)(_.withMessage(_))
 
   // Returns messages to be delivered by the specified time.
-  def deliverableMessages(time: Time): List[Message[Scheduled]] =
-    messages.filter(_.readyToDeliver(time))
+  def deliverableMessages(time: Time): List[Message[Scheduled]] = messages
+    .filter(_.readyToDeliver(time))
 
   // Returns the queue with all messages with past or present delivery times removed.
   def withoutPastMessages(time: Time): DeliveryQueue =
     DeliveryQueue(messages.filter(_.stillWaiting(time)))
 
 object DeliveryQueue {
-  def empty: DeliveryQueue =
-    DeliveryQueue(List.empty)
+  def empty: DeliveryQueue = DeliveryQueue(List.empty)
 
-  def apply(messages: Message[Scheduled]*): DeliveryQueue =
-    this(messages.toList)
+  def apply(messages: Message[Scheduled]*): DeliveryQueue = this(messages.toList)
 }

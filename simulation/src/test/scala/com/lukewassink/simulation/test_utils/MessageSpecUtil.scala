@@ -1,16 +1,9 @@
 package com.lukewassink.simulation.test_utils
 
 import com.lukewassink.simulation.core.ResponseState.Request
-import com.lukewassink.simulation.core.MessageStage.{
-  Drafted,
-  Pending,
-  Scheduled
-}
+import com.lukewassink.simulation.core.MessageStage.{Drafted, Pending, Scheduled}
 import com.lukewassink.simulation.core.{
-  Message,
-  MessageContent,
-  MessageID,
-  NodeID
+  Message, MessageContent, MessageID, NodeID
 }
 import org.scalatest.matchers.{HavePropertyMatchResult, HavePropertyMatcher}
 import com.lukewassink.simulation.util.Time
@@ -25,22 +18,13 @@ object MessageSpecUtil {
       receiverId: NodeID,
       sendTime: Time,
       content: String
-  ): Message[Pending] =
-    Message(
-      Pending(
-        messageId,
-        nodeId,
-        receiverId,
-        sendTime
-      ),
-      Request(),
-      MessageContent(content)
-    )
+  ): Message[Pending] = Message(
+    Pending(messageId, nodeId, receiverId, sendTime),
+    Request(),
+    MessageContent(content)
+  )
 
-  def pendingMessage(
-      receiverId: NodeID,
-      content: String
-  ): Message[Pending] =
+  def pendingMessage(receiverId: NodeID, content: String): Message[Pending] =
     pendingMessage(MessageID(0), NodeID(0), receiverId, Time(0), content)
 
   def scheduledMessage(
@@ -58,22 +42,21 @@ object MessageSpecUtil {
       receiverId: NodeID,
       deliveryTime: Time,
       content: String
-  ): Message[Scheduled] =
-    pendingMessage(receiverId, content).schedule(deliveryTime)
+  ): Message[Scheduled] = pendingMessage(receiverId, content)
+    .schedule(deliveryTime)
 }
 
 trait MessageMatchers {
   // Custom matcher to test the stringContent of messages.
   def stringContent(
       expectedContent: String
-  ): HavePropertyMatcher[Message[?], String] =
-    (message: Message[?]) =>
-      HavePropertyMatchResult(
-        message.content.stringContent == expectedContent,
-        "stringContent",
-        expectedContent,
-        message.content.stringContent
-      )
+  ): HavePropertyMatcher[Message[?], String] = (message: Message[?]) =>
+    HavePropertyMatchResult(
+      message.content.stringContent == expectedContent,
+      "stringContent",
+      expectedContent,
+      message.content.stringContent
+    )
 
   // Custom matcher to test the messageID of messages.
   def messageID(

@@ -31,64 +31,51 @@ class UnitSpec
 
   export ImplicitConversions.given
 
-  override implicit def makeTagTestable(tag: Tag.Base): ExpectedNode = {
+  override implicit def makeTagTestable(tag: Tag.Base): ExpectedNode =
     ExpectedNode.element(tag.name)
-  }
 
   override implicit def makeCommentBuilderTestable(
       commentBuilder: () => CommentNode
-  ): ExpectedNode = {
-    ExpectedNode.comment
-  }
+  ): ExpectedNode = ExpectedNode.comment
 
   override implicit def makeHtmlPropTestable[V, _DomV](prop: HtmlProp[V] {
     type DomV = _DomV
-  }): TestableHtmlProp[V, _DomV] = {
+  }): TestableHtmlProp[V, _DomV] =
     new TestableHtmlProp[V, _DomV](prop.name, prop.codec.decode)
-  }
 
   override implicit def makeStyleTestable[V](
       style: StyleProp[V]
-  ): TestableStyleProp[V] = {
-    new TestableStyleProp[V](style.name)
-  }
+  ): TestableStyleProp[V] = new TestableStyleProp[V](style.name)
 
   override implicit def makeGlobalAttrTestable[V](
       attr: GlobalAttr[V]
-  ): TestableGlobalAttr[V] = {
+  ): TestableGlobalAttr[V] =
     new TestableGlobalAttr[V](attr.name, attr.codec.encode, attr.codec.decode)
-  }
 
   override implicit def makeHtmlAttrTestable[V](
       attr: HtmlAttr[V]
-  ): TestableHtmlAttr[V] = {
+  ): TestableHtmlAttr[V] =
     new TestableHtmlAttr[V](attr.name, attr.codec.encode, attr.codec.decode)
-  }
 
   override implicit def makeSvgAttrTestable[V](
       svgAttr: SvgAttr[V]
-  ): TestableSvgAttr[V] = {
-    new TestableSvgAttr[V](
-      svgAttr.name,
-      svgAttr.codec.encode,
-      svgAttr.codec.decode,
-      svgAttr.namespaceUri
-    )
-  }
+  ): TestableSvgAttr[V] = new TestableSvgAttr[V](
+    svgAttr.name,
+    svgAttr.codec.encode,
+    svgAttr.codec.decode,
+    svgAttr.namespaceUri
+  )
 
   override implicit def makeMathMlAttrTestable[V](
       attr: MathMlAttr[V]
-  ): TestableMathMlAttr[V] = {
+  ): TestableMathMlAttr[V] =
     new TestableMathMlAttr[V](attr.name, attr.codec.encode, attr.codec.decode)
-  }
 
   override implicit def makeCompositeKeyTestable(
       key: CompositeAttr[?]
-  ): TestableCompositeKey = {
-    new TestableCompositeKey(
-      key.name,
-      key.separator,
-      getRawDomValue = _.getAttribute(key.name)
-    )
-  }
+  ): TestableCompositeKey = new TestableCompositeKey(
+    key.name,
+    key.separator,
+    getRawDomValue = _.getAttribute(key.name)
+  )
 }

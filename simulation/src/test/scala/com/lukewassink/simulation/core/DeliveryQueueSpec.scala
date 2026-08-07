@@ -6,9 +6,9 @@ import com.lukewassink.simulation.test_utils.UnitSpec
 
 class DeliveryQueueSpec extends UnitSpec {
   describe("DeliveryQueue") {
-    val message1 = scheduledMessage(0, 1, 2, 1, 9, "")
-    val message2 = scheduledMessage(12, 5, 2, 2, 8, "")
-    val message3 = scheduledMessage(19, 1, 2, 5, 8, "")
+    val message1    = scheduledMessage(0, 1, 2, 1, 9, "")
+    val message2    = scheduledMessage(12, 5, 2, 2, 8, "")
+    val message3    = scheduledMessage(19, 1, 2, 5, 8, "")
     val sampleQueue = DeliveryQueue(message1, message2, message3)
 
     describe("readyToDeliver") {
@@ -18,25 +18,16 @@ class DeliveryQueueSpec extends UnitSpec {
       }
 
       it("can return messages that are ready to deliver") {
-        sampleQueue.deliverableMessages(
-          8
-        ) should contain theSameElementsAs List(
-          message2,
-          message3
-        )
-        sampleQueue.deliverableMessages(
-          9
-        ) should contain theSameElementsAs List(
-          message1,
-          message2,
-          message3
-        )
+        sampleQueue.deliverableMessages(8) should contain theSameElementsAs
+          List(message2, message3)
+        sampleQueue.deliverableMessages(9) should contain theSameElementsAs
+          List(message1, message2, message3)
       }
     }
 
     describe("withMessage") {
       it("adds a message") {
-        val queue = DeliveryQueue.empty
+        val queue            = DeliveryQueue.empty
         assert(queue.deliverableMessages(9).isEmpty)
         val queueWithMessage = queue.withMessage(message1)
         assert(queueWithMessage.deliverableMessages(9) === List(message1))
@@ -46,50 +37,30 @@ class DeliveryQueueSpec extends UnitSpec {
     describe("withMessages") {
       it("adds the messages") {
         DeliveryQueue.empty.withMessages(List.empty).messages shouldBe empty
-        DeliveryQueue.empty
-          .withMessages(List(message1))
-          .messages should contain theSameElementsAs List(message1)
-        DeliveryQueue.empty
-          .withMessages(List(message1, message2, message3))
-          .messages should contain theSameElementsAs List(
-          message1,
-          message2,
-          message3
-        )
+        DeliveryQueue.empty.withMessages(List(message1)).messages should
+          contain theSameElementsAs List(message1)
+        DeliveryQueue.empty.withMessages(List(message1, message2, message3))
+          .messages should contain theSameElementsAs
+          List(message1, message2, message3)
       }
     }
 
     describe("withoutDeliveredMessages") {
       it("removes delivered messages") {
-        sampleQueue.deliverableMessages(
-          8
-        ) should contain theSameElementsAs List(
-          message2,
-          message3
-        )
-        sampleQueue
-          .withoutPastMessages(8)
-          .deliverableMessages(9) should contain theSameElementsAs List(
-          message1
-        )
+        sampleQueue.deliverableMessages(8) should contain theSameElementsAs
+          List(message2, message3)
+        sampleQueue.withoutPastMessages(8).deliverableMessages(9) should
+          contain theSameElementsAs List(message1)
       }
     }
 
     describe("allMessages") {
       it("returns all messages") {
         DeliveryQueue.empty.messages shouldBe empty
-        DeliveryQueue(
-          message1
-        ).messages should contain theSameElementsAs List(message1)
-        DeliveryQueue(
-          message1,
-          message2,
-          message3
-        ).messages should contain theSameElementsAs List(
-          message1,
-          message2,
-          message3
-        )
+        DeliveryQueue(message1).messages should contain theSameElementsAs
+          List(message1)
+        DeliveryQueue(message1, message2, message3).messages should
+          contain theSameElementsAs List(message1, message2, message3)
       }
     }
   }

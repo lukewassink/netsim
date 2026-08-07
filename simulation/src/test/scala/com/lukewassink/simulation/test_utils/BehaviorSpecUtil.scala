@@ -7,21 +7,14 @@ import com.lukewassink.simulation.util.Time
 object BehaviorSpecUtil {
 
   // Sends the specified message.
-  case class TestMessageBehavior(message: Message[Drafted])
-      extends NodeBehavior {
-    override def updatedNodeState(
-        time: Time,
-        state: NodeState
-    ): NodeState =
+  case class TestMessageBehavior(message: Message[Drafted]) extends NodeBehavior {
+    override def updatedNodeState(time: Time, state: NodeState): NodeState =
       state.withOutgoingMessage(time, message)
   }
 
   // Increments its own state.
   case class TestSelfUpdateBehavior(selfState: Int) extends NodeBehavior {
-    override def updatedSelfState(
-        time: Time,
-        state: NodeState
-    ): NodeBehavior =
+    override def updatedSelfState(time: Time, state: NodeState): NodeBehavior =
       TestSelfUpdateBehavior(selfState + 1)
   }
 }

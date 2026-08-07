@@ -13,8 +13,7 @@ final case class XORRandom private (private val state: Long) extends Random {
     val x = state ^ (state << 7)
     x ^ (x >>> 9)
 
-  def next: (Int, XORRandom) =
-    (state.toInt, XORRandom(nextState))
+  def next: (Int, XORRandom) = (state.toInt, XORRandom(nextState))
 }
 
 object XORRandom {

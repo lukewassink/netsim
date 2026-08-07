@@ -5,18 +5,15 @@ import com.lukewassink.runner.util.{Failure, Result, Success}
 
 // Validates global constraints on a syntax tree.
 object Validator {
-  def validate(result: Result[SimulationNode]): Result[SimulationNode] =
-    result.flatMap(node => {
+  def validate(result: Result[SimulationNode]): Result[SimulationNode] = result
+    .flatMap { node =>
       val errors = runAllValidators(node)
       if errors.isEmpty then Success(node) else Failure[SimulationNode](errors)
-    })
+    }
 
   private def validationContext(node: SimulationNode): ValidationContext = {
-    val indicesByName =
-      node.network.nodes
-        .map(_.name)
-        .zipWithIndex
-        .groupMap((name, _) => name)((name, idx) => idx)
+    val indicesByName = node.network.nodes.map(_.name).zipWithIndex
+      .groupMap((name, _) => name)((name, idx) => idx)
     ValidationContext(indicesByName)
   }
 
@@ -29,10 +26,8 @@ object Validator {
     )
   }
 
-  private val validators: List[Validator] = List(
-    DuplicateNodeNamesValidator,
-    MissingReferenceNameValidator
-  )
+  private val validators: List[Validator] =
+    List(DuplicateNodeNamesValidator, MissingReferenceNameValidator)
 }
 
 case class ValidationContext(nodeIndicesByName: Map[String, List[Int]])
@@ -47,11 +42,9 @@ case object DuplicateNodeNamesValidator extends Validator:
   def run(
       node: SimulationNode,
       context: ValidationContext
-  ): List[ConfigValidationException] =
-    context.nodeIndicesByName
-      .filter((_, indices) => indices.length > 1)
-      .map(DuplicateNodeNamesException(_, _))
-      .toList
+  ): List[ConfigValidationException] = context.nodeIndicesByName
+    .filter((_, indices) => indices.length > 1)
+    .map(DuplicateNodeNamesException(_, _)).toList
 
 case object MissingReferenceNameValidator extends Validator:
   def run(
@@ -59,7 +52,6 @@ case object MissingReferenceNameValidator extends Validator:
       context: ValidationContext
   ): List[ConfigValidationException] = {
     val nodeNames = context.nodeIndicesByName.keySet
-    referenceLocations(node)
-      .filterNot(rl => nodeNames.contains(rl.nodeName))
+    referenceLocations(node).filterNot(rl => nodeNames.contains(rl.nodeName))
       .map(MissingReferenceNameException(_))
   }

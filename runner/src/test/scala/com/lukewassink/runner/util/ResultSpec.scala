@@ -9,9 +9,8 @@ class ResultSpec extends UnitSpec {
     }
 
     it("doesn't affect a Failure") {
-      val result = Failure[Int](RuntimeException("Test message")).flatMap(i =>
-        Success(2 * i)
-      )
+      val result = Failure[Int](RuntimeException("Test message"))
+        .flatMap(i => Success(2 * i))
 
       inside(result) { case Failure(errors: List[Throwable]) =>
         errors should have length 1

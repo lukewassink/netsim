@@ -13,11 +13,10 @@ import math.{max, min}
 
 // Hook into the document and render the root element.
 @main
-def RenderRoot(): Unit =
-  renderOnDomContentLoaded(
-    dom.document.getElementById("app"),
-    RootRenderer.render()
-  )
+def RenderRoot(): Unit = renderOnDomContentLoaded(
+  dom.document.getElementById("app"),
+  RootRenderer.render()
+)
 
 case class NetworkState(network: Signal[Network])
 
@@ -27,27 +26,22 @@ object RootRenderer:
 
   private val initialNetwork = defaultNetwork
 
-  private val networkHistory =
-    Runner.run(initialNetwork).take(HistoryLength).toVector
+  private val networkHistory = Runner.run(initialNetwork).take(HistoryLength)
+    .toVector
 
   private val tick: Var[Int] = Var(0)
 
   given playbackState: PlaybackState = PlaybackState(HistoryLength)
 
-  private val currentNetwork: Signal[Network] =
-    playbackState.tick.map(networkHistory)
+  private val currentNetwork: Signal[Network] = playbackState.tick
+    .map(networkHistory)
 
   given NetworkState(currentNetwork)
 
-  def render(): Element = {
-    div(
-      cls := "root",
-      h1("NetSim"),
-      div(
-        NetworkRenderer.render,
-        PlaybackControls.render()
-      )
-    )
-  }
+  def render(): Element = div(
+    cls := "root",
+    h1("NetSim"),
+    div(NetworkRenderer.render, PlaybackControls.render())
+  )
   end render
 end RootRenderer

@@ -10,13 +10,11 @@ class NodeRendererSpec extends UnitSpec {
     val numNodes = testNetwork.nodes.size
     val nodeData = NodeRenderer.addData(testNetwork)
 
-    it("generates data for each node") {
-      nodeData should have size numNodes
-    }
+    it("generates data for each node")(nodeData should have size numNodes)
 
     it("copies the node to the node data") {
       val matchedNodes = for {
-        (id, node) <- testNetwork.nodes
+        (id, node)   <- testNetwork.nodes
         nodeFromData <- nodeData.get(id).map(_.node)
       } yield node -> nodeFromData
 

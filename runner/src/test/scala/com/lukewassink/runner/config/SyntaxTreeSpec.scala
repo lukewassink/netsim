@@ -1,8 +1,7 @@
 package com.lukewassink.runner.config
 
 import com.lukewassink.runner.config.BehaviorNode.{
-  SimpleResponderNode,
-  SimpleSenderNode
+  SimpleResponderNode, SimpleSenderNode
 }
 import com.lukewassink.simulation.test_utils.UnitSpec
 import io.github.edadma.hocon.{Hocon, MissingPathException}
@@ -11,26 +10,27 @@ import com.lukewassink.runner.util.{Success, Failure}
 class SyntaxTreeSpec extends UnitSpec {
   describe("fromConfig") {
     it("handles zero nodes") {
-      val config = Hocon.parse("""
+      val config = Hocon.parse(
+        """
            name = "simulation-name"
            randomSeed = 10
 
            network {
              nodes = []
            }
-        """.stripMargin)
+        """.stripMargin
+      )
       val result = SyntaxTree.fromConfig(config)
 
       val expectedTree =
         SimulationNode("simulation-name", 10, NetworkNode(List.empty))
 
-      inside(result) { case Success(tree) =>
-        tree should equal(expectedTree)
-      }
+      inside(result) { case Success(tree) => tree should equal(expectedTree) }
     }
 
     it("handles a node with zero behaviors") {
-      val config = Hocon.parse("""
+      val config = Hocon.parse(
+        """
                  name = "simulation-name"
                  randomSeed = 10
 
@@ -40,23 +40,22 @@ class SyntaxTreeSpec extends UnitSpec {
                      behaviors = []
                    }]
                  }
-              """.stripMargin)
+              """.stripMargin
+      )
       val result = SyntaxTree.fromConfig(config)
 
-      val expectedTree =
-        SimulationNode(
-          "simulation-name",
-          10,
-          NetworkNode(List(NodeNode("node-name", List.empty)))
-        )
+      val expectedTree = SimulationNode(
+        "simulation-name",
+        10,
+        NetworkNode(List(NodeNode("node-name", List.empty)))
+      )
 
-      inside(result) { case Success(tree) =>
-        tree should equal(expectedTree)
-      }
+      inside(result) { case Success(tree) => tree should equal(expectedTree) }
     }
 
     it("builds a network") {
-      val config = Hocon.parse("""
+      val config = Hocon.parse(
+        """
                        name = "simulation-name"
                        randomSeed = 10
 
@@ -83,43 +82,41 @@ class SyntaxTreeSpec extends UnitSpec {
                            ]
                          }]
                        }
-                    """.stripMargin)
+                    """.stripMargin
+      )
       val result = SyntaxTree.fromConfig(config)
 
-      val expectedTree =
-        SimulationNode(
-          "simulation-name",
-          10,
-          NetworkNode(
+      val expectedTree = SimulationNode(
+        "simulation-name",
+        10,
+        NetworkNode(List(
+          NodeNode("node-name-1", List.empty),
+          NodeNode("node-name-2", List(SimpleResponderNode())),
+          NodeNode(
+            "node-name-3",
             List(
-              NodeNode("node-name-1", List.empty),
-              NodeNode("node-name-2", List(SimpleResponderNode())),
-              NodeNode(
-                "node-name-3",
-                List(
-                  SimpleResponderNode(),
-                  SimpleResponderNode(),
-                  SimpleSenderNode(10, "node-name-2", "Hi!")
-                )
-              )
+              SimpleResponderNode(),
+              SimpleResponderNode(),
+              SimpleSenderNode(10, "node-name-2", "Hi!")
             )
           )
-        )
+        ))
+      )
 
-      inside(result) { case Success(tree) =>
-        tree should equal(expectedTree)
-      }
+      inside(result) { case Success(tree) => tree should equal(expectedTree) }
     }
 
     it("returns a parse error as a Failure") {
-      val config = Hocon.parse("""
+      val config = Hocon.parse(
+        """
                  nam = "simulation-name" // "nam" should be "name", so the path "name" is missing
                  randomSeed = 10
 
                  network {
                    nodes = []
                  }
-              """.stripMargin)
+              """.stripMargin
+      )
       val result = SyntaxTree.fromConfig(config)
 
       val expectedTree =

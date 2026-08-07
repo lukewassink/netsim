@@ -1,13 +1,11 @@
 package com.lukewassink.runner.config
 
 import com.lukewassink.runner.config.BehaviorNode.{
-  SimpleResponderNode,
-  SimpleSenderNode
+  SimpleResponderNode, SimpleSenderNode
 }
 import com.lukewassink.runner.config.Validator.validate
 import com.lukewassink.runner.config.{
-  DuplicateNodeNamesException,
-  MissingReferenceNameException
+  DuplicateNodeNamesException, MissingReferenceNameException
 }
 import com.lukewassink.simulation.test_utils.UnitSpec
 import com.lukewassink.runner.util.{Failure, Success}
@@ -15,49 +13,43 @@ import com.lukewassink.runner.util.{Failure, Success}
 class ValidatorSpec extends UnitSpec {
   describe("validate") {
     it("handles a valid syntax tree") {
-      val validTree =
-        SimulationNode(
-          "simulation-name",
-          10,
-          NetworkNode(
+      val validTree = SimulationNode(
+        "simulation-name",
+        10,
+        NetworkNode(List(
+          NodeNode("node-name-1", List.empty),
+          NodeNode("node-name-2", List(SimpleResponderNode())),
+          NodeNode(
+            "node-name-3",
             List(
-              NodeNode("node-name-1", List.empty),
-              NodeNode("node-name-2", List(SimpleResponderNode())),
-              NodeNode(
-                "node-name-3",
-                List(
-                  SimpleResponderNode(),
-                  SimpleResponderNode(),
-                  SimpleSenderNode(10, "node-name-2", "Hi!")
-                )
-              )
+              SimpleResponderNode(),
+              SimpleResponderNode(),
+              SimpleSenderNode(10, "node-name-2", "Hi!")
             )
           )
-        )
+        ))
+      )
 
       assert(validate(Success(validTree)) === Success(validTree))
     }
 
     it("catches duplicate node names") {
-      val tree =
-        SimulationNode(
-          "simulation-name",
-          10,
-          NetworkNode(
+      val tree = SimulationNode(
+        "simulation-name",
+        10,
+        NetworkNode(List(
+          NodeNode("node-name-1", List.empty),
+          NodeNode("node-name-1", List(SimpleResponderNode())),
+          NodeNode(
+            "node-name-3",
             List(
-              NodeNode("node-name-1", List.empty),
-              NodeNode("node-name-1", List(SimpleResponderNode())),
-              NodeNode(
-                "node-name-3",
-                List(
-                  SimpleResponderNode(),
-                  SimpleResponderNode(),
-                  SimpleSenderNode(10, "node-name-1", "Hi!")
-                )
-              )
+              SimpleResponderNode(),
+              SimpleResponderNode(),
+              SimpleSenderNode(10, "node-name-1", "Hi!")
             )
           )
-        )
+        ))
+      )
 
       val result = validate(Success(tree))
 
@@ -67,25 +59,22 @@ class ValidatorSpec extends UnitSpec {
     }
 
     it("catches missing references") {
-      val tree =
-        SimulationNode(
-          "simulation-name",
-          10,
-          NetworkNode(
+      val tree = SimulationNode(
+        "simulation-name",
+        10,
+        NetworkNode(List(
+          NodeNode("node-name-1", List.empty),
+          NodeNode("node-name-2", List(SimpleResponderNode())),
+          NodeNode(
+            "node-name-3",
             List(
-              NodeNode("node-name-1", List.empty),
-              NodeNode("node-name-2", List(SimpleResponderNode())),
-              NodeNode(
-                "node-name-3",
-                List(
-                  SimpleResponderNode(),
-                  SimpleResponderNode(),
-                  SimpleSenderNode(10, "node-name-5", "Hi!")
-                )
-              )
+              SimpleResponderNode(),
+              SimpleResponderNode(),
+              SimpleSenderNode(10, "node-name-5", "Hi!")
             )
           )
-        )
+        ))
+      )
 
       val result = validate(Success(tree))
 
@@ -95,33 +84,30 @@ class ValidatorSpec extends UnitSpec {
     }
 
     it("returns a list of all validation errors") {
-      val tree =
-        SimulationNode(
-          "simulation-name",
-          10,
-          NetworkNode(
+      val tree = SimulationNode(
+        "simulation-name",
+        10,
+        NetworkNode(List(
+          NodeNode("node-name-1", List.empty),
+          NodeNode(
+            "node-name-1",
             List(
-              NodeNode("node-name-1", List.empty),
-              NodeNode(
-                "node-name-1",
-                List(
-                  SimpleResponderNode(),
-                  SimpleSenderNode(10, "node-name-12", "Hi!")
-                )
-              ),
-              NodeNode(
-                "node-name-3",
-                List(
-                  SimpleResponderNode(),
-                  SimpleResponderNode(),
-                  SimpleSenderNode(10, "node-name-5", "Hi!")
-                )
-              ),
-              NodeNode("node-name-3", List.empty),
-              NodeNode("node-name-3", List.empty)
+              SimpleResponderNode(),
+              SimpleSenderNode(10, "node-name-12", "Hi!")
             )
-          )
-        )
+          ),
+          NodeNode(
+            "node-name-3",
+            List(
+              SimpleResponderNode(),
+              SimpleResponderNode(),
+              SimpleSenderNode(10, "node-name-5", "Hi!")
+            )
+          ),
+          NodeNode("node-name-3", List.empty),
+          NodeNode("node-name-3", List.empty)
+        ))
+      )
 
       val result = validate(Success(tree))
 

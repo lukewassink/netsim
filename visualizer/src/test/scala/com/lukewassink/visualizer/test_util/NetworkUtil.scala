@@ -2,18 +2,12 @@ package com.lukewassink.visualizer.test_util
 
 import com.lukewassink.simulation.behavior.SimpleSender
 import com.lukewassink.simulation.core.{
-  Message,
-  MessageContent,
-  Network,
-  Node,
-  NodeHeader,
-  NodeState
+  Message, MessageContent, Network, Node, NodeHeader, NodeState
 }
 import com.lukewassink.simulation.util.XORRandom
 import com.lukewassink.simulation.test_utils.ImplicitConversions.given
 import com.lukewassink.simulation.test_utils.MessageSpecUtil.{
-  draftedMessage,
-  scheduledMessage
+  draftedMessage, scheduledMessage
 }
 import com.raquo.laminar.api.L.{*, given}
 
@@ -28,12 +22,7 @@ object NetworkUtil {
 
   val nodeA = Node(
     List.empty,
-    NodeState(
-      NodeHeader(1, 2),
-      List.empty,
-      List.empty,
-      XORRandom.fromSeed(1L)
-    )
+    NodeState(NodeHeader(1, 2), List.empty, List.empty, XORRandom.fromSeed(1L))
   )
   val nodeB = Node(
     List.empty,

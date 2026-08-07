@@ -17,11 +17,9 @@ case class NodeState(
     incomingMessages: List[Message[Scheduled]],
     random: Random
 ) {
-  def clearOutgoingMessages: NodeState =
-    copy(outgoingMessages = List.empty)
+  def clearOutgoingMessages: NodeState = copy(outgoingMessages = List.empty)
 
-  def clearIncomingMessages: NodeState =
-    copy(incomingMessages = List.empty)
+  def clearIncomingMessages: NodeState = copy(incomingMessages = List.empty)
 
   // Sets the message ID, sender ID, and send time for outgoing messages and adds it to the list.
   def withOutgoingMessage(time: Time, message: Message[Drafted]): NodeState = {

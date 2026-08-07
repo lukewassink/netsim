@@ -1,8 +1,7 @@
 package com.lukewassink.runner.config
 
 import com.lukewassink.runner.config.BehaviorNode.{
-  SimpleResponderNode,
-  SimpleSenderNode
+  SimpleResponderNode, SimpleSenderNode
 }
 import com.lukewassink.runner.util.{Failure, Result, Success}
 import io.github.edadma.hocon.{Config, ConfigObject, Decoder, HoconException}
@@ -15,8 +14,7 @@ object SyntaxTree {
   given Decoder[BehaviorNode] = (value, path) => {
     val config = value match {
       case o: ConfigObject => Config(o)
-      case other           =>
-        throw HoconException(
+      case other           => throw HoconException(
           s"Behaviors must be objects, but configuration value at $path was not an object"
         )
     }

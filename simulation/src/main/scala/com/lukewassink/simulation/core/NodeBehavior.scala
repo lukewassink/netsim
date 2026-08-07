@@ -22,10 +22,7 @@ trait NodeBehavior:
       sharedState: NodeState
   ): NodeBehavior = this
 
-  final def updated(
-      time: Time,
-      sharedState: NodeState
-  ): UpdatedState =
+  final def updated(time: Time, sharedState: NodeState): UpdatedState =
     UpdatedState(
       updatedNodeState(time, sharedState),
       updatedSelfState(time, sharedState)

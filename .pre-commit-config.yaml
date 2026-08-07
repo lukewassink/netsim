@@ -4,8 +4,5 @@ repos:
     hooks:
       - id: sbt-unused-imports #includes fatal warnings, arguments optional
         args: [ --scope=test:compile ]
-#      - id: sbt-scalafmt-apply
-#        args: [ --no-clean ]
-
-#        -   id: sbt-wartremover #arguments are optional
-#            args: [--warts=Warts.unsafe, --scope=test:compile]
+      - id: sbt-wartremover #arguments are optional
+        args: [ --warts=Warts.unsafe, --scope=test:compile ]

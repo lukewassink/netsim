@@ -7,7 +7,7 @@ class MessageRendererSpec extends UnitSpec {
 
   describe("addData") {
     val numMessages = testNetwork.messagesInTransit.messages.size
-    val nodeData = NodeRenderer.addData(testNetwork)
+    val nodeData    = NodeRenderer.addData(testNetwork)
     val messageData = MessageRenderer.addData(testNetwork, nodeData)
 
     it("generates data for each message") {
@@ -16,9 +16,8 @@ class MessageRendererSpec extends UnitSpec {
 
     it("copies the message to the message data") {
       val messagesInFlight = testNetwork.messagesInTransit.messages
-      messageData.map(
-        _.message
-      ) should contain theSameElementsAs messagesInFlight
+      messageData.map(_.message) should contain theSameElementsAs
+        messagesInFlight
     }
   }
 }

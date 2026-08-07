@@ -17,8 +17,8 @@ final class PlaybackState(
 
   def increment(): Unit = tickVar.update(i => min(i + 1, maxTick))
 
-  def tickWriter: Observer[Int] =
-    tickVar.writer.contramap[Int](i => min(max(i, 0), maxTick))
+  def tickWriter: Observer[Int] = tickVar.writer
+    .contramap[Int](i => min(max(i, 0), maxTick))
 
   // Forces a new event, which can be used to refresh UI elements.
   def refreshTick(): Unit = tickVar.update(identity)

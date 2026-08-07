@@ -2,10 +2,7 @@ package com.lukewassink.visualizer.core
 
 import com.lukewassink.simulation.core.MessageStage.Scheduled
 import com.lukewassink.simulation.core.{
-  Message,
-  MessageUniqueID,
-  Network,
-  NodeID
+  Message, MessageUniqueID, Network, NodeID
 }
 import com.lukewassink.simulation.util.Duration
 import com.lukewassink.visualizer.util.Pos
@@ -24,24 +21,21 @@ object MessageRenderer {
   def addData(
       network: Network,
       nodeData: Map[NodeID, NodeData]
-  ): List[MessageData] = {
-    network.messagesInTransit.messages
-      .map(message => {
-        val time = network.time
-        val Scheduled(_, from, to, startTime, endTime) = message.messageStage
-        val sender = nodeData(from)
-        val receiver = nodeData(to)
+  ): List[MessageData] = network.messagesInTransit.messages.map { message =>
+    val time                                       = network.time
+    val Scheduled(_, from, to, startTime, endTime) = message.messageStage
+    val sender                                     = nodeData(from)
+    val receiver                                   = nodeData(to)
 
-        // The portion of its journey the message has completed.
-        val t = (time - startTime) / (endTime - startTime - Duration(2))
-        val center = sender.center.interpolate(t, receiver.center)
+    // The portion of its journey the message has completed.
+    val t      = (time - startTime) / (endTime - startTime - Duration(2))
+    val center = sender.center.interpolate(t, receiver.center)
 
-        MessageData(
-          message,
-          center,
-          time == startTime || time >= endTime - Duration(2)
-        )
-      })
+    MessageData(
+      message,
+      center,
+      time == startTime || time >= endTime - Duration(2)
+    )
   }
 
   // Render an individual message.
@@ -54,11 +48,9 @@ object MessageRenderer {
     val y = data.map(_.center.y.toString)
 
     svg.circle(
-      svg.cls := "message",
+      svg.cls   := "message",
       svg.style := s"transition-duration: ${FrameLength}ms",
-      svg.cls <-- data
-        .map(_.firstOrLast)
-        .splitBoolean(_ => "", _ => "show"),
+      svg.cls <-- data.map(_.firstOrLast).splitBoolean(_ => "", _ => "show"),
       svg.cx <-- x,
       svg.cy <-- y
     )

@@ -32,29 +32,27 @@ case class Network(
     val initializedNodes = nodes.map(_ -> _.preDeliveryAction(newTime))
 
     // Deliver messages
-    val nodesWithDeliveredMessages =
-      messagesInTransit
-        .deliverableMessages(newTime)
-        .foldLeft(initializedNodes) { (nodes, message) =>
-          nodes.updatedWith(message.messageStage.receiverId)(
-            _.map(_.withIncomingMessage(message))
-          )
-        }
+    val nodesWithDeliveredMessages = messagesInTransit
+      .deliverableMessages(newTime)
+      .foldLeft(initializedNodes) { (nodes, message) =>
+        nodes.updatedWith(message.messageStage.receiverId)(_.map(
+          _.withIncomingMessage(message)
+        ))
+      }
 
     // Trigger node behavior
-    val updatedNodes = nodesWithDeliveredMessages.map { (id, node) =>
-      (id, node.postDeliveryAction(newTime))
-    }
+    val updatedNodes = nodesWithDeliveredMessages
+      .map((id, node) => (id, node.postDeliveryAction(newTime)))
 
     // New messages to deliver
     val toDeliver: Iterable[Message[Scheduled]] = for {
       (_, node) <- updatedNodes
-      message <- node.outgoingMessages
+      message   <- node.outgoingMessages
     } yield message.schedule(newTime + DeliveryLatency)
 
     // Clear delivered messages and add new messages
-    val updatedMessages =
-      messagesInTransit.withoutPastMessages(newTime).withMessages(toDeliver)
+    val updatedMessages = messagesInTransit.withoutPastMessages(newTime)
+      .withMessages(toDeliver)
 
     Network(newTime, updatedNodes, updatedMessages, random)
   }
@@ -68,10 +66,10 @@ object Network {
       messages: List[Message[Scheduled]],
       random: Random
   ): Network = {
-    val nodeMap: Map[NodeID, Node] = nodes.foldLeft(Map[NodeID, Node]()) {
-      (map, node) =>
+    val nodeMap: Map[NodeID, Node] = nodes
+      .foldLeft(Map[NodeID, Node]()) { (map, node) =>
         map.updated(node.sharedState.header.id, node)
-    }
+      }
     Network(time, nodeMap, DeliveryQueue(messages), random)
   }
 }
