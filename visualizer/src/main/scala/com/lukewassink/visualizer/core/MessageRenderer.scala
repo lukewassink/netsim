@@ -13,6 +13,7 @@ import com.lukewassink.visualizer.core.NetworkRenderer.FrameLength
 case class MessageData(
     message: Message[Scheduled],
     center: Pos,
+    // Signals the message to fade in/out.
     firstOrLast: Boolean
 )
 

@@ -1,7 +1,13 @@
 package com.lukewassink.visualizer.core
 
+import com.lukewassink.simulation.core.{Message, MessageContent, MessageUniqueID}
+import com.lukewassink.simulation.core.MessageStage.Scheduled
+import com.lukewassink.simulation.core.ResponseState.Request
+import com.lukewassink.simulation.test_utils.NodeStateSpecUtil.testNodeState
 import com.lukewassink.visualizer.test_util.UnitSpec
 import com.lukewassink.visualizer.test_util.NetworkUtil.testNetwork
+import com.lukewassink.visualizer.util.Pos
+import com.raquo.laminar.api.L.{*, given}
 
 class MessageRendererSpec extends UnitSpec {
 
@@ -18,6 +24,30 @@ class MessageRendererSpec extends UnitSpec {
       val messagesInFlight = testNetwork.messagesInTransit.messages
       messageData.map(_.message) should contain theSameElementsAs
         messagesInFlight
+    }
+  }
+
+  describe("render") {
+    it("moves the message when messageData updates") {
+      val id      = MessageUniqueID(0, 0)
+      val message = Message[Scheduled](
+        Scheduled(0, 0, 1, 5, 20),
+        Request(),
+        MessageContent("")
+      )
+      val messageData = MessageData(message, Pos(5, 6), false)
+      val messageVar  = Var(messageData)
+
+      mount(
+        MessageRenderer.render(id, messageData, messageVar.signal),
+        "Message failed to mount"
+      )
+
+      expectNode(svg.circle.of(svg.cx is "5", svg.cy is "6"))
+
+      messageVar.update(_ => MessageData(message, Pos(8, 9), false))
+
+      expectNode(svg.circle.of(svg.cx is "8", svg.cy is "9"))
     }
   }
 }

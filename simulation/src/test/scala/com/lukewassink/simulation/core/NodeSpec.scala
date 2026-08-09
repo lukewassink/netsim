@@ -73,7 +73,7 @@ class NodeSpec extends UnitSpec {
     }
 
     it("triggers a behavior to update the shared state") {
-      val node         = Node(List(TestMessageBehavior(draftedMessage1)), emptyState)
+      val node = Node(List(TestMessageBehavior(draftedMessage1)), emptyState)
       node.outgoingMessages shouldBe empty
       val nextMessages = node.postDeliveryAction(10).outgoingMessages
       nextMessages should have size 1
@@ -92,7 +92,7 @@ class NodeSpec extends UnitSpec {
   }
 
   describe("sending multiple messages") {
-    val node             = Node(
+    val node = Node(
       List(
         TestMessageBehavior(draftedMessage1),
         TestMessageBehavior(draftedMessage2)

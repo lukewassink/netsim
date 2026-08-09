@@ -27,7 +27,7 @@ class DeliveryQueueSpec extends UnitSpec {
 
     describe("withMessage") {
       it("adds a message") {
-        val queue            = DeliveryQueue.empty
+        val queue = DeliveryQueue.empty
         assert(queue.deliverableMessages(9).isEmpty)
         val queueWithMessage = queue.withMessage(message1)
         assert(queueWithMessage.deliverableMessages(9) === List(message1))

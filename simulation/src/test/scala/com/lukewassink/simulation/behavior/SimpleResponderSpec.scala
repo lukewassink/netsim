@@ -8,11 +8,11 @@ import com.lukewassink.simulation.test_utils.NodeStateSpecUtil.testNodeState
 
 class SimpleResponderSpec extends UnitSpec {
   describe("trigger") {
-    val message1         = scheduledMessage(2, 5, "One")
-    val message2         = scheduledMessage(2, 5, "Two")
-    val responder        = SimpleResponder()
-    val noMessagesState  = testNodeState(NodeHeader(2, 0), List.empty, List.empty)
-    val oneMessageState  = testNodeState(
+    val message1  = scheduledMessage(2, 5, "One")
+    val message2  = scheduledMessage(2, 5, "Two")
+    val responder = SimpleResponder()
+    val noMessagesState = testNodeState(NodeHeader(2, 0), List.empty, List.empty)
+    val oneMessageState = testNodeState(
       NodeHeader(2, 0),
       List.empty,
       List(message1)

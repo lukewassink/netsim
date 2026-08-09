@@ -30,7 +30,7 @@ object RootRenderer:
     result match {
       case Success(simulation: Simulation) =>
         simulation.history.take(HistoryLength).toVector
-      case Failure(_)                      => Vector.empty
+      case Failure(_) => Vector.empty
     }
 
   given playbackState: PlaybackState = PlaybackState(HistoryLength)

@@ -27,7 +27,7 @@ class NetworkSpec extends UnitSpec {
     val scheduledMessageAToC = pendingMessageAToC.schedule(10)
     val scheduledMessageBToA = pendingMessageBToA.schedule(10)
 
-    val nodeA       = Node(
+    val nodeA = Node(
       List.empty,
       testNodeState(
         NodeHeader(1, 0),
@@ -35,15 +35,15 @@ class NetworkSpec extends UnitSpec {
         List.empty
       )
     )
-    val nodeB       = Node(
+    val nodeB = Node(
       List.empty,
       testNodeState(NodeHeader(2, 0), List(pendingMessageBToA), List.empty)
     )
-    val nodeC       = Node(
+    val nodeC = Node(
       List(BehaviorSpecUtil.TestSelfUpdateBehavior(0)),
       testNodeState(NodeHeader(3, 0), List.empty, List.empty)
     )
-    val network     = testNetwork(
+    val network = testNetwork(
       1,
       List(nodeA, nodeB, nodeC),
       List(scheduledMessageAToB, scheduledMessageAToC, scheduledMessageBToA)
@@ -56,7 +56,7 @@ class NetworkSpec extends UnitSpec {
       }
 
       it("delivers current messages") {
-        val readyToSend      = testNetwork(
+        val readyToSend = testNetwork(
           9,
           List(nodeA, nodeB, nodeC),
           List(scheduledMessageAToB, scheduledMessageAToC, scheduledMessageBToA)

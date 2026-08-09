@@ -81,6 +81,6 @@ object Transformer {
             MessageContent(content)
           )
         )
-      case SimpleResponderNode()                     => SimpleResponder()
+      case SimpleResponderNode() => SimpleResponder()
     }
 }

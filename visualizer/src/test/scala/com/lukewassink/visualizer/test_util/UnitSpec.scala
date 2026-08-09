@@ -9,6 +9,8 @@ import com.raquo.laminar.keys.*
 import com.raquo.laminar.nodes.*
 import com.raquo.laminar.tags.Tag
 import com.lukewassink.simulation.test_utils.ImplicitConversions
+import org.scalactic
+import com.raquo.laminar.api.L
 
 // Don't generate compiler warnings for the implicit conversions below. They are required for domtestutils.
 import scala.language.implicitConversions
@@ -28,6 +30,52 @@ class UnitSpec
       StyleProp,
       CompositeAttr[?]
     ] {
+
+  var root: RootNode = null
+
+  def sentinel: ExpectedNode = ExpectedNode.comment
+
+  /** You can use this when `sentinel` does not make sense semantically */
+  def emptyCommentNode: ExpectedNode = ExpectedNode.comment
+
+  def mount(using
+      prettifier: scalactic.Prettifier,
+      pos: scalactic.source.Position
+  )(
+      node: ReactiveElement.Base,
+      clue: String = defaultMountedElementClue
+  ): Unit = {
+    mountedElementClue = clue
+    assertEmptyContainer("laminar.mount")
+    root = L.render(containerNode, node)
+  }
+
+  def mount(clue: String, node: ReactiveElement.Base)(using
+      prettifier: scalactic.Prettifier,
+      pos: scalactic.source.Position
+  ): Unit = mount(using prettifier, pos)(node, clue)
+
+  override def unmount(clue: String = "unmount")(using
+      prettifier: scalactic.Prettifier,
+      pos: scalactic.source.Position
+  ): Unit = {
+    assertRootNodeMounted("unmount:" + clue)
+    doAssert(
+      root != null,
+      s"ASSERT FAILED [unmount:$clue]: Laminar root not found. Did you use Laminar's mount() method in LaminarSpec? Note: unfortunately this could conceal the true error message."
+    )
+    doAssert(
+      root.child.ref == rootNode,
+      s"ASSERT FAILED [unmount:$clue]: Laminar root's ref does not match rootNode. What did you do!?"
+    )
+    doAssert(
+      root.unmount(),
+      s"ASSERT FAILED [unmount:$clue]: Laminar root failed to unmount"
+    )
+    root = null
+    // containerNode = null
+    mountedElementClue = defaultMountedElementClue
+  }
 
   export ImplicitConversions.given
 

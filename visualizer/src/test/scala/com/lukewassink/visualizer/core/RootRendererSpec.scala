@@ -7,12 +7,20 @@ import com.raquo.laminar.api.L.{*, given}
 class RootRendererSpec extends UnitSpec {
   describe("rootElement") {
     it("Renders the root SVG with a node and a message") {
-      mount(RootRenderer.render().ref, "Root failed to mount")
+      mount(RootRenderer.render(), "Root failed to mount")
 
       expectNode(div.of(
         h1 of textNode,
         div.of(
-          svg.svg of (svg.cls is "network-panel", comment, comment),
+          svg.svg of
+            (
+              svg.cls is "network-panel",
+              sentinel,
+              svg.circle,
+              svg.circle,
+              svg.circle,
+              sentinel
+            ),
           div.of(button, input, input)
         )
       ))
