@@ -10,4 +10,8 @@ case class SimulationMetadata(name: String, randomSeed: Long)
 // -- additional metadata for logging, rendering, storage, etc.
 case class Simulation(metadata: SimulationMetadata, initialNetwork: Network):
   // Lazily compute and cache the network evolution over time.
-  lazy val history: LazyList[Network] = initialNetwork.toStream
+  lazy val history: LazyList[Network] = Simulation.history(initialNetwork)
+
+case object Simulation:
+  private def history(network: Network): LazyList[Network] =
+    network #:: history(network.next)

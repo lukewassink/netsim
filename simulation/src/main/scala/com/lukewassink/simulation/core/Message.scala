@@ -44,10 +44,12 @@ final case class Message[S <: MessageStage](
     responseState: ResponseState,
     content: MessageContent
 ):
-  def isResponseTo(other: Message[Scheduled]): Boolean = responseState match
-    case Request()                   => false
-    case Response(nodeId, messageId) => nodeId == other.messageStage.senderId &&
-      messageId == other.messageStage.messageId
+  def isResponseTo(other: Message[Scheduled]): Boolean =
+    responseState match
+      case Request()                   => false
+      case Response(nodeId, messageId) =>
+        nodeId == other.messageStage.senderId &&
+        messageId == other.messageStage.messageId
 
 // Contains the sender ID and message ID, which uniquely identify the message withing the network history.
 final case class MessageUniqueID(senderID: NodeID, messageID: MessageID)
@@ -97,8 +99,8 @@ case object Message {
     def readyToDeliver(time: Time): Boolean =
       message.messageStage.deliveryTime <= time
 
-    def stillWaiting(time: Time): Boolean = message.messageStage.deliveryTime >
-      time
+    def stillWaiting(time: Time): Boolean =
+      message.messageStage.deliveryTime > time
 
     // Note: if this is also needed for Pending messages, move it to an extension of Pending | Scheduled,
     // and use pattern matching to extract the unique ID.

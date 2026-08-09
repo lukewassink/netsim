@@ -10,6 +10,10 @@ object NodeStateSpecUtil {
       header: NodeHeader,
       outgoingMessages: List[Message[Pending]],
       incomingMessages: List[Message[Scheduled]]
-  ): NodeState =
-    NodeState(header, outgoingMessages, incomingMessages, InertRandom())
+  ): NodeState = NodeState(
+    header,
+    outgoingMessages,
+    incomingMessages,
+    InertRandom()
+  )
 }

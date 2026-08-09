@@ -18,8 +18,8 @@ case class Node(behaviors: List[NodeBehavior], sharedState: NodeState) {
     val clearedState = sharedState.clearOutgoingMessages
 
     // Update shared and behavior states by triggering behaviors in order.
-    val (nextState, nextBehaviors) = behaviors
-      .foldLeft((clearedState, List[NodeBehavior]())) {
+    val (nextState, nextBehaviors) =
+      behaviors.foldLeft((clearedState, List[NodeBehavior]())) {
         case ((curState, processedBehaviors), behavior) =>
           val UpdatedState(nextS, nextB) = behavior.updated(time, curState)
           (nextS, nextB :: processedBehaviors)
@@ -33,8 +33,10 @@ case class Node(behaviors: List[NodeBehavior], sharedState: NodeState) {
   def outgoingMessages: List[Message[Pending]] = sharedState.outgoingMessages
 
   // Adds an incoming message.
-  def withIncomingMessage(message: Message[Scheduled]): Node =
-    Node(behaviors, sharedState.withIncomingMessage(message))
+  def withIncomingMessage(message: Message[Scheduled]): Node = Node(
+    behaviors,
+    sharedState.withIncomingMessage(message)
+  )
 
   def id: NodeID = sharedState.header.id
 }

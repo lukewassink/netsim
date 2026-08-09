@@ -14,8 +14,11 @@ class NodeStateSpec extends UnitSpec {
   private val scheduledMessage1 = sentMessage1.schedule(5)
   private val scheduledMessage2 = sentMessage2.schedule(9)
 
-  private val emptyState =
-    testNodeState(NodeHeader(3, 1), List.empty, List.empty)
+  private val emptyState = testNodeState(
+    NodeHeader(3, 1),
+    List.empty,
+    List.empty
+  )
 
   describe("withOutgoingMessage") {
     it("adds the message to the list and sets node metadata correctly") {

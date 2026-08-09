@@ -9,8 +9,11 @@ import com.lukewassink.simulation.test_utils.NodeStateSpecUtil.testNodeState
 class SimpleSenderSpec extends UnitSpec {
   private val message              = draftedMessage(2, "")
   private val sender               = SimpleSender(5, message)
-  private val nodeState: NodeState =
-    testNodeState(NodeHeader(1, 0), List.empty, List.empty)
+  private val nodeState: NodeState = testNodeState(
+    NodeHeader(1, 0),
+    List.empty,
+    List.empty
+  )
 
   describe("trigger") {
     it("does nothing at earlier times") {

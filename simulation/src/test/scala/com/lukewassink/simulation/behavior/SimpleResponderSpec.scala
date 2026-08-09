@@ -12,10 +12,16 @@ class SimpleResponderSpec extends UnitSpec {
     val message2         = scheduledMessage(2, 5, "Two")
     val responder        = SimpleResponder()
     val noMessagesState  = testNodeState(NodeHeader(2, 0), List.empty, List.empty)
-    val oneMessageState  =
-      testNodeState(NodeHeader(2, 0), List.empty, List(message1))
-    val twoMessagesState =
-      testNodeState(NodeHeader(2, 0), List.empty, List(message1, message2))
+    val oneMessageState  = testNodeState(
+      NodeHeader(2, 0),
+      List.empty,
+      List(message1)
+    )
+    val twoMessagesState = testNodeState(
+      NodeHeader(2, 0),
+      List.empty,
+      List(message1, message2)
+    )
 
     it("handles zero messages") {
       responder.updated(5, noMessagesState).sharedState
@@ -23,15 +29,15 @@ class SimpleResponderSpec extends UnitSpec {
     }
 
     it("responds to one message") {
-      val outgoingMessages = responder.updated(5, oneMessageState).sharedState
-        .outgoingMessages
+      val outgoingMessages =
+        responder.updated(5, oneMessageState).sharedState.outgoingMessages
       outgoingMessages should have size 1
       all(outgoingMessages) should have(stringContent("Response to: One"))
     }
 
     it("responds to multiple messages") {
-      val outgoingMessages = responder.updated(5, twoMessagesState).sharedState
-        .outgoingMessages
+      val outgoingMessages =
+        responder.updated(5, twoMessagesState).sharedState.outgoingMessages
       outgoingMessages should have size 2
       exactly(1, outgoingMessages) should have(stringContent("Response to: One"))
       exactly(1, outgoingMessages) should have(stringContent("Response to: Two"))

@@ -21,25 +21,27 @@ object BehaviorLocation:
   // Returns a list of node names referenced in behaviors along with their locations.
   def referenceLocations(
       simulationNode: SimulationNode
-  ): List[ReferenceLocation] = simulationNode.network.nodes.zipWithIndex
-    .foldLeft(List.empty)((list, nodeWithIndex) =>
-      list ::: referenceLocations(nodeWithIndex._1, nodeWithIndex._2)
-    )
+  ): List[ReferenceLocation] =
+    simulationNode.network.nodes.zipWithIndex
+      .foldLeft(List.empty)((list, nodeWithIndex) =>
+        list ::: referenceLocations(nodeWithIndex._1, nodeWithIndex._2)
+      )
 
   private def referenceLocations(
       node: NodeNode,
       nodeIndex: Int
-  ): List[ReferenceLocation] = node.behaviors.zipWithIndex
-    .foldLeft(List.empty) { (list, behaviorWithIndex) =>
-      val (behavior, index) = behaviorWithIndex
-      val location          = BehaviorLocation(
-        node.name,
-        nodeIndex,
-        behavior.getClass.getSimpleName,
-        index
-      )
-      list ::: references(behavior).map(ReferenceLocation(_, location))
-    }
+  ): List[ReferenceLocation] =
+    node.behaviors.zipWithIndex
+      .foldLeft(List.empty) { (list, behaviorWithIndex) =>
+        val (behavior, index) = behaviorWithIndex
+        val location          = BehaviorLocation(
+          node.name,
+          nodeIndex,
+          behavior.getClass.getSimpleName,
+          index
+        )
+        list ::: references(behavior).map(ReferenceLocation(_, location))
+      }
 
   private def references(behavior: BehaviorNode): List[String] =
     behavior match {

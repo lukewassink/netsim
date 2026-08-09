@@ -31,6 +31,7 @@ case class NodeState(
     )
   }
 
-  def withIncomingMessage(message: Message[Scheduled]): NodeState =
-    copy(incomingMessages = message :: incomingMessages)
+  def withIncomingMessage(message: Message[Scheduled]): NodeState = copy(
+    incomingMessages = message :: incomingMessages
+  )
 }

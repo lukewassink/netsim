@@ -15,16 +15,13 @@ case class Network(
     random: Random
 ) {
 
-  // Returns a stream of network states showing the evolution of the network over time.
-  def toStream: LazyList[Network] = this #:: this.next().toStream
-
   // Logic:
   // 1) tick the time forward
   // 2) trigger pre-delivery node actions
   // 3) deliver messages
   // 4) trigger node behaviors
   // 5) collect outgoing messages from nodes
-  def next(): Network = {
+  def next: Network = {
     // Tick time
     val newTime = time.next
 
@@ -32,23 +29,24 @@ case class Network(
     val initializedNodes = nodes.map(_ -> _.preDeliveryAction(newTime))
 
     // Deliver messages
-    val nodesWithDeliveredMessages = messagesInTransit
-      .deliverableMessages(newTime)
-      .foldLeft(initializedNodes) { (nodes, message) =>
-        nodes.updatedWith(message.messageStage.receiverId)(_.map(
-          _.withIncomingMessage(message)
-        ))
-      }
+    val nodesWithDeliveredMessages =
+      messagesInTransit.deliverableMessages(newTime)
+        .foldLeft(initializedNodes) { (nodes, message) =>
+          nodes.updatedWith(message.messageStage.receiverId)(_.map(
+            _.withIncomingMessage(message)
+          ))
+        }
 
     // Trigger node behavior
     val updatedNodes = nodesWithDeliveredMessages
       .map((id, node) => (id, node.postDeliveryAction(newTime)))
 
     // New messages to deliver
-    val toDeliver: Iterable[Message[Scheduled]] = for {
-      (_, node) <- updatedNodes
-      message   <- node.outgoingMessages
-    } yield message.schedule(newTime + DeliveryLatency)
+    val toDeliver: Iterable[Message[Scheduled]] =
+      for {
+        (_, node) <- updatedNodes
+        message   <- node.outgoingMessages
+      } yield message.schedule(newTime + DeliveryLatency)
 
     // Clear delivered messages and add new messages
     val updatedMessages = messagesInTransit.withoutPastMessages(newTime)
@@ -66,8 +64,8 @@ object Network {
       messages: List[Message[Scheduled]],
       random: Random
   ): Network = {
-    val nodeMap: Map[NodeID, Node] = nodes
-      .foldLeft(Map[NodeID, Node]()) { (map, node) =>
+    val nodeMap: Map[NodeID, Node] =
+      nodes.foldLeft(Map[NodeID, Node]()) { (map, node) =>
         map.updated(node.sharedState.header.id, node)
       }
     Network(time, nodeMap, DeliveryQueue(messages), random)

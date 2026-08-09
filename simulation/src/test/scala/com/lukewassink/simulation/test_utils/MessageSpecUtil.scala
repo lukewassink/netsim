@@ -34,9 +34,13 @@ object MessageSpecUtil {
       sendTime: Time,
       deliveryTime: Time,
       content: String
-  ): Message[Scheduled] =
-    pendingMessage(messageId, nodeId, receiverId, sendTime, content)
-      .schedule(deliveryTime)
+  ): Message[Scheduled] = pendingMessage(
+    messageId,
+    nodeId,
+    receiverId,
+    sendTime,
+    content
+  ).schedule(deliveryTime)
 
   def scheduledMessage(
       receiverId: NodeID,
@@ -50,13 +54,14 @@ trait MessageMatchers {
   // Custom matcher to test the stringContent of messages.
   def stringContent(
       expectedContent: String
-  ): HavePropertyMatcher[Message[?], String] = (message: Message[?]) =>
-    HavePropertyMatchResult(
-      message.content.stringContent == expectedContent,
-      "stringContent",
-      expectedContent,
-      message.content.stringContent
-    )
+  ): HavePropertyMatcher[Message[?], String] =
+    (message: Message[?]) =>
+      HavePropertyMatchResult(
+        message.content.stringContent == expectedContent,
+        "stringContent",
+        expectedContent,
+        message.content.stringContent
+      )
 
   // Custom matcher to test the messageID of messages.
   def messageID(

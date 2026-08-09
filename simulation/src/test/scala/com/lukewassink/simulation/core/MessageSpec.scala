@@ -71,17 +71,26 @@ class MessageSpec extends UnitSpec {
 
     describe("isResponseTo") {
       it("returns true if it is a response to the other message") {
-        val response =
-          Message[Drafted](Drafted(2), Response(2, 1), MessageContent(""))
+        val response = Message[Drafted](
+          Drafted(2),
+          Response(2, 1),
+          MessageContent("")
+        )
 
         assert(response.isResponseTo(message))
       }
 
       it("returns false if it is not a response to the other message") {
-        val response1 =
-          Message[Drafted](Drafted(3), Response(3, 1), MessageContent(""))
-        val response2 =
-          Message[Drafted](Drafted(2), Response(2, 0), MessageContent(""))
+        val response1 = Message[Drafted](
+          Drafted(3),
+          Response(3, 1),
+          MessageContent("")
+        )
+        val response2 = Message[Drafted](
+          Drafted(2),
+          Response(2, 0),
+          MessageContent("")
+        )
 
         assert(!response1.isResponseTo(message))
         assert(!response2.isResponseTo(message))

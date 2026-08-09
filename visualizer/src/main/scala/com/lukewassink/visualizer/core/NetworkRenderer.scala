@@ -23,14 +23,14 @@ object NetworkRenderer {
     val nodeData: Signal[Map[NodeID, NodeData]] = network
       .map(NodeRenderer.addData)
 
-    val nodeElements: Signal[List[SvgElement]] = nodeData.map(_.values.toList)
-      .split(_.node.id)(NodeRenderer.render)
+    val nodeElements: Signal[List[SvgElement]] =
+      nodeData.map(_.values.toList).split(_.node.id)(NodeRenderer.render)
 
     val messageData: Signal[List[MessageData]] = network.combineWith(nodeData)
       .mapN(MessageRenderer.addData)
 
-    val messageElements: Signal[List[SvgElement]] = messageData
-      .split(_.message.uniqueID)(MessageRenderer.render)
+    val messageElements: Signal[List[SvgElement]] =
+      messageData.split(_.message.uniqueID)(MessageRenderer.render)
 
     svg.svg(
       svg.cls     := "network-panel",

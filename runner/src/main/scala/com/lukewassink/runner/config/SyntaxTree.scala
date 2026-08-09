@@ -11,19 +11,22 @@ object SyntaxTree {
     try Success(config.as[SimulationNode])
     catch case e: HoconException => Failure(e)
 
-  given Decoder[BehaviorNode] = (value, path) => {
-    val config = value match {
-      case o: ConfigObject => Config(o)
-      case other           => throw HoconException(
-          s"Behaviors must be objects, but configuration value at $path was not an object"
-        )
-    }
+  given Decoder[BehaviorNode] =
+    (value, path) => {
+      val config =
+        value match {
+          case o: ConfigObject => Config(o)
+          case other           =>
+            throw HoconException(
+              s"Behaviors must be objects, but configuration value at $path was not an object"
+            )
+        }
 
-    config.getString("type") match {
-      case "simple-sender"    => config.as[SimpleSenderNode]
-      case "simple-responder" => config.as[SimpleResponderNode]
+      config.getString("type") match {
+        case "simple-sender"    => config.as[SimpleSenderNode]
+        case "simple-responder" => config.as[SimpleResponderNode]
+      }
     }
-  }
 }
 
 final case class SimulationNode(

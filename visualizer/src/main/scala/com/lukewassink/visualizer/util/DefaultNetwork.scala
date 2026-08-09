@@ -10,72 +10,34 @@ import com.lukewassink.simulation.core.{
 import com.lukewassink.simulation.util.{Time, XORRandom}
 
 // The default network to display in the visualizer.
-//
-// TODO(#32) delete this once we can load the network from a config.
 object DefaultNetwork {
-
-  // Implicit conversions to allow simply passing Int values to message, node, and network constructors.
-  // It's OK to just copy/paste these in here because this whole file will be deleted as soon as we can load
-  // networks from config.
-  given Conversion[Int, NodeID] with
-    def apply(id: Int): NodeID = NodeID(id)
-
-  given Conversion[Int, MessageID] with
-    def apply(id: Int): MessageID = MessageID(id)
-
-  given Conversion[Int, Time] with
-    def apply(ticks: Int): Time = Time(ticks)
-
-  val messageAToB = Message[Scheduled](
-    Scheduled(0, 1, 2, 0, 25),
-    Request(),
-    MessageContent("AToB")
-  )
-  val messageAToC = Message[Scheduled](
-    Scheduled(1, 1, 3, 0, 30),
-    Request(),
-    MessageContent("AToC")
-  )
-  val messageBToA = Message[Scheduled](
-    Scheduled(0, 2, 1, 0, 15),
-    Request(),
-    MessageContent("BToA")
-  )
-
-  val messageCToB =
-    Message[Drafted](Drafted(2), Request(), MessageContent("CToB"))
-
-  val messageCToA =
-    Message[Drafted](Drafted(1), Request(), MessageContent("CToB"))
-
-  val messageCToB2 =
-    Message[Drafted](Drafted(2), Request(), MessageContent("CToB"))
-
-  val messageCToA2 =
-    Message[Drafted](Drafted(1), Request(), MessageContent("CToB"))
-
-  val nodeA = Node(
-    List.empty,
-    NodeState(NodeHeader(1, 2), List.empty, List.empty, XORRandom.fromSeed(1L))
-  )
-  val nodeB = Node(
-    List.empty,
-    NodeState(NodeHeader(2, 1), List.empty, List.empty, XORRandom.fromSeed(1L))
-  )
-  val nodeC = Node(
-    List(
-      SimpleSender(12, messageCToB),
-      SimpleSender(24, messageCToA),
-      SimpleSender(40, messageCToB2),
-      SimpleSender(55, messageCToA2)
-    ),
-    NodeState(NodeHeader(3, 0), List.empty, List.empty, XORRandom.fromSeed(1L))
-  )
-
-  val defaultNetwork = Network(
-    0,
-    List(nodeA, nodeB, nodeC),
-    List(messageAToB, messageAToC, messageBToA),
-    XORRandom.fromSeed(1L)
-  )
+  val config: String =
+    """
+     name = "simulation-name"
+     randomSeed = 10
+     
+     network {
+       nodes = [{
+           name = "node-name-1"
+           behaviors = []
+         }
+         {
+           name = "node-name-2"
+           behaviors = [{type = "simple-responder"}]
+         }
+         {
+           name = "node-name-3"
+           behaviors = [
+             {type = "simple-responder"}
+             {type = "simple-responder"}
+             {
+               type = "simple-sender"
+               time = 1
+               receiver = "node-name-2"
+               content = "Hi!"
+             }
+           ]
+        }]
+     }
+  """.stripMargin
 }

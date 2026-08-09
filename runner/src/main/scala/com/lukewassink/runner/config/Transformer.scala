@@ -4,7 +4,6 @@ import com.lukewassink.runner.config.BehaviorNode.{
   SimpleResponderNode, SimpleSenderNode
 }
 import com.lukewassink.runner.core.{Simulation, SimulationMetadata}
-import com.lukewassink.runner.util.Result
 import com.lukewassink.simulation.behavior.{SimpleResponder, SimpleSender}
 import com.lukewassink.simulation.core.MessageStage.Drafted
 import com.lukewassink.simulation.core.ResponseState.Request
@@ -18,27 +17,27 @@ import com.lukewassink.simulation.util.{Time, XORRandom}
 case class TransformContext(nameToID: Map[String, NodeID], randomSeed: Long):
   // This method should never fail to find an ID for a name unless there is a bug in syntax tree validation
   // or in constructing the transform context, so throw an error if it does fail.
-  def resolveID(name: String): NodeID = nameToID.get(name) match {
-    case Some(nodeID) => nodeID
-    case None         => throw IllegalStateException(
-        s"Internal error: no node ID for node name $name. This indicates a bug in validation or transformation."
-      )
-  }
+  def resolveID(name: String): NodeID =
+    nameToID.get(name) match {
+      case Some(nodeID) => nodeID
+      case None         =>
+        throw IllegalStateException(
+          s"Internal error: no node ID for node name $name. This indicates a bug in validation or transformation."
+        )
+    }
 
 object TransformContext:
   def apply(simulation: SimulationNode): TransformContext = {
-    val nameToID = simulation.network.nodes.map(_.name).zipWithIndex
-      .map((name, id) => name -> NodeID(id)).toMap
+    val nameToID =
+      simulation.network.nodes.map(_.name).zipWithIndex
+        .map((name, id) => name -> NodeID(id)).toMap
     TransformContext(nameToID, simulation.randomSeed)
   }
 
 // Transforms a syntax tree into an actual Simulation with a network.
 // This includes assigning node IDs and resolving node name references.
 object Transformer {
-  def transform(result: Result[SimulationNode]): Result[Simulation] = result
-    .map(transform)
-
-  private def transform(simulationNode: SimulationNode): Simulation = {
+  def transform(simulationNode: SimulationNode): Simulation = {
     given TransformContext = TransformContext(simulationNode)
 
     Simulation(
@@ -71,15 +70,17 @@ object Transformer {
 
   private def transform(using
       context: TransformContext
-  )(behaviorNode: BehaviorNode): NodeBehavior = behaviorNode match {
-    case SimpleSenderNode(time, receiver, content) => SimpleSender(
-        Time(time),
-        Message[Drafted](
-          Drafted(context.resolveID(receiver)),
-          Request(),
-          MessageContent(content)
+  )(behaviorNode: BehaviorNode): NodeBehavior =
+    behaviorNode match {
+      case SimpleSenderNode(time, receiver, content) =>
+        SimpleSender(
+          Time(time),
+          Message[Drafted](
+            Drafted(context.resolveID(receiver)),
+            Request(),
+            MessageContent(content)
+          )
         )
-      )
-    case SimpleResponderNode()                     => SimpleResponder()
-  }
+      case SimpleResponderNode()                     => SimpleResponder()
+    }
 }

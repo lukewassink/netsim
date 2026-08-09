@@ -9,8 +9,9 @@ import com.lukewassink.runner.config.BehaviorNode.{
 class BehaviorLocationSpec extends UnitSpec {
   describe("referenceLocations") {
     it("handles empty nodes") {
-      val references =
-        referenceLocations(SimulationNode("name", 10, NetworkNode(List.empty)))
+      val references = referenceLocations(
+        SimulationNode("name", 10, NetworkNode(List.empty))
+      )
 
       references shouldBe empty
     }

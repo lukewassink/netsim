@@ -22,8 +22,11 @@ class SyntaxTreeSpec extends UnitSpec {
       )
       val result = SyntaxTree.fromConfig(config)
 
-      val expectedTree =
-        SimulationNode("simulation-name", 10, NetworkNode(List.empty))
+      val expectedTree = SimulationNode(
+        "simulation-name",
+        10,
+        NetworkNode(List.empty)
+      )
 
       inside(result) { case Success(tree) => tree should equal(expectedTree) }
     }
@@ -119,8 +122,11 @@ class SyntaxTreeSpec extends UnitSpec {
       )
       val result = SyntaxTree.fromConfig(config)
 
-      val expectedTree =
-        SimulationNode("simulation-name", 10, NetworkNode(List.empty))
+      val expectedTree = SimulationNode(
+        "simulation-name",
+        10,
+        NetworkNode(List.empty)
+      )
 
       inside(result) { case Failure(List(e)) =>
         e shouldBe a[MissingPathException]

@@ -6,8 +6,9 @@ import com.lukewassink.simulation.util.Time
 // A store of scheduled messages. Can return messages ready to be delivered based on time.
 case class DeliveryQueue(messages: List[Message[Scheduled]]):
 
-  def withMessage(message: Message[Scheduled]): DeliveryQueue =
-    DeliveryQueue(message :: messages)
+  def withMessage(message: Message[Scheduled]): DeliveryQueue = DeliveryQueue(
+    message :: messages
+  )
 
   def withMessages(messages: Iterable[Message[Scheduled]]): DeliveryQueue =
     messages.foldLeft(this)(_.withMessage(_))
@@ -17,8 +18,9 @@ case class DeliveryQueue(messages: List[Message[Scheduled]]):
     .filter(_.readyToDeliver(time))
 
   // Returns the queue with all messages with past or present delivery times removed.
-  def withoutPastMessages(time: Time): DeliveryQueue =
-    DeliveryQueue(messages.filter(_.stillWaiting(time)))
+  def withoutPastMessages(time: Time): DeliveryQueue = DeliveryQueue(
+    messages.filter(_.stillWaiting(time))
+  )
 
 object DeliveryQueue {
   def empty: DeliveryQueue = DeliveryQueue(List.empty)

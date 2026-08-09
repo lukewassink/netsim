@@ -18,8 +18,11 @@ class NodeSpec extends UnitSpec {
   private val scheduledMessage1 = sentMessage1.schedule(5)
   private val scheduledMessage2 = sentMessage2.schedule(9)
 
-  val emptyState: NodeState =
-    testNodeState(NodeHeader(0, 0), List.empty, List.empty)
+  val emptyState: NodeState = testNodeState(
+    NodeHeader(0, 0),
+    List.empty,
+    List.empty
+  )
 
   val emptyNode                = Node(List.empty, emptyState)
   val nodeWithOutgoingMessages = Node(
@@ -113,10 +116,14 @@ class NodeSpec extends UnitSpec {
 
   describe("id") {
     it("returns the node ID") {
-      val node1 =
-        Node(List.empty, testNodeState(NodeHeader(1, 0), List.empty, List.empty))
-      val node2 =
-        Node(List.empty, testNodeState(NodeHeader(2, 0), List.empty, List.empty))
+      val node1 = Node(
+        List.empty,
+        testNodeState(NodeHeader(1, 0), List.empty, List.empty)
+      )
+      val node2 = Node(
+        List.empty,
+        testNodeState(NodeHeader(2, 0), List.empty, List.empty)
+      )
 
       node1.id shouldEqual NodeID(1)
       node2.id shouldEqual NodeID(2)

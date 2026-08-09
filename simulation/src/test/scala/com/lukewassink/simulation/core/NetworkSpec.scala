@@ -48,7 +48,7 @@ class NetworkSpec extends UnitSpec {
       List(nodeA, nodeB, nodeC),
       List(scheduledMessageAToB, scheduledMessageAToC, scheduledMessageBToA)
     )
-    val nextNetwork = network.next()
+    val nextNetwork = network.next
 
     describe("NextState") {
       it("ticks the time forward") {
@@ -61,7 +61,7 @@ class NetworkSpec extends UnitSpec {
           List(nodeA, nodeB, nodeC),
           List(scheduledMessageAToB, scheduledMessageAToC, scheduledMessageBToA)
         )
-        val withSentMessages = readyToSend.next()
+        val withSentMessages = readyToSend.next
 
         readyToSend.nodes(1).sharedState.incomingMessages shouldBe empty
         readyToSend.nodes(2).sharedState.incomingMessages shouldBe empty
@@ -92,7 +92,7 @@ class NetworkSpec extends UnitSpec {
         val network = testNetwork(0, List(node), List.empty)
 
         network.messagesInTransit.messages shouldBe empty
-        val nextNetwork = network.next()
+        val nextNetwork = network.next
         nextNetwork.messagesInTransit.messages should have size 1
         nextNetwork.messagesInTransit.messages.head.messageStage
           .deliveryTime should equal(Time(11))

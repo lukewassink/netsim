@@ -1,11 +1,11 @@
 package com.lukewassink.visualizer.core
 
-import com.lukewassink.runner.core.Runner
+import com.lukewassink.runner.core.{Runner, Simulation}
+import com.lukewassink.runner.util.{Failure, Success}
 import com.lukewassink.simulation.core.Network
 import com.lukewassink.visualizer.core.NetworkRenderer
 import com.lukewassink.visualizer.playback.PlaybackControls
-import com.lukewassink.visualizer.util.DefaultNetwork.defaultNetwork
-import com.lukewassink.visualizer.util.PlaybackState
+import com.lukewassink.visualizer.util.{DefaultNetwork, PlaybackState}
 import com.raquo.laminar.api.L.{*, given}
 import org.scalajs.dom
 
@@ -24,12 +24,14 @@ object RootRenderer:
   // Amount of the network history to take.
   private val HistoryLength = 100
 
-  private val initialNetwork = defaultNetwork
+  private val result = Runner.run(DefaultNetwork.config)
 
-  private val networkHistory = Runner.run(initialNetwork).take(HistoryLength)
-    .toVector
-
-  private val tick: Var[Int] = Var(0)
+  private val networkHistory: Vector[Network] =
+    result match {
+      case Success(simulation: Simulation) =>
+        simulation.history.take(HistoryLength).toVector
+      case Failure(_)                      => Vector.empty
+    }
 
   given playbackState: PlaybackState = PlaybackState(HistoryLength)
 

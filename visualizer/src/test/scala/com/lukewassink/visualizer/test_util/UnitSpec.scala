@@ -59,12 +59,13 @@ class UnitSpec
 
   override implicit def makeSvgAttrTestable[V](
       svgAttr: SvgAttr[V]
-  ): TestableSvgAttr[V] = new TestableSvgAttr[V](
-    svgAttr.name,
-    svgAttr.codec.encode,
-    svgAttr.codec.decode,
-    svgAttr.namespaceUri
-  )
+  ): TestableSvgAttr[V] =
+    new TestableSvgAttr[V](
+      svgAttr.name,
+      svgAttr.codec.encode,
+      svgAttr.codec.decode,
+      svgAttr.namespaceUri
+    )
 
   override implicit def makeMathMlAttrTestable[V](
       attr: MathMlAttr[V]
@@ -73,9 +74,10 @@ class UnitSpec
 
   override implicit def makeCompositeKeyTestable(
       key: CompositeAttr[?]
-  ): TestableCompositeKey = new TestableCompositeKey(
-    key.name,
-    key.separator,
-    getRawDomValue = _.getAttribute(key.name)
-  )
+  ): TestableCompositeKey =
+    new TestableCompositeKey(
+      key.name,
+      key.separator,
+      getRawDomValue = _.getAttribute(key.name)
+    )
 }

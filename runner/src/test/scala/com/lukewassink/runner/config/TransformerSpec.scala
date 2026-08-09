@@ -63,7 +63,7 @@ class TransformerSpec extends UnitSpec {
         Network(0, List.empty, List.empty, XORRandom.fromSeed(10))
       )
 
-      assert(Transformer.transform(Success(tree)) === Success(simulation))
+      assert(Transformer.transform(tree) === simulation)
     }
 
     it("handles empty behavior") {
@@ -91,7 +91,7 @@ class TransformerSpec extends UnitSpec {
         )
       )
 
-      assert(Transformer.transform(Success(tree)) === Success(simulation))
+      assert(Transformer.transform(tree) === simulation)
     }
 
     it("handles a complex simulation") {
@@ -118,12 +118,21 @@ class TransformerSpec extends UnitSpec {
           0,
           List(
             Node(
-              List(SimpleResponder()),
+              List.empty,
               NodeState(
                 NodeHeader(0, 0),
                 List.empty,
                 List.empty,
                 XORRandom.fromSeed(10, 1)
+              )
+            ),
+            Node(
+              List(SimpleResponder()),
+              NodeState(
+                NodeHeader(1, 0),
+                List.empty,
+                List.empty,
+                XORRandom.fromSeed(10, 2)
               )
             ),
             Node(
@@ -135,15 +144,6 @@ class TransformerSpec extends UnitSpec {
                   Message[Drafted](Drafted(1), Request(), MessageContent("Hi!"))
                 )
               ),
-              NodeState(
-                NodeHeader(1, 0),
-                List.empty,
-                List.empty,
-                XORRandom.fromSeed(10, 2)
-              )
-            ),
-            Node(
-              List.empty,
               NodeState(
                 NodeHeader(2, 0),
                 List.empty,
@@ -157,7 +157,7 @@ class TransformerSpec extends UnitSpec {
         )
       )
 
-//      assert(Transformer.transform(Success(tree)) === Success(simulation))
+      assert(Transformer.transform(tree) === simulation)
     }
   }
 }
