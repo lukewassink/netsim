@@ -4,5 +4,6 @@ addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "1.2.0")
 addSbtPlugin("org.scalameta"      % "sbt-scalafmt"             % "2.6.1")
 addSbtPlugin("org.wartremover"    % "sbt-wartremover"          % "3.6.1")
 addSbtPlugin("ch.epfl.scala"      % "sbt-scalajs-bundler"      % "0.21.1")
+addSbtPlugin("com.orrsella"       % "sbt-stats"                % "1.0.7")
 
 libraryDependencies += "org.scala-js" %% "scalajs-env-jsdom-nodejs" % "1.1.0"

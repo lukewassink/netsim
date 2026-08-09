@@ -39,6 +39,4 @@ object NetworkUtil {
     List(messageAToB, messageAToC, messageBToA),
     XORRandom.fromSeed(1L)
   )
-
-  val testNetworkVar: Var[Network] = Var(testNetwork)
 }
