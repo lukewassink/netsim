@@ -1,0 +1,30 @@
+.config {
+    width: 500px;
+
+    .controls {
+        display: flex;
+        flex-direction: row;
+        gap: var(--gap-between-sections);
+    }
+}
+
+.config-panel {
+    flex-grow: 1;
+    height: var(--main-panel-height);
+    display: flex;
+}
+
+.config-errors {
+    flex-grow: 1;
+    color: red;
+    text-wrap: wrap;
+    white-space: pre-wrap;
+}
+
+.panel--config-input {
+    padding: 10px;
+    flex-grow: 1;
+    resize: none;
+    font-family: Monaco, monospace;
+}
+

@@ -1,0 +1,53 @@
+@import "config.css";
+@import "playback.css";
+@import "simulation.css";
+@import "variables.css";
+@import "root.css";
+
+/* Default fonts */
+html {
+    font-family: Arial, sans-serif;
+    font-size: 1rem;
+}
+
+/* Containers */
+.panel {
+    border-radius: var(--border-radius);
+    border: 2px solid darkgray;
+}
+
+.container-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-between-sections);
+}
+
+/* Controls */
+.control-element {
+    height: var(--control-element-height);
+    margin: 0.5rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    background-color: white;
+    border: 2px solid darkgray;
+
+    &:hover {
+        background-color: lightgray;
+    }
+}
+
+.button {
+    box-shadow: none;
+
+    &:hover {
+        background-color: lightgray;
+    }
+}
+
+.panel--controls {
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    flex-direction: row;
+}

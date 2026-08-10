@@ -1,0 +1,41 @@
+.play-button {
+    height: var(--control-element-height);
+    margin: 0.5rem;
+    cursor: pointer;
+    background: transparent;
+    box-sizing: border-box;
+    width: var(--control-element-height);
+    padding: 0;
+
+    border-color: transparent transparent transparent black;
+
+    border-style: solid;
+    border-width: calc(var(--control-element-height) / 2) 0 calc(var(--control-element-height) / 2) var(--control-element-height);
+
+    &.paused {
+        border-style: double;
+        border-width: 0 0 0 calc(0.85 * var(--control-element-height));
+    }
+
+    &:hover {
+        border-color: transparent transparent transparent #404040;
+        transform: scale(110%);
+        transition: transform var(--element-transform-time);
+    }
+
+    transition: transform var(--element-transform-time);
+}
+
+.frame-counter {
+    font-size: 1.2rem;
+    color: black;
+    width: 4rem;
+
+    &.disabled {
+        background-color: lightgray;
+    }
+}
+
+.slider {
+    flex: 1;
+}

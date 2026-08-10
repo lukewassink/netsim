@@ -5,7 +5,7 @@ import com.lukewassink.visualizer.core.RootRenderer.given
 
 object PlaybackControls {
   def render: HtmlElement = div(
-    cls := "playback-controls",
+    cls := "panel panel--controls",
     PlayButton.render,
     Slider.render,
     FrameCounter.render

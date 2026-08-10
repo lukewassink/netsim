@@ -30,7 +30,7 @@ object NetworkRenderer {
       messageData.split(_.message.uniqueID)(MessageRenderer.render)
 
     svg.svg(
-      svg.cls     := "network-panel",
+      svg.cls     := "panel panel--network",
       svg.viewBox := viewBox,
       children <-- nodeElements,
       children <-- messageElements

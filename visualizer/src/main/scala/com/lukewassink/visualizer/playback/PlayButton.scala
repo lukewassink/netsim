@@ -11,7 +11,7 @@ object PlayButton {
       .combineWith(playbackState.playing.signal.changes).filter((_, p) => p) // Only emit new events when playing is true
 
     button(
-      cls := "play-button control-element",
+      cls := "play-button",
       cls <-- playbackState.playing.signal.splitBoolean(_ => "paused", _ => ""),
       onClick --> (_ => playbackState.togglePlaying()),
       playbackStream --> (_ => playbackState.increment()),

@@ -1,0 +1,12 @@
+:root {
+    /* Layout */
+    --main-panel-height: 650px;
+    --border-radius: 10px;
+    --gap-between-sections: 20px;
+
+    /* Elements */
+    --control-element-height: 2rem;
+
+    /* Animations */
+    --element-transform-time: 0.2s;
+}

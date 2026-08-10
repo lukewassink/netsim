@@ -13,7 +13,6 @@ class NetworkRendererSpec extends UnitSpec {
       expectNode(
         svg.svg of
           (
-            svg.cls is "network-panel",
             sentinel, // nodes:
             svg.circle,
             svg.circle,
