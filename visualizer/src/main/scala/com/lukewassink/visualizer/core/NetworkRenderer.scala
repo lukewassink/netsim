@@ -2,9 +2,7 @@ package com.lukewassink.visualizer.core
 
 import com.raquo.laminar.api.L.{*, given}
 import com.lukewassink.simulation.core.{Network, NodeID}
-import com.lukewassink.visualizer.core.{
-  NodeRenderer, MessageRenderer, NetworkState
-}
+import com.lukewassink.visualizer.core.{NodeRenderer, MessageRenderer}
 import com.lukewassink.visualizer.core.RootRenderer.given
 
 // Render the network panel.
@@ -15,8 +13,7 @@ object NetworkRenderer {
   // Amount of time between ticks in milliseconds.
   val FrameLength = 200
 
-  def render(using networkState: NetworkState): SvgElement = {
-    val network = networkState.network
+  def render(network: Signal[Network]): SvgElement = {
 
     val viewBox = s"0, 0, $NetworkViewBoxSize, $NetworkViewBoxSize"
 

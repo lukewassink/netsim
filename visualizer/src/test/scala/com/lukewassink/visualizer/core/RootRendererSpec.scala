@@ -12,16 +12,24 @@ class RootRendererSpec extends UnitSpec {
       expectNode(div.of(
         h1 of textNode,
         div.of(
-          svg.svg of
-            (
-              svg.cls is "network-panel",
-              sentinel,
-              svg.circle,
-              svg.circle,
-              svg.circle,
-              sentinel
-            ),
-          div.of(button, input, input)
+          div.of(
+            svg.svg of
+              (
+                svg.cls is "network-panel",
+                sentinel,
+                // TODO(#49) add these back once the visualizer doesn't start with a blank state.
+//                svg.circle,
+//                svg.circle,
+//                svg.circle,
+                sentinel
+              ),
+            div.of(button, input, input)
+          ),
+          div.of(
+            textArea,
+            span.of(""),
+            div.of(button.of("Run"), button.of("Reset Config"))
+          )
         )
       ))
     }

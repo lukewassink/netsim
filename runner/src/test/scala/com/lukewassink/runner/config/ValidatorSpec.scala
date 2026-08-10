@@ -30,7 +30,7 @@ class ValidatorSpec extends UnitSpec {
         ))
       )
 
-      assert(validate(Success(validTree)) === Success(validTree))
+      assert(validate(validTree) === Success(validTree))
     }
 
     it("catches duplicate node names") {
@@ -51,7 +51,7 @@ class ValidatorSpec extends UnitSpec {
         ))
       )
 
-      val result = validate(Success(tree))
+      val result = validate(tree)
 
       inside(result) { case Failure(List(e)) =>
         e shouldBe a[DuplicateNodeNamesException]
@@ -76,7 +76,7 @@ class ValidatorSpec extends UnitSpec {
         ))
       )
 
-      val result = validate(Success(tree))
+      val result = validate(tree)
 
       inside(result) { case Failure(List(e)) =>
         e shouldBe a[MissingReferenceNameException]
@@ -109,7 +109,7 @@ class ValidatorSpec extends UnitSpec {
         ))
       )
 
-      val result = validate(Success(tree))
+      val result = validate(tree)
 
       inside(result) { case Failure(List(e1, e2, e3, e4)) =>
         e1 shouldBe a[DuplicateNodeNamesException]

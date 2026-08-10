@@ -5,11 +5,10 @@ import com.lukewassink.runner.util.{Failure, Result, Success}
 
 // Validates global constraints on a syntax tree.
 object Validator {
-  def validate(result: Result[SimulationNode]): Result[SimulationNode] = result
-    .flatMap { node =>
-      val errors = runAllValidators(node)
-      if errors.isEmpty then Success(node) else Failure[SimulationNode](errors)
-    }
+  def validate(simulationNode: SimulationNode): Result[SimulationNode] =
+    val errors = runAllValidators(simulationNode)
+    if errors.isEmpty then Success(simulationNode)
+    else Failure[SimulationNode](errors)
 
   private def validationContext(node: SimulationNode): ValidationContext = {
     val indicesByName =
