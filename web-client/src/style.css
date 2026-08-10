@@ -139,5 +139,6 @@ h1 {
         color: red;
         width: 500px;
         text-wrap: wrap;
+        white-space: pre-wrap;
     }
 }
