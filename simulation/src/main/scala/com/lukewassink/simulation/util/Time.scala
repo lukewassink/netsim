@@ -21,6 +21,17 @@ final case class Time(time: Double):
 
   infix def -(duration: Duration): Time = Time(time - duration.time)
 
+case object Time:
+  case class MillisecondsToTime(ticksPerMilli: Double):
+    def convert(millis: Double): Time = Time(millis * ticksPerMilli)
+
+  extension (d: Double)
+    def milliseconds(using converter: MillisecondsToTime): Time = converter
+      .convert(d)
+
+  extension (l: Long)
+    def milliseconds(using MillisecondsToTime): Time = l.toDouble.milliseconds
+
 // A class that represents the duration between two moments of time, measured in ticks.
 final case class Duration(time: Double):
 
