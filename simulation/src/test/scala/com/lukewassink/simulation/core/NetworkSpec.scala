@@ -52,7 +52,7 @@ class NetworkSpec extends UnitSpec {
 
     describe("NextState") {
       it("ticks the time forward") {
-        assert(nextNetwork.time.time - network.time.time === 1)
+        assert(nextNetwork.ctx.time.time - network.ctx.time.time === 1)
       }
 
       it("delivers current messages") {
@@ -101,13 +101,14 @@ class NetworkSpec extends UnitSpec {
 
     describe("List constructor") {
       it("handles an empty list") {
-        Network(0, List.empty, List.empty, InertRandom()) should
-          equal(Network(0, Map.empty, DeliveryQueue.empty, InertRandom(), 1))
+        Network(0, List.empty, List.empty) should equal(
+          Network(ExecutionContext(0, 1, 1), Map.empty, DeliveryQueue.empty)
+        )
       }
 
       it("handles a list of nodes") {
-        Network(0, List(nodeA, nodeB, nodeC), List.empty, InertRandom())
-          .nodes should contain theSameElementsAs
+        Network(0, List(nodeA, nodeB, nodeC), List.empty).nodes should
+          contain theSameElementsAs
           Map(NodeID(1) -> nodeA, NodeID(2) -> nodeB, NodeID(3) -> nodeC)
       }
 
@@ -115,8 +116,7 @@ class NetworkSpec extends UnitSpec {
         Network(
           0,
           List.empty,
-          List(scheduledMessageAToB, scheduledMessageAToC, scheduledMessageBToA),
-          InertRandom()
+          List(scheduledMessageAToB, scheduledMessageAToC, scheduledMessageBToA)
         ).messagesInTransit.messages should contain theSameElementsAs
           List(scheduledMessageAToB, scheduledMessageAToC, scheduledMessageBToA)
       }

@@ -1,10 +1,7 @@
 package com.lukewassink.visualizer.test_util
 
 import com.lukewassink.simulation.behavior.SimpleSender
-import com.lukewassink.simulation.core.{
-  Message, MessageContent, Network, Node, NodeHeader, NodeState
-}
-import com.lukewassink.simulation.util.XORRandom
+import com.lukewassink.simulation.core.{Network, Node, NodeHeader, NodeState}
 import com.lukewassink.simulation.test_utils.ImplicitConversions.given
 import com.lukewassink.simulation.test_utils.MessageSpecUtil.{
   draftedMessage, scheduledMessage
@@ -22,21 +19,20 @@ object NetworkUtil {
 
   val nodeA = Node(
     List.empty,
-    NodeState(NodeHeader(1, 2), List.empty, List.empty, XORRandom.fromSeed(1L))
+    NodeState(NodeHeader(1, 2), List.empty, List.empty)
   )
   val nodeB = Node(
     List.empty,
-    NodeState(NodeHeader(2, 5), List.empty, List.empty, XORRandom.fromSeed(1L))
+    NodeState(NodeHeader(2, 5), List.empty, List.empty)
   )
   val nodeC = Node(
     List(SimpleSender(3, messageCToB)),
-    NodeState(NodeHeader(3, 10), List.empty, List.empty, XORRandom.fromSeed(1L))
+    NodeState(NodeHeader(3, 10), List.empty, List.empty)
   )
 
   val testNetwork = Network(
     7,
     List(nodeA, nodeB, nodeC),
-    List(messageAToB, messageAToC, messageBToA),
-    XORRandom.fromSeed(1L)
+    List(messageAToB, messageAToC, messageBToA)
   )
 }

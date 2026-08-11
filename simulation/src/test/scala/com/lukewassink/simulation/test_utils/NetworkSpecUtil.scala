@@ -11,5 +11,5 @@ object NetworkSpecUtil {
       time: Time,
       nodes: List[Node],
       messages: List[Message[Scheduled]]
-  ): Network = Network(time, nodes, messages, InertRandom())
+  ): Network = Network(time, nodes, messages)
 }

@@ -9,10 +9,10 @@ import com.lukewassink.simulation.behavior.{SimpleResponder, SimpleSender}
 import com.lukewassink.simulation.core.MessageStage.Drafted
 import com.lukewassink.simulation.core.ResponseState.Request
 import com.lukewassink.simulation.core.{
-  Message, MessageContent, MessageID, Network, Node, NodeBehavior, NodeHeader,
-  NodeID, NodeState
+  ExecutionContext, Message, MessageContent, MessageID, Network, Node,
+  NodeBehavior, NodeHeader, NodeID, NodeState
 }
-import com.lukewassink.simulation.util.{Time, XORRandom}
+import com.lukewassink.simulation.util.Time
 
 // Context used by the transformers to build the Simulation.
 case class TransformContext(nameToID: Map[String, NodeID], randomSeed: Long):
@@ -51,22 +51,16 @@ object Transformer {
   private def transform(using
       context: TransformContext
   )(networkNode: NetworkNode): Network = Network(
-    Time(0),
+    ExecutionContext(Time(0), 1, context.randomSeed),
     networkNode.nodes.map(transform),
-    List.empty,
-    XORRandom.fromSeed(context.randomSeed)
+    List.empty
   )
 
   private def transform(using
       context: TransformContext
   )(nodeNode: NodeNode): Node = {
     val id    = context.resolveID(nodeNode.name)
-    val state = NodeState(
-      NodeHeader(id, MessageID(0)),
-      List.empty,
-      List.empty,
-      XORRandom.fromSeed(context.randomSeed, id.id + 1)
-    )
+    val state = NodeState(NodeHeader(id, MessageID(0)), List.empty, List.empty)
     Node(nodeNode.behaviors.map(transform), state)
   }
 

@@ -2,17 +2,17 @@ package com.lukewassink.simulation.behavior
 
 import com.lukewassink.simulation.behavior.SimpleResponder
 import com.lukewassink.simulation.core.{
-  Message, MessageContent, NetworkExecutionContext, NodeHeader
+  Message, MessageContent, ExecutionContext, NodeHeader
 }
 import com.lukewassink.simulation.test_utils.UnitSpec
 import com.lukewassink.simulation.test_utils.MessageSpecUtil.scheduledMessage
-import com.lukewassink.simulation.test_utils.NetworkExecutionContextUtils.testContext
+import com.lukewassink.simulation.test_utils.ExecutionContextUtils.testContext
 import com.lukewassink.simulation.test_utils.NodeStateSpecUtil.testNodeState
 import com.lukewassink.simulation.util.Time
 
 class SimpleResponderSpec extends UnitSpec {
   describe("updated") {
-    given NetworkExecutionContext = testContext(5)
+    given ExecutionContext = testContext(5)
 
     val message1  = scheduledMessage(2, 5, "One")
     val message2  = scheduledMessage(2, 5, "Two")

@@ -1,6 +1,6 @@
 package com.lukewassink.simulation.util
 
-import com.lukewassink.simulation.core.NetworkExecutionContext
+import com.lukewassink.simulation.core.ExecutionContext
 
 // A class that represents moments of time.
 final case class Time(time: Double):
@@ -25,14 +25,14 @@ final case class Time(time: Double):
 
 case object Time:
   trait TimeConverter:
-    def convertTime(millis: Double): Time
+    def convertTime(millis: Double): Duration
 
   extension (d: Double)
-    def milliseconds(using converter: TimeConverter): Time = converter
+    def milliseconds(using converter: TimeConverter): Duration = converter
       .convertTime(d)
 
   extension (l: Long)
-    def milliseconds(using TimeConverter): Time = l.toDouble.milliseconds
+    def milliseconds(using TimeConverter): Duration = l.toDouble.milliseconds
 
 // A class that represents the duration between two moments of time, measured in ticks.
 final case class Duration(time: Double):

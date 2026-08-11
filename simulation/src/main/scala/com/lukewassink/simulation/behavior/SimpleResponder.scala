@@ -2,7 +2,7 @@ package com.lukewassink.simulation.behavior
 
 import com.lukewassink.simulation.core.MessageStage.{Drafted, Scheduled}
 import com.lukewassink.simulation.core.{
-  Message, MessageContent, NetworkExecutionContext, NodeBehavior, NodeState
+  Message, MessageContent, ExecutionContext, NodeBehavior, NodeState
 }
 import com.lukewassink.simulation.util.Time
 
@@ -13,7 +13,7 @@ case class SimpleResponder() extends NodeBehavior {
     .respond(MessageContent("Response to: " + message.content.stringContent))
 
   override def updatedNodeState(using
-      ctx: NetworkExecutionContext
+      ctx: ExecutionContext
   )(state: NodeState): NodeState =
     state.incomingMessages.map(createResponse(ctx.time))
       .foldLeft(state)((state, response) => state.withOutgoingMessage(response))

@@ -1,23 +1,14 @@
 package com.lukewassink.runner.core
 
-import com.lukewassink.runner.config.Transformer
 import com.lukewassink.runner.core.Runner
 import com.lukewassink.runner.util.{Failure, Success}
 import com.lukewassink.simulation.behavior.{SimpleResponder, SimpleSender}
-import com.lukewassink.simulation.core.MessageStage.{Drafted, Pending, Scheduled}
+import com.lukewassink.simulation.core.MessageStage.Drafted
 import com.lukewassink.simulation.core.ResponseState.Request
 import com.lukewassink.simulation.core.{
   Message, MessageContent, Network, Node, NodeHeader, NodeState
 }
-import com.lukewassink.simulation.test_utils.MessageSpecUtil.{
-  draftedMessage, scheduledMessage
-}
-import com.lukewassink.simulation.test_utils.NetworkSpecUtil.testNetwork
-import com.lukewassink.simulation.test_utils.NodeStateSpecUtil.testNodeState
-import com.lukewassink.simulation.test_utils.{MessageMatchers, UnitSpec}
-import com.lukewassink.simulation.util.XORRandom
-import io.github.edadma.hocon.Hocon
-import org.scalactic.Prettifier.default
+import com.lukewassink.simulation.test_utils.UnitSpec
 
 class RunnerSpec extends UnitSpec {
   describe("run (from config)") {
@@ -59,23 +50,10 @@ class RunnerSpec extends UnitSpec {
         Network(
           0,
           List(
-            Node(
-              List.empty,
-              NodeState(
-                NodeHeader(0, 0),
-                List.empty,
-                List.empty,
-                XORRandom.fromSeed(10, 1)
-              )
-            ),
+            Node(List.empty, NodeState(NodeHeader(0, 0), List.empty, List.empty)),
             Node(
               List(SimpleResponder()),
-              NodeState(
-                NodeHeader(1, 0),
-                List.empty,
-                List.empty,
-                XORRandom.fromSeed(10, 2)
-              )
+              NodeState(NodeHeader(1, 0), List.empty, List.empty)
             ),
             Node(
               List(
@@ -86,16 +64,10 @@ class RunnerSpec extends UnitSpec {
                   Message[Drafted](Drafted(1), Request(), MessageContent("Hi!"))
                 )
               ),
-              NodeState(
-                NodeHeader(2, 0),
-                List.empty,
-                List.empty,
-                XORRandom.fromSeed(10, 3)
-              )
+              NodeState(NodeHeader(2, 0), List.empty, List.empty)
             )
           ),
-          List.empty,
-          XORRandom.fromSeed(10)
+          List.empty
         )
       )
 

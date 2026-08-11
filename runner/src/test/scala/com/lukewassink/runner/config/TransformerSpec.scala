@@ -9,10 +9,10 @@ import com.lukewassink.simulation.behavior.{SimpleResponder, SimpleSender}
 import com.lukewassink.simulation.core.MessageStage.Drafted
 import com.lukewassink.simulation.core.ResponseState.Request
 import com.lukewassink.simulation.core.{
-  Message, MessageContent, Network, Node, NodeHeader, NodeState
+  ExecutionContext, Message, MessageContent, Network, Node, NodeHeader,
+  NodeState
 }
 import com.lukewassink.simulation.test_utils.UnitSpec
-import com.lukewassink.simulation.util.XORRandom
 
 class TransformerSpec extends UnitSpec {
   describe("TransformContext") {
@@ -60,7 +60,7 @@ class TransformerSpec extends UnitSpec {
 
       val simulation = Simulation(
         SimulationMetadata("simulation-name", 10),
-        Network(0, List.empty, List.empty, XORRandom.fromSeed(10))
+        Network(ExecutionContext(0, 1, 10), List.empty, List.empty)
       )
 
       assert(Transformer.transform(tree) === Success(simulation))
@@ -76,18 +76,11 @@ class TransformerSpec extends UnitSpec {
       val simulation = Simulation(
         SimulationMetadata("simulation-name", 10),
         Network(
-          0,
-          List(Node(
-            List.empty,
-            NodeState(
-              NodeHeader(0, 0),
-              List.empty,
-              List.empty,
-              XORRandom.fromSeed(10, 1)
-            )
-          )),
-          List.empty,
-          XORRandom.fromSeed(10)
+          ExecutionContext(0, 1, 10),
+          List(
+            Node(List.empty, NodeState(NodeHeader(0, 0), List.empty, List.empty))
+          ),
+          List.empty
         )
       )
 
@@ -115,25 +108,12 @@ class TransformerSpec extends UnitSpec {
       val simulation = Simulation(
         SimulationMetadata("simulation-name", 10),
         Network(
-          0,
+          ExecutionContext(0, 1, 10),
           List(
-            Node(
-              List.empty,
-              NodeState(
-                NodeHeader(0, 0),
-                List.empty,
-                List.empty,
-                XORRandom.fromSeed(10, 1)
-              )
-            ),
+            Node(List.empty, NodeState(NodeHeader(0, 0), List.empty, List.empty)),
             Node(
               List(SimpleResponder()),
-              NodeState(
-                NodeHeader(1, 0),
-                List.empty,
-                List.empty,
-                XORRandom.fromSeed(10, 2)
-              )
+              NodeState(NodeHeader(1, 0), List.empty, List.empty)
             ),
             Node(
               List(
@@ -144,16 +124,10 @@ class TransformerSpec extends UnitSpec {
                   Message[Drafted](Drafted(1), Request(), MessageContent("Hi!"))
                 )
               ),
-              NodeState(
-                NodeHeader(2, 0),
-                List.empty,
-                List.empty,
-                XORRandom.fromSeed(10, 3)
-              )
+              NodeState(NodeHeader(2, 0), List.empty, List.empty)
             )
           ),
-          List.empty,
-          XORRandom.fromSeed(10)
+          List.empty
         )
       )
 

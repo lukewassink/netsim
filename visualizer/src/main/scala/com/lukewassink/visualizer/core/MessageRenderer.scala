@@ -23,7 +23,7 @@ object MessageRenderer {
       network: Network,
       nodeData: Map[NodeID, NodeData]
   ): List[MessageData] = network.messagesInTransit.messages.map { message =>
-    val time                                       = network.time
+    val time                                       = network.ctx.time
     val Scheduled(_, from, to, startTime, endTime) = message.messageStage
     val sender                                     = nodeData(from)
     val receiver                                   = nodeData(to)

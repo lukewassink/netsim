@@ -9,7 +9,7 @@ import com.lukewassink.simulation.test_utils.MessageSpecUtil.{
   draftedMessage, pendingMessage
 }
 import com.lukewassink.simulation.test_utils.NodeStateSpecUtil.testNodeState
-import com.lukewassink.simulation.test_utils.NetworkExecutionContextUtils.testContext
+import com.lukewassink.simulation.test_utils.ExecutionContextUtils.testContext
 
 class NodeSpec extends UnitSpec {
   private val draftedMessage1   = draftedMessage(7, "One")

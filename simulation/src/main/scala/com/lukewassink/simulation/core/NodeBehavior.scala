@@ -12,16 +12,16 @@ trait NodeBehavior:
 
   // Overwrite if a behavior wants to update the shared state.
   protected def updatedNodeState(using
-      ctx: NetworkExecutionContext
+      ctx: ExecutionContext
   )(sharedState: NodeState): NodeState = sharedState
 
   // Overwrite if a behavior wants to update its own state.
   protected def updatedSelfState(using
-      ctx: NetworkExecutionContext
+      ctx: ExecutionContext
   )(sharedState: NodeState): NodeBehavior = this
 
   final def updated(using
-      ctx: NetworkExecutionContext
+      ctx: ExecutionContext
   )(sharedState: NodeState): UpdatedState = UpdatedState(
     updatedNodeState(sharedState),
     updatedSelfState(sharedState)
