@@ -22,8 +22,10 @@ case class NodeState(
   def clearIncomingMessages: NodeState = copy(incomingMessages = List.empty)
 
   // Sets the message ID, sender ID, and send time for outgoing messages and adds it to the list.
-  def withOutgoingMessage(time: Time, message: Message[Drafted]): NodeState = {
-    val messageToSend = message.send(header.nextMessageId, header.id, time)
+  def withOutgoingMessage(using
+      ctx: NetworkExecutionContext
+  )(message: Message[Drafted]): NodeState = {
+    val messageToSend = message.send(header.nextMessageId, header.id, ctx.time)
 
     copy(
       outgoingMessages = messageToSend :: outgoingMessages,

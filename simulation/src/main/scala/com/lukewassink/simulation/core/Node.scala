@@ -7,12 +7,12 @@ import com.lukewassink.simulation.util.Time
 // messages and top its own state.
 case class Node(behaviors: List[NodeBehavior], sharedState: NodeState) {
   // Updates the node before receiving new messages. Used for cleanup and initialization. No behaviors execute here.
-  def preDeliveryAction(time: Time): Node =
+  def preDeliveryAction(using ctx: NetworkExecutionContext): Node =
     // Clear sent messages from the last tick.
     Node(behaviors, sharedState.clearIncomingMessages)
 
   // Updates the node based on delivered messages. Behaviors are triggered here.
-  def postDeliveryAction(time: Time): Node =
+  def postDeliveryAction(using ctx: NetworkExecutionContext): Node =
 
     // Clear messages that were sent last tick.
     val clearedState = sharedState.clearOutgoingMessages
@@ -21,7 +21,7 @@ case class Node(behaviors: List[NodeBehavior], sharedState: NodeState) {
     val (nextState, nextBehaviors) =
       behaviors.foldLeft((clearedState, List[NodeBehavior]())) {
         case ((curState, processedBehaviors), behavior) =>
-          val UpdatedState(nextS, nextB) = behavior.updated(time, curState)
+          val UpdatedState(nextS, nextB) = behavior.updated(curState)
           (nextS, nextB :: processedBehaviors)
       }
 

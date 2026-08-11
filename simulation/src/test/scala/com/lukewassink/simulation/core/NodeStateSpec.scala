@@ -5,6 +5,7 @@ import com.lukewassink.simulation.test_utils.MessageSpecUtil.{
 }
 import com.lukewassink.simulation.test_utils.NodeStateSpecUtil.testNodeState
 import com.lukewassink.simulation.test_utils.UnitSpec
+import com.lukewassink.simulation.test_utils.NetworkExecutionContextUtils.testContext
 
 class NodeStateSpec extends UnitSpec {
   private val draftedMessage1   = draftedMessage(7, "One")
@@ -23,9 +24,11 @@ class NodeStateSpec extends UnitSpec {
   describe("withOutgoingMessage") {
     it("adds the message to the list and sets node metadata correctly") {
       assert(emptyState.outgoingMessages.isEmpty)
-      val state2 = emptyState.withOutgoingMessage(4, draftedMessage1)
+      val state2 =
+        emptyState.withOutgoingMessage(using testContext(4))(draftedMessage1)
       assert(state2.outgoingMessages === List(sentMessage1))
-      val state3 = state2.withOutgoingMessage(5, draftedMessage2)
+      val state3 =
+        state2.withOutgoingMessage(using testContext(5))(draftedMessage2)
       state3.outgoingMessages should contain theSameElementsAs
         List(sentMessage1, sentMessage2)
     }

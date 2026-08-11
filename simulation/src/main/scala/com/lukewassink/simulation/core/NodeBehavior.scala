@@ -11,19 +11,18 @@ final case class UpdatedState(sharedState: NodeState, selfState: NodeBehavior)
 trait NodeBehavior:
 
   // Overwrite if a behavior wants to update the shared state.
-  protected def updatedNodeState(
-      time: Time,
-      sharedState: NodeState
-  ): NodeState = sharedState
+  protected def updatedNodeState(using
+      ctx: NetworkExecutionContext
+  )(sharedState: NodeState): NodeState = sharedState
 
   // Overwrite if a behavior wants to update its own state.
-  protected def updatedSelfState(
-      time: Time,
-      sharedState: NodeState
-  ): NodeBehavior = this
+  protected def updatedSelfState(using
+      ctx: NetworkExecutionContext
+  )(sharedState: NodeState): NodeBehavior = this
 
-  final def updated(time: Time, sharedState: NodeState): UpdatedState =
-    UpdatedState(
-      updatedNodeState(time, sharedState),
-      updatedSelfState(time, sharedState)
-    )
+  final def updated(using
+      ctx: NetworkExecutionContext
+  )(sharedState: NodeState): UpdatedState = UpdatedState(
+    updatedNodeState(sharedState),
+    updatedSelfState(sharedState)
+  )

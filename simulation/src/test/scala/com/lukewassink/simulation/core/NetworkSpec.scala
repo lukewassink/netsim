@@ -102,7 +102,7 @@ class NetworkSpec extends UnitSpec {
     describe("List constructor") {
       it("handles an empty list") {
         Network(0, List.empty, List.empty, InertRandom()) should
-          equal(Network(0, Map.empty, DeliveryQueue.empty, InertRandom()))
+          equal(Network(0, Map.empty, DeliveryQueue.empty, InertRandom(), 1))
       }
 
       it("handles a list of nodes") {

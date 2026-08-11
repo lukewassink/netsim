@@ -1,5 +1,6 @@
 package com.lukewassink.simulation.util
 
+import com.lukewassink.simulation.core.NetworkExecutionContext
 import com.lukewassink.simulation.test_utils.UnitSpec
 import com.lukewassink.simulation.util.Time.*
 
@@ -55,7 +56,7 @@ class TimeSpec extends UnitSpec {
     it("subtracts a duration to get another time")(assert(three - durTwo === one))
 
     it("converts from milliseconds to time") {
-      given MillisecondsToTime = MillisecondsToTime(1)
+      given NetworkExecutionContext = NetworkExecutionContext(1, 1)
       assert(3.5.milliseconds === Time(3.5))
       assert(2.milliseconds === Time(2))
     }

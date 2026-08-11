@@ -9,6 +9,7 @@ import com.lukewassink.simulation.test_utils.MessageSpecUtil.{
   draftedMessage, pendingMessage
 }
 import com.lukewassink.simulation.test_utils.NodeStateSpecUtil.testNodeState
+import com.lukewassink.simulation.test_utils.NetworkExecutionContextUtils.testContext
 
 class NodeSpec extends UnitSpec {
   private val draftedMessage1   = draftedMessage(7, "One")
@@ -62,20 +63,22 @@ class NodeSpec extends UnitSpec {
       )
       node.sharedState.incomingMessages should contain theSameElementsAs
         List(scheduledMessage1, scheduledMessage2)
-      node.preDeliveryAction(5).sharedState.incomingMessages shouldBe empty
+      node.preDeliveryAction(using testContext(5)).sharedState
+        .incomingMessages shouldBe empty
     }
   }
 
   describe("postDeliveryAction") {
     it("clears outgoing messages") {
-      nodeWithOutgoingMessages.postDeliveryAction(1).outgoingMessages shouldBe
-        empty
+      nodeWithOutgoingMessages.postDeliveryAction(using testContext(1))
+        .outgoingMessages shouldBe empty
     }
 
     it("triggers a behavior to update the shared state") {
       val node = Node(List(TestMessageBehavior(draftedMessage1)), emptyState)
       node.outgoingMessages shouldBe empty
-      val nextMessages = node.postDeliveryAction(10).outgoingMessages
+      val nextMessages =
+        node.postDeliveryAction(using testContext(5)).outgoingMessages
       nextMessages should have size 1
       all(nextMessages) should have(stringContent("One"))
     }
@@ -86,7 +89,7 @@ class NodeSpec extends UnitSpec {
     node.behaviors.head match {
       case TestSelfUpdateBehavior(selfState) => selfState.should(equal(0))
     }
-    node.postDeliveryAction(10).behaviors.head match {
+    node.postDeliveryAction(using testContext(10)).behaviors.head match {
       case TestSelfUpdateBehavior(selfState) => selfState.should(equal(1))
     }
   }
@@ -100,7 +103,8 @@ class NodeSpec extends UnitSpec {
       emptyState
     )
     node.outgoingMessages shouldBe empty
-    val outgoingMessages = node.postDeliveryAction(10).outgoingMessages
+    val outgoingMessages =
+      node.postDeliveryAction(using testContext(10)).outgoingMessages
 
     it("triggers multiple behaviors") {
       outgoingMessages should have size 2
