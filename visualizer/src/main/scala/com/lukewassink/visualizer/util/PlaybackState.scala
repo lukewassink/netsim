@@ -25,10 +25,12 @@ final class PlaybackState(
 
   def pause(): Unit = playing.set(false)
 
+  def play(): Unit = playing.set(true)
+
   def togglePlaying(): Unit = playing.update(!_)
 
   def reset(): Unit = {
-    this.pause()
+    this.play()
     tickVar.set(0)
   }
 }

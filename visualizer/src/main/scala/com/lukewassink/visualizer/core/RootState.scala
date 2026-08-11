@@ -9,6 +9,10 @@ import com.lukewassink.visualizer.util.{DefaultSimulation, PlaybackState}
 import com.raquo.laminar.api.L.{*, given}
 import com.lukewassink.runner.util.Failure
 
+object RootState:
+  // Amount of the network history to take.
+  private val HISTORY_LENGTH = 200
+
 class RootState(val config: Var[String], val playbackState: PlaybackState) {
   def this(config: Var[String]) = this(
     config,
@@ -45,7 +49,3 @@ class RootState(val config: Var[String], val playbackState: PlaybackState) {
 
   def resetConfig(): Unit = config.set(lastValidConfig.now())
 }
-
-object RootState:
-  // Amount of the network history to take.
-  private val HISTORY_LENGTH = 200
