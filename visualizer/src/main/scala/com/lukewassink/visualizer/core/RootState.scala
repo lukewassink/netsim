@@ -2,7 +2,9 @@ package com.lukewassink.visualizer.core
 
 import com.lukewassink.runner.core.{Runner, Simulation}
 import com.lukewassink.simulation.core.Network
-import com.lukewassink.visualizer.util.DefaultSimulation.emptySimulation
+import com.lukewassink.visualizer.util.DefaultSimulation.{
+  defaultSimulation, emptySimulation
+}
 import com.lukewassink.visualizer.util.PlaybackState
 import com.raquo.laminar.api.L.{*, given}
 import com.lukewassink.runner.util.Failure
@@ -13,7 +15,7 @@ case class RootState(config: Var[String], playbackState: PlaybackState) {
   private val result = config.signal.map(Runner.run)
 
   val simulation: Signal[Simulation] = result.changes.filter(_.isSuccess)
-    .map(_.getOrElse(emptySimulation)).startWith(emptySimulation)
+    .map(_.getOrElse(emptySimulation)).startWith(defaultSimulation)
 
   val history: Signal[Vector[Network]] = simulation
     .map(_.history.take(HistoryLength).toVector)
