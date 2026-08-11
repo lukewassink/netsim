@@ -32,7 +32,11 @@ object ConfigRenderer {
       button(
         cls("control-element button"),
         "Reset Config",
-        onClick --> (e => configText.set(rootState.config.now()))
+        onClick -->
+          (_ => {
+            rootState.resetConfig()
+            configText.set(rootState.config.now())
+          })
       ),
       cls("panel panel--controls")
     )

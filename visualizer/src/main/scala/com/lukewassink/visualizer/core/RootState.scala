@@ -5,20 +5,23 @@ import com.lukewassink.simulation.core.Network
 import com.lukewassink.visualizer.util.DefaultSimulation.{
   defaultSimulation, emptySimulation
 }
-import com.lukewassink.visualizer.util.PlaybackState
+import com.lukewassink.visualizer.util.{DefaultSimulation, PlaybackState}
 import com.raquo.laminar.api.L.{*, given}
 import com.lukewassink.runner.util.Failure
 
-case class RootState(config: Var[String], playbackState: PlaybackState) {
-  import com.lukewassink.visualizer.core.RootState.HistoryLength
+class RootState(val config: Var[String], val playbackState: PlaybackState) {
+  def this(config: Var[String]) = this(
+    config,
+    PlaybackState(RootState.HISTORY_LENGTH)
+  )
 
   private val result = config.signal.map(Runner.run)
 
-  val simulation: Signal[Simulation] = result.changes.filter(_.isSuccess)
+  lazy val simulation: Signal[Simulation] = result.changes.filter(_.isSuccess)
     .map(_.getOrElse(emptySimulation)).startWith(defaultSimulation)
 
   val history: Signal[Vector[Network]] = simulation
-    .map(_.history.take(HistoryLength).toVector)
+    .map(_.history.take(RootState.HISTORY_LENGTH).toVector)
 
   val currentNetwork: Signal[Network] = playbackState.tick.combineWith(history)
     .map((t, h) => h(t))
@@ -32,13 +35,17 @@ case class RootState(config: Var[String], playbackState: PlaybackState) {
   // Must be passed to a component to bind.
   val refreshPlaybackOnConfigUpdate: Binder.Base =
     simulation --> (_ => playbackState.reset())
+
+  private val lastValidConfig: Var[String] = Var(DefaultSimulation.config)
+
+  // Must be passed to a component to bind.
+  val updateLastValidConfig: Binder.Base =
+    config.signal.combineWith(result).changes.filter((_, r) => r.isSuccess)
+      .map(_._1) --> lastValidConfig.set
+
+  def resetConfig(): Unit = config.set(lastValidConfig.now())
 }
 
-case object RootState:
+object RootState:
   // Amount of the network history to take.
-  private val HistoryLength = 200
-
-  def apply(config: Var[String]): RootState = RootState(
-    config,
-    PlaybackState(HistoryLength)
-  )
+  private val HISTORY_LENGTH = 200
