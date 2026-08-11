@@ -9,7 +9,7 @@ import io.github.edadma.hocon.{Config, ConfigObject, Decoder, HoconException}
 object SyntaxTree {
   def fromConfig(config: Config): Result[SimulationNode] =
     try Success(config.as[SimulationNode])
-    catch case e: (HoconException | IllegalStateException) => Failure(e)
+    catch case e: (HoconException | ConfigException) => Failure(e)
 
   given Decoder[BehaviorNode] =
     (value, path) => {
@@ -25,10 +25,7 @@ object SyntaxTree {
       config.getString("type") match {
         case "simple-sender"    => config.as[SimpleSenderNode]
         case "simple-responder" => config.as[SimpleResponderNode]
-        case t                  =>
-          throw IllegalStateException(
-            s"Behavior type $t is not a valid behavior type"
-          )
+        case t                  => throw MissingBehaviorTypeException(t)
       }
     }
 }

@@ -4,6 +4,7 @@ import com.lukewassink.runner.config.BehaviorNode.{
   SimpleResponderNode, SimpleSenderNode
 }
 import com.lukewassink.runner.core.{Simulation, SimulationMetadata}
+import com.lukewassink.runner.util.{Failure, Result, Success}
 import com.lukewassink.simulation.behavior.{SimpleResponder, SimpleSender}
 import com.lukewassink.simulation.core.MessageStage.Drafted
 import com.lukewassink.simulation.core.ResponseState.Request
@@ -37,14 +38,15 @@ object TransformContext:
 // Transforms a syntax tree into an actual Simulation with a network.
 // This includes assigning node IDs and resolving node name references.
 object Transformer {
-  def transform(simulationNode: SimulationNode): Simulation = {
-    given TransformContext = TransformContext(simulationNode)
+  def transform(simulationNode: SimulationNode): Result[Simulation] =
+    try {
+      given TransformContext = TransformContext(simulationNode)
 
-    Simulation(
-      SimulationMetadata(simulationNode.name, simulationNode.randomSeed),
-      transform(simulationNode.network)
-    )
-  }
+      Success(Simulation(
+        SimulationMetadata(simulationNode.name, simulationNode.randomSeed),
+        transform(simulationNode.network)
+      ))
+    } catch { case e: IllegalStateException => Failure(e) }
 
   private def transform(using
       context: TransformContext

@@ -34,7 +34,7 @@ case class RootState(config: Var[String], playbackState: PlaybackState) {
 
 case object RootState:
   // Amount of the network history to take.
-  private val HistoryLength = 100
+  private val HistoryLength = 200
 
   def apply(config: Var[String]): RootState = RootState(
     config,

@@ -15,7 +15,6 @@ class RootRendererSpec extends UnitSpec {
           div.of(
             svg.svg of
               (
-                svg.cls is "network-panel",
                 sentinel,
                 // TODO(#49) add these back once the visualizer doesn't start with a blank state.
 //                svg.circle,
@@ -26,8 +25,7 @@ class RootRendererSpec extends UnitSpec {
             div.of(button, input, input)
           ),
           div.of(
-            textArea,
-            span.of(""),
+            div.of(textArea, span.of("")),
             div.of(button.of("Run"), button.of("Reset Config"))
           )
         )

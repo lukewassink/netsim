@@ -63,7 +63,7 @@ class TransformerSpec extends UnitSpec {
         Network(0, List.empty, List.empty, XORRandom.fromSeed(10))
       )
 
-      assert(Transformer.transform(tree) === simulation)
+      assert(Transformer.transform(tree) === Success(simulation))
     }
 
     it("handles empty behavior") {
@@ -91,7 +91,7 @@ class TransformerSpec extends UnitSpec {
         )
       )
 
-      assert(Transformer.transform(tree) === simulation)
+      assert(Transformer.transform(tree) === Success(simulation))
     }
 
     it("handles a complex simulation") {
@@ -157,7 +157,7 @@ class TransformerSpec extends UnitSpec {
         )
       )
 
-      assert(Transformer.transform(tree) === simulation)
+      assert(Transformer.transform(tree) === Success(simulation))
     }
   }
 }

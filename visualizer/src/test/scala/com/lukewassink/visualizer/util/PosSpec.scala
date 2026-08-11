@@ -1,9 +1,9 @@
 package com.lukewassink.visualizer.util
 
-import com.lukewassink.visualizer.test_util.UnitSpec
-import org.scalactic.Equality
 import Pos.fromPolar
 import com.lukewassink.visualizer.test_util.PosSpecUtil.given
+import com.lukewassink.visualizer.test_util.UnitSpec
+import org.scalactic.Equality
 
 class PosSpec extends UnitSpec {
   describe("interpolate") {

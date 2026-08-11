@@ -15,8 +15,10 @@
 }
 
 .config-errors {
-    flex-grow: 1;
-    color: red;
+    height: fit-content;
+    max-height: calc(0.4 * var(--main-panel-height));
+    /*flex-grow: 1;*/
+    color: #B00020;
     text-wrap: wrap;
     white-space: pre-wrap;
 }

@@ -17,9 +17,7 @@ object Validator {
     ValidationContext(indicesByName)
   }
 
-  private def runAllValidators(
-      node: SimulationNode
-  ): List[ConfigValidationException] = {
+  private def runAllValidators(node: SimulationNode): List[ConfigException] = {
     val context = validationContext(node)
     validators.foldLeft(List.empty)((errors, validator) =>
       errors ++ validator.run(node, context)
@@ -38,13 +36,13 @@ trait Validator:
   def run(
       node: SimulationNode,
       context: ValidationContext
-  ): List[ConfigValidationException]
+  ): List[ConfigException]
 
 case object DuplicateNodeNamesValidator extends Validator:
   def run(
       node: SimulationNode,
       context: ValidationContext
-  ): List[ConfigValidationException] =
+  ): List[ConfigException] =
     context.nodeIndicesByName.filter((_, indices) => indices.length > 1)
       .map(DuplicateNodeNamesException(_, _)).toList
 
@@ -52,7 +50,7 @@ case object MissingReferenceNameValidator extends Validator:
   def run(
       node: SimulationNode,
       context: ValidationContext
-  ): List[ConfigValidationException] = {
+  ): List[ConfigException] = {
     val nodeNames = context.nodeIndicesByName.keySet
     referenceLocations(node).filterNot(rl => nodeNames.contains(rl.nodeName))
       .map(MissingReferenceNameException(_))

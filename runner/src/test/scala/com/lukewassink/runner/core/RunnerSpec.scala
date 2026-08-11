@@ -2,7 +2,7 @@ package com.lukewassink.runner.core
 
 import com.lukewassink.runner.config.Transformer
 import com.lukewassink.runner.core.Runner
-import com.lukewassink.runner.util.Success
+import com.lukewassink.runner.util.{Failure, Success}
 import com.lukewassink.simulation.behavior.{SimpleResponder, SimpleSender}
 import com.lukewassink.simulation.core.MessageStage.{Drafted, Pending, Scheduled}
 import com.lukewassink.simulation.core.ResponseState.Request
@@ -17,6 +17,7 @@ import com.lukewassink.simulation.test_utils.NodeStateSpecUtil.testNodeState
 import com.lukewassink.simulation.test_utils.{MessageMatchers, UnitSpec}
 import com.lukewassink.simulation.util.XORRandom
 import io.github.edadma.hocon.Hocon
+import org.scalactic.Prettifier.default
 
 class RunnerSpec extends UnitSpec {
   describe("run (from config)") {
@@ -25,7 +26,7 @@ class RunnerSpec extends UnitSpec {
         """
            name = "simulation-name"
            randomSeed = 10
-           
+
            network {
              nodes = [{
                  name = "node-name-1"
@@ -100,5 +101,60 @@ class RunnerSpec extends UnitSpec {
 
       inside(result) { case Success(s) => s === simulation }
     }
+  }
+
+  it("returns a Failure if there are HOCON parsing errors") {
+    val config: String =
+      """
+         name = "simulation-name"
+         randomSeed = 10
+
+         network {
+           nodes = [{
+               name = "node-name-1"
+               behaviors = []
+             }]x // 'x' here is a syntax error
+      """.stripMargin
+
+    val result = Runner.run(config)
+    inside(result) { case Failure(_) => }
+  }
+
+  it("returns a Failure if there is a missing behavior type") {
+    val config: String =
+      """
+             name = "simulation-name"
+             randomSeed = 10
+
+             network {
+               nodes = [{
+                   name = "node-name-1"
+                   behaviors = [{type = "missing-type"}]
+                 }]
+          """.stripMargin
+
+    val result = Runner.run(config)
+    inside(result) { case Failure(_) => }
+  }
+
+  it("returns a Failure if there are validation errors") {
+    val config: String =
+      """
+             name = "simulation-name"
+             randomSeed = 10
+
+             network {
+               nodes = [{
+                   name = "node-name-1"
+                   behaviors = []
+                 }
+                 {
+                   name = "node-name-1"
+                   behaviors = []
+                 }]
+          """.stripMargin
+
+    val result = Runner.run(config)
+    inside(result) { case Failure(_) => }
   }
 }
