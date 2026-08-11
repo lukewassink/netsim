@@ -13,15 +13,7 @@ class RootRendererSpec extends UnitSpec {
         h1 of textNode,
         div.of(
           div.of(
-            svg.svg of
-              (
-                sentinel,
-                // TODO(#49) add these back once the visualizer doesn't start with a blank state.
-//                svg.circle,
-//                svg.circle,
-//                svg.circle,
-                sentinel
-              ),
+            svg.svg of (sentinel, svg.circle, svg.circle, svg.circle, sentinel),
             div.of(button, input, input)
           ),
           div.of(
