@@ -24,6 +24,15 @@ case class ExecutionContext(
     val d = rng.nextDouble()
     if d == 0 then openNextDouble else d
 
+  // Returns true with probability chance, false otherwise.
+  def chances(chance: Double): Boolean =
+    if chance > 1 || chance < 0 then
+      throw IllegalArgumentException(
+        s"Argument chance must be in [0, 1]. It was $chance."
+      )
+
+    rng.nextDouble() < chance
+
 // The time it takes for a message to be delivered. Hardcoded for now. Later this should be changed to be config
 // based.
 final val DeliveryLatency = Duration(10)
@@ -79,13 +88,26 @@ object Network {
   def apply(
       ctx: ExecutionContext,
       nodes: List[Node],
+      deliveryQueue: DeliveryQueue
+  ): Network = {
+    val nodeMap: Map[NodeID, Node] =
+      nodes.foldLeft(Map[NodeID, Node]()) { (map, node) =>
+        map.updated(node.sharedState.header.id, node)
+      }
+    Network(ctx, nodeMap, deliveryQueue)
+  }
+
+  // A convenience method to initialize Network using a list of nodes and list of messages.
+  def apply(
+      ctx: ExecutionContext,
+      nodes: List[Node],
       messages: List[Message[Scheduled]]
   ): Network = {
     val nodeMap: Map[NodeID, Node] =
       nodes.foldLeft(Map[NodeID, Node]()) { (map, node) =>
         map.updated(node.sharedState.header.id, node)
       }
-    Network(ctx, nodeMap, DeliveryQueue(messages))
+    Network(ctx, nodeMap, DeliveryQueue(List.empty, messages))
   }
 
   def apply(

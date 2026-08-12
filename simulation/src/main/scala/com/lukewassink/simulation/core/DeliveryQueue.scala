@@ -2,15 +2,28 @@ package com.lukewassink.simulation.core
 
 import com.lukewassink.simulation.core.MessageStage.Scheduled
 import com.lukewassink.simulation.util.Time
+import com.lukewassink.simulation.interceptor.MessageInterceptor
 
 // A store of scheduled messages. Can return messages ready to be delivered based on time.
-case class DeliveryQueue(messages: List[Message[Scheduled]]):
+case class DeliveryQueue(
+    interceptors: List[MessageInterceptor],
+    messages: List[Message[Scheduled]]
+):
 
-  def withMessage(message: Message[Scheduled]): DeliveryQueue = DeliveryQueue(
-    message :: messages
-  )
+  // Passes the message through all the interceptors in order and prepends the result to the queue.
+  def withMessage(using
+      ExecutionContext
+  )(message: Message[Scheduled]): DeliveryQueue = {
+    val interceptedMessages =
+      interceptors.foldLeft(List(message))((ms, interceptor) =>
+        ms.flatMap(interceptor.intercept)
+      )
+    this.copy(messages = interceptedMessages ::: messages)
+  }
 
-  def withMessages(messages: Iterable[Message[Scheduled]]): DeliveryQueue =
+  def withMessages(using
+      ExecutionContext
+  )(messages: Iterable[Message[Scheduled]]): DeliveryQueue =
     messages.foldLeft(this)(_.withMessage(_))
 
   // Returns messages to be delivered by the specified time.
@@ -18,12 +31,14 @@ case class DeliveryQueue(messages: List[Message[Scheduled]]):
     .filter(_.readyToDeliver(time))
 
   // Returns the queue with all messages with past or present delivery times removed.
-  def withoutPastMessages(time: Time): DeliveryQueue = DeliveryQueue(
-    messages.filter(_.stillWaiting(time))
-  )
+  def withoutPastMessages(time: Time): DeliveryQueue = this
+    .copy(messages = messages.filter(_.stillWaiting(time)))
 
 object DeliveryQueue {
-  def empty: DeliveryQueue = DeliveryQueue(List.empty)
+  def empty: DeliveryQueue = DeliveryQueue(List.empty, List.empty)
 
-  def apply(messages: Message[Scheduled]*): DeliveryQueue = this(messages.toList)
+  def apply(messages: Message[Scheduled]*): DeliveryQueue = this(
+    List.empty,
+    messages.toList
+  )
 }
