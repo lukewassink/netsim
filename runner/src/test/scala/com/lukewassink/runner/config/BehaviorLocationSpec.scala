@@ -10,7 +10,7 @@ class BehaviorLocationSpec extends UnitSpec {
   describe("referenceLocations") {
     it("handles empty nodes") {
       val references = referenceLocations(
-        SimulationNode("name", 10, NetworkNode(List.empty))
+        SimulationNode("name", 10, List.empty, NetworkNode(List.empty))
       )
 
       references shouldBe empty
@@ -20,6 +20,7 @@ class BehaviorLocationSpec extends UnitSpec {
       val references = referenceLocations(SimulationNode(
         "name",
         10,
+        List.empty,
         NetworkNode(List(NodeNode("node-name", List.empty)))
       ))
 
@@ -30,6 +31,7 @@ class BehaviorLocationSpec extends UnitSpec {
       val references = referenceLocations(SimulationNode(
         "name",
         10,
+        List.empty,
         NetworkNode(List(
           NodeNode(
             "node1",

@@ -19,6 +19,7 @@ class TransformerSpec extends UnitSpec {
     val tree = SimulationNode(
       "simulation-name",
       10,
+      List.empty,
       NetworkNode(List(
         NodeNode("node-name-1", List.empty),
         NodeNode("node-name-2", List.empty),
@@ -56,7 +57,12 @@ class TransformerSpec extends UnitSpec {
 
   describe("transformer.transform") {
     it("handles empty nodes") {
-      val tree = SimulationNode("simulation-name", 10, NetworkNode(List.empty))
+      val tree = SimulationNode(
+        "simulation-name",
+        10,
+        List.empty,
+        NetworkNode(List.empty)
+      )
 
       val simulation = Simulation(
         SimulationMetadata("simulation-name", 10),
@@ -70,6 +76,7 @@ class TransformerSpec extends UnitSpec {
       val tree = SimulationNode(
         "simulation-name",
         10,
+        List.empty,
         NetworkNode(List(NodeNode("node-name", List.empty)))
       )
 
@@ -91,6 +98,7 @@ class TransformerSpec extends UnitSpec {
       val tree = SimulationNode(
         "simulation-name",
         10,
+        List.empty,
         NetworkNode(List(
           NodeNode("node-name-1", List.empty),
           NodeNode("node-name-2", List(SimpleResponderNode())),

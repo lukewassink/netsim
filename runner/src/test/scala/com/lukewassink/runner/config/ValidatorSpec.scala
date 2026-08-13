@@ -16,6 +16,7 @@ class ValidatorSpec extends UnitSpec {
       val validTree = SimulationNode(
         "simulation-name",
         10,
+        List.empty,
         NetworkNode(List(
           NodeNode("node-name-1", List.empty),
           NodeNode("node-name-2", List(SimpleResponderNode())),
@@ -37,6 +38,7 @@ class ValidatorSpec extends UnitSpec {
       val tree = SimulationNode(
         "simulation-name",
         10,
+        List.empty,
         NetworkNode(List(
           NodeNode("node-name-1", List.empty),
           NodeNode("node-name-1", List(SimpleResponderNode())),
@@ -62,6 +64,7 @@ class ValidatorSpec extends UnitSpec {
       val tree = SimulationNode(
         "simulation-name",
         10,
+        List.empty,
         NetworkNode(List(
           NodeNode("node-name-1", List.empty),
           NodeNode("node-name-2", List(SimpleResponderNode())),
@@ -87,6 +90,7 @@ class ValidatorSpec extends UnitSpec {
       val tree = SimulationNode(
         "simulation-name",
         10,
+        List.empty,
         NetworkNode(List(
           NodeNode("node-name-1", List.empty),
           NodeNode(
