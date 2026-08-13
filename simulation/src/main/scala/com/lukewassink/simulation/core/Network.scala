@@ -4,6 +4,7 @@ import com.lukewassink.simulation.core.MessageStage.Scheduled
 import com.lukewassink.simulation.util.Time.TimeConverter
 import com.lukewassink.simulation.util.{BaseDistribution, Chance, Duration, Time}
 import com.lukewassink.simulation.util.Chance.*
+import com.lukewassink.simulation.core.NodeID.NodeID
 
 import scala.util.Random
 

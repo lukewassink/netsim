@@ -7,10 +7,12 @@ import com.lukewassink.runner.core.{Simulation, SimulationMetadata}
 import com.lukewassink.runner.util.{Failure, Result, Success}
 import com.lukewassink.simulation.behavior.{SimpleResponder, SimpleSender}
 import com.lukewassink.simulation.core.MessageStage.Drafted
+import com.lukewassink.simulation.core.NodeID.NodeID
+import com.lukewassink.simulation.core.NodeID
 import com.lukewassink.simulation.core.ResponseState.Request
 import com.lukewassink.simulation.core.{
   ExecutionContext, Message, MessageContent, MessageID, Network, Node,
-  NodeBehavior, NodeHeader, NodeID, NodeState
+  NodeBehavior, NodeHeader, NodeState
 }
 import com.lukewassink.simulation.util.Time
 

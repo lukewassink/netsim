@@ -1,7 +1,7 @@
 package com.lukewassink.simulation.core
 
 import com.lukewassink.simulation.core.MessageStage.{Pending, Scheduled}
-import com.lukewassink.simulation.util.Time
+import com.lukewassink.simulation.core.NodeID.NodeID
 
 // The fundamental abstraction of the simulation. It can send and receive messages in response to incoming
 // messages and top its own state.

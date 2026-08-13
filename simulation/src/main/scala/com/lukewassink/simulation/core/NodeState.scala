@@ -1,10 +1,13 @@
 package com.lukewassink.simulation.core
 
+import com.lukewassink.simulation.core.MessageID.MessageID
 import com.lukewassink.simulation.core.MessageStage.*
-import com.lukewassink.simulation.util.{Random, Time}
+import com.lukewassink.simulation.core.NodeID.NodeID
 
-// A node ID. It should uniquely identify the node.
-case class NodeID(id: Int)
+object NodeID:
+  opaque type NodeID = Int
+
+  def apply(value: Int): NodeID = value
 
 // Metadata for a node.
 case class NodeHeader(id: NodeID, nextMessageId: MessageID)

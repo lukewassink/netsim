@@ -1,7 +1,10 @@
 package com.lukewassink.simulation.test_utils
 
-import com.lukewassink.simulation.core.{MessageID, NodeID}
+import com.lukewassink.simulation.core.MessageID
+import com.lukewassink.simulation.core.MessageID.MessageID
 import com.lukewassink.simulation.util.{Duration, Time}
+import com.lukewassink.simulation.core.NodeID.NodeID
+import com.lukewassink.simulation.core.NodeID
 
 object ImplicitConversions {
   given Conversion[Int, NodeID] with

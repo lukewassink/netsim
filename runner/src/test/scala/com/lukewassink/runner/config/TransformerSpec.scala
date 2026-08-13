@@ -9,7 +9,7 @@ import com.lukewassink.simulation.behavior.{SimpleResponder, SimpleSender}
 import com.lukewassink.simulation.core.MessageStage.Drafted
 import com.lukewassink.simulation.core.ResponseState.Request
 import com.lukewassink.simulation.core.{
-  ExecutionContext, Message, MessageContent, Network, Node, NodeHeader,
+  ExecutionContext, Message, MessageContent, Network, Node, NodeHeader, NodeID,
   NodeState
 }
 import com.lukewassink.simulation.test_utils.UnitSpec
@@ -43,7 +43,7 @@ class TransformerSpec extends UnitSpec {
 
     describe("resolveID") {
       it("returns the node ID corresponding to a name") {
-        assert(context.resolveID("node-name-1").id === 0)
+        assert(context.resolveID("node-name-1") === NodeID(0))
       }
 
       it("throws an error if the node ID is not present") {

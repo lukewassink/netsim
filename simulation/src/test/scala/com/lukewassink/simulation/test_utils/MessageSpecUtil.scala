@@ -7,6 +7,8 @@ import com.lukewassink.simulation.core.{
 }
 import org.scalatest.matchers.{HavePropertyMatchResult, HavePropertyMatcher}
 import com.lukewassink.simulation.util.Time
+import com.lukewassink.simulation.core.NodeID.NodeID
+import com.lukewassink.simulation.core.MessageID.MessageID
 
 object MessageSpecUtil {
   def draftedMessage(receiverId: NodeID, content: String): Message[Drafted] =

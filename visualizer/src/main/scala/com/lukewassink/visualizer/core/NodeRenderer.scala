@@ -4,7 +4,8 @@ import com.raquo.laminar.api.L.{*, given}
 import NetworkRenderer.NetworkViewBoxSize
 import com.lukewassink.visualizer.util.Pos
 import com.lukewassink.visualizer.util.Pos.fromPolar
-import com.lukewassink.simulation.core.{Network, Node, NodeID}
+import com.lukewassink.simulation.core.{Network, Node}
+import com.lukewassink.simulation.core.NodeID.NodeID
 
 // A node along with its rendering data.
 case class NodeData(node: Node, center: Pos)

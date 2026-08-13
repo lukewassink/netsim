@@ -1,11 +1,18 @@
 package com.lukewassink.simulation.core
 
+import com.lukewassink.simulation.core.MessageID.MessageID
 import com.lukewassink.simulation.util.Time
+import com.lukewassink.simulation.core.NodeID.NodeID
 
 // NOTE: a message ID uniquely identifies a message withing a node.
-// The message's UniqueID(message ID, node ID) is required to uniquely identify the message within the network.
-final case class MessageID(id: Int):
-  def next: MessageID = MessageID(id + 1)
+// The message's UniqueID(message ID, node ID) is required to uniquely
+// identify the message within the network.
+case object MessageID:
+  opaque type MessageID = Int
+
+  def apply(value: Int): MessageID = value
+
+  extension (id: MessageID) def next: MessageID = MessageID(id + 1)
 
 enum MessageStage:
   // Message has content and a recipient and is ready to be added to the outbox.
