@@ -33,5 +33,6 @@ object RootRenderer:
       ),
       ConfigRenderer.render
     ),
-    rootState.refreshPlaybackOnConfigUpdate
+    rootState.refreshPlaybackOnConfigUpdate,
+    rootState.updateLastValidConfig
   )
