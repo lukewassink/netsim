@@ -9,7 +9,6 @@ case class DeliveryQueue(
     interceptors: List[MessageInterceptor],
     messages: List[Message[Scheduled]]
 ):
-
   // Passes the message through all the interceptors in order and prepends the result to the queue.
   def withMessage(using
       ExecutionContext

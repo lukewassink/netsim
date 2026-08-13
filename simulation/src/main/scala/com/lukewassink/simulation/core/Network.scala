@@ -2,36 +2,10 @@ package com.lukewassink.simulation.core
 
 import com.lukewassink.simulation.core.MessageStage.Scheduled
 import com.lukewassink.simulation.util.Time.TimeConverter
-import com.lukewassink.simulation.util.{BaseDistribution, Duration, Time}
+import com.lukewassink.simulation.util.{BaseDistribution, Chance, Duration, Time}
+import com.lukewassink.simulation.util.Chance.*
 
 import scala.util.Random
-
-// Shared context that should be made available implicitly throughout the network.
-case class ExecutionContext(
-    time: Time,
-    ticksPerMillisecond: Double,
-    randomSeed: Long
-) extends TimeConverter, BaseDistribution:
-  private val rng: Random = Random(randomSeed)
-
-  def convertTime(d: Double): Duration = Duration(ticksPerMillisecond * d)
-
-  def withNextTime: ExecutionContext = this.copy(time = time.next)
-
-  override def nextDouble: Double = rng.nextDouble()
-
-  override def openNextDouble: Double =
-    val d = rng.nextDouble()
-    if d == 0 then openNextDouble else d
-
-  // Returns true with probability chance, false otherwise.
-  def chances(chance: Double): Boolean =
-    if chance > 1 || chance < 0 then
-      throw IllegalArgumentException(
-        s"Argument chance must be in [0, 1]. It was $chance."
-      )
-
-    rng.nextDouble() < chance
 
 // The time it takes for a message to be delivered. Hardcoded for now. Later this should be changed to be config
 // based.

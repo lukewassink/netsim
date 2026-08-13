@@ -1,8 +1,23 @@
 package com.lukewassink.simulation.core
 
 import com.lukewassink.simulation.core.DeliveryQueue
-import com.lukewassink.simulation.test_utils.MessageSpecUtil.scheduledMessage
+import com.lukewassink.simulation.core.DeliveryQueueSpec.TestInterceptor
+import com.lukewassink.simulation.core.MessageStage.Scheduled
+import com.lukewassink.simulation.interceptor.MessageInterceptor
+import com.lukewassink.simulation.test_utils.MessageSpecUtil.{
+  pendingMessage, scheduledMessage
+}
 import com.lukewassink.simulation.test_utils.UnitSpec
+
+object DeliveryQueueSpec {
+  case class TestInterceptor(replacementMessage: Message[Scheduled])
+      extends MessageInterceptor:
+    override def intercept(using
+        ExecutionContext
+    )(message: Message[Scheduled]): List[Message[Scheduled]] = List(
+      replacementMessage
+    )
+}
 
 class DeliveryQueueSpec extends UnitSpec {
   describe("DeliveryQueue") {
@@ -33,6 +48,15 @@ class DeliveryQueueSpec extends UnitSpec {
         assert(queue.deliverableMessages(9).isEmpty)
         val queueWithMessage = queue.withMessage(message1)
         assert(queueWithMessage.deliverableMessages(9) === List(message1))
+      }
+
+      it("runs the interceptors") {
+        val message     = scheduledMessage(1, 1, "Bye!")
+        val interceptor = TestInterceptor(message)
+
+        DeliveryQueue(List(interceptor), List.empty)
+          .withMessage(scheduledMessage(1, 1, "Bye!")).messages should
+          contain theSameElementsAs List(message)
       }
     }
 
