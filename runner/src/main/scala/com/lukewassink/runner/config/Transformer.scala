@@ -46,14 +46,22 @@ object Transformer {
 
       Success(Simulation(
         SimulationMetadata(simulationNode.name, simulationNode.randomSeed),
-        transformNetwork(simulationNode.network, simulationNode.randomSeed)
+        transformNetwork(
+          simulationNode.network,
+          simulationNode.randomSeed,
+          simulationNode.ticksPerMillisecond
+        )
       ))
     } catch { case e: IllegalStateException => Failure(e) }
 
   private def transformNetwork(using
       context: TransformContext
-  )(networkNode: NetworkNode, randomSeed: Long): Network = Network(
-    ExecutionContext(Time(0), 1, randomSeed),
+  )(
+      networkNode: NetworkNode,
+      randomSeed: Long,
+      ticksPerMillisecond: Double
+  ): Network = Network(
+    ExecutionContext(Time(0), ticksPerMillisecond, randomSeed),
     networkNode.nodes.map(transformNode),
     List.empty
   )

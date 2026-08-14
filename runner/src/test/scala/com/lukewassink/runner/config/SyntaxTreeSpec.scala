@@ -31,6 +31,7 @@ class SyntaxTreeSpec extends UnitSpec {
       val expectedTree = SimulationNode(
         "simulation-name",
         10,
+        1,
         List.empty,
         NetworkNode(List.empty)
       )
@@ -57,6 +58,7 @@ class SyntaxTreeSpec extends UnitSpec {
       val expectedTree = SimulationNode(
         "simulation-name",
         10,
+        1,
         List.empty,
         NetworkNode(List(NodeNode("node-name", List.empty)))
       )
@@ -67,39 +69,41 @@ class SyntaxTreeSpec extends UnitSpec {
     it("builds a network") {
       val config = Hocon.parse(
         """
-                       name = "simulation-name"
-                       randomSeed = 10
+         name = "simulation-name"
+         randomSeed = 10
+         ticksPerMillisecond = 5
 
-                       network {
-                         nodes = [{
-                           name = "node-name-1"
-                           behaviors = []
-                         }
-                         {
-                           name = "node-name-2"
-                           behaviors = [{type = "simple-responder"}]
-                         }
-                         {
-                           name = "node-name-3"
-                           behaviors = [
-                             {type = "simple-responder"}
-                             {type = "simple-responder"}
-                             {
-                               type = "simple-sender"
-                               time = 10
-                               receiver = "node-name-2"
-                               content = "Hi!"
-                             }
-                           ]
-                         }]
-                       }
-                    """.stripMargin
+         network {
+           nodes = [{
+             name = "node-name-1"
+             behaviors = []
+           }
+           {
+             name = "node-name-2"
+             behaviors = [{type = "simple-responder"}]
+           }
+           {
+             name = "node-name-3"
+             behaviors = [
+               {type = "simple-responder"}
+               {type = "simple-responder"}
+               {
+                 type = "simple-sender"
+                 time = 10
+                 receiver = "node-name-2"
+                 content = "Hi!"
+               }
+             ]
+           }]
+         }
+      """.stripMargin
       )
       val result = SyntaxTree.fromConfig(config)
 
       val expectedTree = SimulationNode(
         "simulation-name",
         10,
+        5,
         List.empty,
         NetworkNode(List(
           NodeNode("node-name-1", List.empty),
@@ -160,6 +164,7 @@ class SyntaxTreeSpec extends UnitSpec {
       val expectedTree = SimulationNode(
         "simulation-name",
         10,
+        1,
         List(
           MessageDropInterceptorNode(0.63),
           RandomLatencyInterceptorNode(UniformDistributionNode(6, 12.1)),
@@ -186,6 +191,7 @@ class SyntaxTreeSpec extends UnitSpec {
       val expectedTree = SimulationNode(
         "simulation-name",
         10,
+        1,
         List.empty,
         NetworkNode(List.empty)
       )
@@ -209,6 +215,7 @@ class SyntaxTreeSpec extends UnitSpec {
       val expectedTree = SimulationNode(
         "simulation-name",
         10,
+        1,
         List.empty,
         NetworkNode(List.empty)
       )

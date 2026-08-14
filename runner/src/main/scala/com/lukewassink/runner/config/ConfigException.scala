@@ -23,7 +23,5 @@ case class MissingDistributionTypeException(distributionType: String)
       s"Distribution type $distributionType does note exist."
     )
 
-case class InvalidChanceException(path: String, e: IllegalArgumentException)
-    extends ConfigException(
-      s"The Double value at $path can not be parsed as a Chance: ${e.getMessage}"
-    )
+case class IllegalConfigValueException(message: String)
+    extends ConfigException(message)

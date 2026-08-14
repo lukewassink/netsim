@@ -34,13 +34,13 @@ case class ValidationContext(nodeIndicesByName: Map[String, List[Int]])
 
 trait Validator:
   def run(
-      node: SimulationNode,
+      simulationNode: SimulationNode,
       context: ValidationContext
   ): List[ConfigException]
 
 case object DuplicateNodeNamesValidator extends Validator:
   def run(
-      node: SimulationNode,
+      simulationNode: SimulationNode,
       context: ValidationContext
   ): List[ConfigException] =
     context.nodeIndicesByName.filter((_, indices) => indices.length > 1)
@@ -48,10 +48,24 @@ case object DuplicateNodeNamesValidator extends Validator:
 
 case object MissingReferenceNameValidator extends Validator:
   def run(
-      node: SimulationNode,
+      simulationNode: SimulationNode,
       context: ValidationContext
   ): List[ConfigException] = {
     val nodeNames = context.nodeIndicesByName.keySet
-    referenceLocations(node).filterNot(rl => nodeNames.contains(rl.nodeName))
+    referenceLocations(simulationNode)
+      .filterNot(rl => nodeNames.contains(rl.nodeName))
       .map(MissingReferenceNameException(_))
+  }
+
+case object NegativeTicksPerMillisecondValidator extends Validator:
+  def run(
+      simulationNode: SimulationNode,
+      context: ValidationContext
+  ): List[ConfigException] = {
+    val tpm = simulationNode.ticksPerMillisecond
+    if tpm > 0 then List.empty
+    else
+      List(IllegalConfigValueException(
+        s"Field ticksPerMillisecond must be > 0, but it is set to $tpm."
+      ))
   }

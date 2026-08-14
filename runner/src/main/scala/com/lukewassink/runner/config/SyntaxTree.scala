@@ -77,6 +77,7 @@ object SyntaxTree {
 final case class SimulationNode(
     name: String,
     randomSeed: Long,
+    ticksPerMillisecond: Double,
     interceptors: List[InterceptorNode],
     network: NetworkNode
 )

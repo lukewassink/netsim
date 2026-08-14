@@ -5,6 +5,8 @@ package com.lukewassink.runner.config
 object SyntaxNodeDefaults {
   val defaultSimulationNode: String =
     """
+      |ticksPerMillisecond = 1
+      |
       |interceptors = []
       |
       |network {

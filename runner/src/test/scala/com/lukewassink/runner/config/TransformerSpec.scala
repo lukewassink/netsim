@@ -20,6 +20,7 @@ class TransformerSpec extends UnitSpec {
     val tree = SimulationNode(
       "simulation-name",
       10,
+      1,
       List.empty,
       NetworkNode(List(
         NodeNode("node-name-1", List.empty),
@@ -62,6 +63,7 @@ class TransformerSpec extends UnitSpec {
       val tree = SimulationNode(
         "simulation-name",
         10,
+        1,
         List.empty,
         NetworkNode(List.empty)
       )
@@ -78,6 +80,7 @@ class TransformerSpec extends UnitSpec {
       val tree = SimulationNode(
         "simulation-name",
         10,
+        1,
         List.empty,
         NetworkNode(List(NodeNode("node-name", List.empty)))
       )
@@ -100,6 +103,7 @@ class TransformerSpec extends UnitSpec {
       val tree = SimulationNode(
         "simulation-name",
         10,
+        6,
         List.empty,
         NetworkNode(List(
           NodeNode("node-name-1", List.empty),
@@ -118,7 +122,7 @@ class TransformerSpec extends UnitSpec {
       val simulation = Simulation(
         SimulationMetadata("simulation-name", 10),
         Network(
-          ExecutionContext(0, 1, 10),
+          ExecutionContext(0, 6, 10),
           List(
             Node(List.empty, NodeState(NodeHeader(0, 0), List.empty, List.empty)),
             Node(
