@@ -5,11 +5,8 @@ import com.lukewassink.runner.config.InterceptorNode.*
 import com.lukewassink.runner.config.DistributionNode.*
 import com.lukewassink.runner.config.SyntaxNodeDefaults.defaultSimulationNode
 import com.lukewassink.runner.util.{Failure, Result, Success}
-import com.lukewassink.simulation.util.Chance.Chance
-import com.lukewassink.simulation.util.Chance
 import io.github.edadma.hocon.{
-  Config, ConfigNumber, ConfigObject, Decoder, Hocon, HoconException,
-  WrongTypeException
+  Config, ConfigObject, Decoder, Hocon, HoconException
 }
 
 object SyntaxTree {
@@ -75,21 +72,6 @@ object SyntaxTree {
         case t            => throw MissingBehaviorTypeException(t)
       }
     }
-
-  given Decoder[Chance] =
-    (value, path) => {
-      val chance =
-        value match {
-          case d: ConfigNumber => d.raw.toDouble
-          case other           =>
-            throw WrongTypeException(path, "Double", other.getClass.toString)
-        }
-
-      try Chance(chance)
-      catch {
-        case e: IllegalArgumentException => throw InvalidChanceException(path, e)
-      }
-    }
 }
 
 final case class SimulationNode(
@@ -100,7 +82,7 @@ final case class SimulationNode(
 )
 
 enum InterceptorNode:
-  case MessageDropInterceptorNode(chance: Chance)
+  case MessageDropInterceptorNode(chance: Double)
   case RandomLatencyInterceptorNode(distribution: DistributionNode)
 
 enum DistributionNode:

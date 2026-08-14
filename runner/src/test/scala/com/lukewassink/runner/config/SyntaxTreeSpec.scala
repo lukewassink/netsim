@@ -3,9 +3,15 @@ package com.lukewassink.runner.config
 import com.lukewassink.runner.config.BehaviorNode.{
   SimpleResponderNode, SimpleSenderNode
 }
+import com.lukewassink.runner.config.DistributionNode.{
+  LogNormalDistributionNode, NormalDistributionNode, UniformDistributionNode
+}
+import com.lukewassink.runner.config.InterceptorNode.{
+  MessageDropInterceptorNode, RandomLatencyInterceptorNode
+}
 import com.lukewassink.simulation.test_utils.UnitSpec
 import io.github.edadma.hocon.{Hocon, MissingPathException}
-import com.lukewassink.runner.util.{Success, Failure}
+import com.lukewassink.runner.util.{Failure, Success}
 
 class SyntaxTreeSpec extends UnitSpec {
   describe("fromConfig") {
@@ -107,6 +113,81 @@ class SyntaxTreeSpec extends UnitSpec {
             )
           )
         ))
+      )
+
+      inside(result) { case Success(tree) => tree should equal(expectedTree) }
+    }
+
+    it("builds interceptor nodes") {
+      val config = Hocon.parse(
+        """
+          |name = "simulation-name"
+          |randomSeed = 10
+          |
+          |interceptors = [
+          |  {
+          |    type = message-drop
+          |    chance = 0.63
+          |  }
+          |  {
+          |    type = random-latency
+          |    distribution {
+          |      type = uniform
+          |      min = 6
+          |      max = 12.1
+          |    }
+          |  }
+          |  {
+          |    type = random-latency
+          |    distribution {
+          |      type = normal
+          |      mean = 2.3
+          |      stDev = 4
+          |    }
+          |  }
+          |  {
+          |    type = random-latency
+          |    distribution {
+          |      type = log-normal
+          |      logMean = 6
+          |      logStdDev = 7
+          |    }
+          |  }
+          |]""".stripMargin
+      )
+      val result = SyntaxTree.fromConfig(config)
+
+      val expectedTree = SimulationNode(
+        "simulation-name",
+        10,
+        List(
+          MessageDropInterceptorNode(0.63),
+          RandomLatencyInterceptorNode(UniformDistributionNode(6, 12.1)),
+          RandomLatencyInterceptorNode(NormalDistributionNode(2.3, 4)),
+          RandomLatencyInterceptorNode(LogNormalDistributionNode(6, 7))
+        ),
+        NetworkNode(List.empty)
+      )
+
+      inside(result) { case Success(tree) => tree should equal(expectedTree) }
+    }
+
+    it("can fall back on default values") {
+      val config = Hocon.parse(
+        """
+                       name = "simulation-name"
+                       randomSeed = 10
+      
+                       // Note: no network or list of interceptors.
+                    """.stripMargin
+      )
+      val result = SyntaxTree.fromConfig(config)
+
+      val expectedTree = SimulationNode(
+        "simulation-name",
+        10,
+        List.empty,
+        NetworkNode(List.empty)
       )
 
       inside(result) { case Success(tree) => tree should equal(expectedTree) }
