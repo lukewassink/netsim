@@ -1,5 +1,7 @@
 package com.lukewassink.visualizer.config
 
+import com.lukewassink.runner.config.AutoRandomSeed
+import com.lukewassink.runner.config.AutoRandomSeed.withAutoSeed
 import com.lukewassink.visualizer.core.RootState
 import com.lukewassink.visualizer.util.DefaultSimulation
 import com.raquo.laminar.api.L.{*, given}
@@ -27,7 +29,11 @@ object ConfigRenderer {
       button(
         "Run",
         cls("control-element button"),
-        onClick --> (e => rootState.config.set(configText.now()))
+        onClick -->
+          (e =>
+            configText.update(withAutoSeed)
+            rootState.config.set(configText.now())
+          )
       ),
       button(
         cls("control-element button"),

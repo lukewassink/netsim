@@ -1,5 +1,7 @@
 package com.lukewassink.visualizer.util
 
+import com.lukewassink.runner.config.AutoRandomSeed
+import com.lukewassink.runner.config.AutoRandomSeed.withAutoSeed
 import com.lukewassink.runner.core.{Runner, Simulation, SimulationMetadata}
 import com.lukewassink.simulation.core.Network
 import com.lukewassink.simulation.util.Time
@@ -7,9 +9,9 @@ import com.lukewassink.simulation.util.Time
 // The default network to display in the visualizer.
 object DefaultSimulation {
   // The default value for the simulation config.
-  val config: String =
+  val config: String = withAutoSeed(
     """|name = "default-simulation"
-      |randomSeed = 10
+      |randomSeed = auto-seed()
       |
       |interceptors = [{
       |    type = random-latency
@@ -38,6 +40,7 @@ object DefaultSimulation {
       |   ]
       | }
       |]""".stripMargin
+  )
 
   // An empty simulation that can serve as a starting value for Laminar signals. It should never actually be rendered.
   val emptySimulation = Simulation(

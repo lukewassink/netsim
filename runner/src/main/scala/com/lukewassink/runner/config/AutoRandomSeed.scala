@@ -17,7 +17,7 @@ object AutoRandomSeed {
     if hasAutoRandomSeed(configText) then
       configText.replaceFirst(
         "\\s+auto-seed\\(\\)\\s*\\R",
-        s" ${Random.nextLong().toString}\n"
+        s" ${Random.nextLong().toString}\n\n"
       )
     else configText
 }
