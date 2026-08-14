@@ -6,14 +6,20 @@ import com.lukewassink.simulation.util.{BaseDistribution, Chance, Duration, Time
 
 import scala.util.Random
 
+object ExecutionContext:
+  def apply(
+      time: Time,
+      ticksPerMillisecond: Double,
+      seed: Long
+  ): ExecutionContext =
+    new ExecutionContext(time, ticksPerMillisecond, Random(seed))
+
 // Shared context that should be made available implicitly throughout the network.
 case class ExecutionContext(
     time: Time,
     ticksPerMillisecond: Double,
-    randomSeed: Long
+    private val rng: Random
 ) extends TimeConverter, BaseDistribution:
-  private val rng: Random = Random(randomSeed)
-
   def convertTime(d: Double): Duration = Duration(ticksPerMillisecond * d)
 
   def withNextTime: ExecutionContext = this.copy(time = time.next)
@@ -24,3 +30,10 @@ case class ExecutionContext(
 
   // Returns true with probability chance, false otherwise.
   def chances(chance: Chance): Boolean = nextChance < chance
+
+  override def equals(other: Any): Boolean =
+    other match {
+      case ExecutionContext(t, tpm, r) =>
+        time == t && ticksPerMillisecond == tpm
+      case _ => false
+    }

@@ -21,7 +21,7 @@ object DeliveryQueueSpec {
 
 class DeliveryQueueSpec extends UnitSpec {
   describe("DeliveryQueue") {
-    given ExecutionContext(0, 1, 1)
+    given ExecutionContext = ExecutionContext(0, 1, 1)
 
     val message1    = scheduledMessage(0, 1, 2, 1, 9, "")
     val message2    = scheduledMessage(12, 5, 2, 2, 8, "")

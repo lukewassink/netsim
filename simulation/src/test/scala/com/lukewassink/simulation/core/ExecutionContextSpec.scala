@@ -29,7 +29,7 @@ class ExecutionContextSpec extends UnitSpec {
 
   describe("withNextTime") {
     it("increments the time by 1") {
-      assert(ExecutionContext(1, 1, 1).withNextTime === ExecutionContext(2, 1, 1))
+      assert(ExecutionContext(1, 1, 1).withNextTime.time === Time(2))
     }
   }
 
