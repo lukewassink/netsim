@@ -13,7 +13,7 @@ class RootRendererSpec extends UnitSpec {
         h1 of textNode,
         div.of(
           div.of(
-            svg.svg of (sentinel, svg.circle, svg.circle, svg.circle, sentinel),
+            svg.svg of (sentinel, svg.circle, svg.circle, sentinel),
             div.of(button, input, input)
           ),
           div.of(
