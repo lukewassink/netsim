@@ -17,7 +17,7 @@ import com.lukewassink.simulation.core.{
 import com.lukewassink.simulation.util.Time
 
 // Context used by the transformers to build the Simulation.
-case class TransformContext(nameToID: Map[String, NodeID], randomSeed: Long):
+case class TransformContext(nameToID: Map[String, NodeID]):
   // This method should never fail to find an ID for a name unless there is a bug in syntax tree validation
   // or in constructing the transform context, so throw an error if it does fail.
   def resolveID(name: String): NodeID =
@@ -34,7 +34,7 @@ object TransformContext:
     val nameToID =
       simulation.network.nodes.map(_.name).zipWithIndex
         .map((name, id) => name -> NodeID(id)).toMap
-    TransformContext(nameToID, simulation.randomSeed)
+    TransformContext(nameToID)
   }
 
 // Transforms a syntax tree into an actual Simulation with a network.
@@ -46,27 +46,27 @@ object Transformer {
 
       Success(Simulation(
         SimulationMetadata(simulationNode.name, simulationNode.randomSeed),
-        transform(simulationNode.network)
+        transformNetwork(simulationNode.network, simulationNode.randomSeed)
       ))
     } catch { case e: IllegalStateException => Failure(e) }
 
-  private def transform(using
+  private def transformNetwork(using
       context: TransformContext
-  )(networkNode: NetworkNode): Network = Network(
-    ExecutionContext(Time(0), 1, context.randomSeed),
-    networkNode.nodes.map(transform),
+  )(networkNode: NetworkNode, randomSeed: Long): Network = Network(
+    ExecutionContext(Time(0), 1, randomSeed),
+    networkNode.nodes.map(transformNode),
     List.empty
   )
 
-  private def transform(using
+  private def transformNode(using
       context: TransformContext
   )(nodeNode: NodeNode): Node = {
     val id    = context.resolveID(nodeNode.name)
     val state = NodeState(NodeHeader(id, MessageID(0)), List.empty, List.empty)
-    Node(nodeNode.behaviors.map(transform), state)
+    Node(nodeNode.behaviors.map(transformBehavior), state)
   }
 
-  private def transform(using
+  private def transformBehavior(using
       context: TransformContext
   )(behaviorNode: BehaviorNode): NodeBehavior =
     behaviorNode match {

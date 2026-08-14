@@ -8,6 +8,7 @@ import com.lukewassink.runner.util.Success
 import com.lukewassink.simulation.behavior.{SimpleResponder, SimpleSender}
 import com.lukewassink.simulation.core.MessageStage.Drafted
 import com.lukewassink.simulation.core.ResponseState.Request
+import com.lukewassink.simulation.core.NodeID.NodeID
 import com.lukewassink.simulation.core.{
   ExecutionContext, Message, MessageContent, Network, Node, NodeHeader, NodeID,
   NodeState
@@ -31,13 +32,14 @@ class TransformerSpec extends UnitSpec {
 
     describe("build context from a SimulationNode") {
 
-      it("builds transformation context from a SimuldationNode") {
+      it("builds transformation context from a SimulationNode") {
 
         assert(
-          context === TransformContext(
-            Map("node-name-1" -> 0, "node-name-2" -> 1, "node-name-3" -> 2),
-            10
-          )
+          context === TransformContext(Map[String, NodeID](
+            "node-name-1" -> 0,
+            "node-name-2" -> 1,
+            "node-name-3" -> 2
+          ))
         )
       }
     }
