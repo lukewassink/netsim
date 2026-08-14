@@ -3,6 +3,10 @@ package com.lukewassink.runner.config
 import com.lukewassink.runner.config.BehaviorNode.{
   SimpleResponderNode, SimpleSenderNode
 }
+import com.lukewassink.runner.config.DistributionNode.UniformDistributionNode
+import com.lukewassink.runner.config.InterceptorNode.{
+  MessageDropInterceptorNode, RandomLatencyInterceptorNode
+}
 import com.lukewassink.runner.config.Validator.validate
 import com.lukewassink.runner.config.{
   DuplicateNodeNamesException, MissingReferenceNameException
@@ -124,6 +128,63 @@ class ValidatorSpec extends UnitSpec {
         e2 shouldBe a[DuplicateNodeNamesException]
         e3 shouldBe a[MissingReferenceNameException]
         e4 shouldBe a[MissingReferenceNameException]
+      }
+    }
+
+    it("catches negative ticksPerMillisecond") {
+      val tree = SimulationNode(
+        "simulation-name",
+        10,
+        -1,
+        List.empty,
+        NetworkNode(List.empty)
+      )
+
+      val result = validate(tree)
+
+      inside(result) { case Failure(List(e)) =>
+        e shouldBe a[IllegalConfigValueException]
+      }
+    }
+
+    it("catches invalid chances") {
+      val tree = SimulationNode(
+        "simulation-name",
+        10,
+        1,
+        List(
+          MessageDropInterceptorNode(-1),
+          MessageDropInterceptorNode(0),
+          MessageDropInterceptorNode(0.5),
+          MessageDropInterceptorNode(1),
+          MessageDropInterceptorNode(5)
+        ),
+        NetworkNode(List.empty)
+      )
+
+      val result = validate(tree)
+
+      inside(result) { case Failure(List(e1, e2, e3, e4)) =>
+        e1 shouldBe a[IllegalConfigValueException]
+        e2 shouldBe a[IllegalConfigValueException]
+        e3 shouldBe a[IllegalConfigValueException]
+        e4 shouldBe a[IllegalConfigValueException]
+      }
+    }
+
+    it("catches invalid ranges") {
+      val tree = SimulationNode(
+        "simulation-name",
+        10,
+        1,
+        List(RandomLatencyInterceptorNode(UniformDistributionNode(5, 3))),
+        NetworkNode(List.empty)
+      )
+
+      val result = validate(tree)
+
+      inside(result) { case Failure(List(e)) =>
+        e shouldBe a[IllegalConfigValueException]
       }
     }
   }
