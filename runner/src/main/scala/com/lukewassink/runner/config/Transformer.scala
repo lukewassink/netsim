@@ -3,18 +3,29 @@ package com.lukewassink.runner.config
 import com.lukewassink.runner.config.BehaviorNode.{
   SimpleResponderNode, SimpleSenderNode
 }
+import com.lukewassink.runner.config.DistributionNode.{
+  LogNormalDistributionNode, NormalDistributionNode, UniformDistributionNode
+}
+import com.lukewassink.runner.config.InterceptorNode.{
+  MessageDropInterceptorNode, RandomLatencyInterceptorNode
+}
 import com.lukewassink.runner.core.{Simulation, SimulationMetadata}
 import com.lukewassink.runner.util.{Failure, Result, Success}
 import com.lukewassink.simulation.behavior.{SimpleResponder, SimpleSender}
 import com.lukewassink.simulation.core.MessageStage.Drafted
 import com.lukewassink.simulation.core.NodeID.NodeID
-import com.lukewassink.simulation.core.NodeID
-import com.lukewassink.simulation.core.ResponseState.Request
 import com.lukewassink.simulation.core.{
-  ExecutionContext, Message, MessageContent, MessageID, Network, Node,
-  NodeBehavior, NodeHeader, NodeState
+  DeliveryQueue, ExecutionContext, Message, MessageContent, MessageID, Network,
+  Node, NodeBehavior, NodeHeader, NodeID, NodeState
 }
-import com.lukewassink.simulation.util.Time
+import com.lukewassink.simulation.core.ResponseState.Request
+import com.lukewassink.simulation.interceptor.{
+  MessageDropInterceptor, MessageInterceptor, RandomLatencyInterceptor
+}
+import com.lukewassink.simulation.util.{
+  Chance, Distribution, LogNormalDistribution, NormalDistribution, Time,
+  UniformDistribution
+}
 
 // Context used by the transformers to build the Simulation.
 case class TransformContext(nameToID: Map[String, NodeID]):
@@ -32,7 +43,7 @@ case class TransformContext(nameToID: Map[String, NodeID]):
 object TransformContext:
   def apply(simulation: SimulationNode): TransformContext = {
     val nameToID =
-      simulation.network.nodes.map(_.name).zipWithIndex
+      simulation.nodes.map(_.name).zipWithIndex
         .map((name, id) => name -> NodeID(id)).toMap
     TransformContext(nameToID)
   }
@@ -46,25 +57,40 @@ object Transformer {
 
       Success(Simulation(
         SimulationMetadata(simulationNode.name, simulationNode.randomSeed),
-        transformNetwork(
-          simulationNode.network,
-          simulationNode.randomSeed,
-          simulationNode.ticksPerMillisecond
+        Network(
+          ExecutionContext(
+            Time(0),
+            simulationNode.ticksPerMillisecond,
+            simulationNode.randomSeed
+          ),
+          simulationNode.nodes.map(transformNode),
+          DeliveryQueue(
+            simulationNode.interceptors.map(transformInterceptor),
+            List.empty
+          )
         )
       ))
     } catch { case e: IllegalStateException => Failure(e) }
 
-  private def transformNetwork(using
+  private def transformInterceptor(using
       context: TransformContext
-  )(
-      networkNode: NetworkNode,
-      randomSeed: Long,
-      ticksPerMillisecond: Double
-  ): Network = Network(
-    ExecutionContext(Time(0), ticksPerMillisecond, randomSeed),
-    networkNode.nodes.map(transformNode),
-    List.empty
-  )
+  )(interceptorNode: InterceptorNode): MessageInterceptor =
+    interceptorNode match {
+      case MessageDropInterceptorNode(chance) =>
+        MessageDropInterceptor(Chance(chance))
+      case RandomLatencyInterceptorNode(distribution) =>
+        RandomLatencyInterceptor(transformDistribution(distribution))
+    }
+
+  private def transformDistribution(using
+      context: TransformContext
+  )(distributionNode: DistributionNode): Distribution =
+    distributionNode match {
+      case UniformDistributionNode(min, max) => UniformDistribution(min, max)
+      case NormalDistributionNode(mean, stDev) => NormalDistribution(mean, stDev)
+      case LogNormalDistributionNode(logMean, logStdDev) =>
+        LogNormalDistribution(logMean, logStdDev)
+    }
 
   private def transformNode(using
       context: TransformContext

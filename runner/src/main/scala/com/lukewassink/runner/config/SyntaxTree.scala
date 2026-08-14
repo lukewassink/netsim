@@ -79,7 +79,7 @@ final case class SimulationNode(
     randomSeed: Long,
     ticksPerMillisecond: Double,
     interceptors: List[InterceptorNode],
-    network: NetworkNode
+    nodes: List[NodeNode]
 )
 
 enum InterceptorNode:
@@ -90,8 +90,6 @@ enum DistributionNode:
   case UniformDistributionNode(min: Double, max: Double)
   case NormalDistributionNode(mean: Double, stDev: Double)
   case LogNormalDistributionNode(logMean: Double, logStdDev: Double)
-
-final case class NetworkNode(nodes: List[NodeNode])
 
 case class NodeNode(name: String, behaviors: List[BehaviorNode])
 

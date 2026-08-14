@@ -16,7 +16,7 @@ object Validator {
 
   private def validationContext(node: SimulationNode): ValidationContext = {
     val indicesByName =
-      node.network.nodes.map(_.name).zipWithIndex
+      node.nodes.map(_.name).zipWithIndex
         .groupMap((name, _) => name)((name, idx) => idx)
     ValidationContext(indicesByName)
   }

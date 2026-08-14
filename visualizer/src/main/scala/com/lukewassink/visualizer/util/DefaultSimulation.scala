@@ -17,29 +17,27 @@ object DefaultSimulation {
     """|name = "default-simulation"
       |randomSeed = 10
       |
-      |network {
-      |  nodes = [{
-      |     name = "node-1"
-      |     behaviors = []
-      |   }
-      |   {
-      |     name = "node-2"
-      |     behaviors = [{type = "simple-responder"}]
-      |   }
-      |   {
-      |     name = "node-3"
-      |     behaviors = [
-      |       {type = "simple-responder"}
-      |       {
-      |         type = "simple-sender"
-      |         time = 1
-      |         receiver = "node-2"
-      |         content = "Hi!"
-      |       }
-      |     ]
-      |   }
-      | ]
-      |}""".stripMargin
+      |nodes = [{
+      |   name = "node-1"
+      |   behaviors = []
+      | }
+      | {
+      |   name = "node-2"
+      |   behaviors = [{type = "simple-responder"}]
+      | }
+      | {
+      |   name = "node-3"
+      |   behaviors = [
+      |     {type = "simple-responder"}
+      |     {
+      |       type = "simple-sender"
+      |       time = 1
+      |       receiver = "node-2"
+      |       content = "Hi!"
+      |     }
+      |   ]
+      | }
+      |]""".stripMargin
 
   // An empty simulation that can serve as a starting value for Laminar signals. It should never actually be rendered.
   val emptySimulation = Simulation(

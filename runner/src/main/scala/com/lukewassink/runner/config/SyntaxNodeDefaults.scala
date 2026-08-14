@@ -8,8 +8,6 @@ object SyntaxNodeDefaults {
       |ticksPerMillisecond = 1
       |
       |interceptors = []
-      |
-      |network {
-      |  nodes = []
-      |}""".stripMargin
+      |nodes = []
+      |""".stripMargin
 }

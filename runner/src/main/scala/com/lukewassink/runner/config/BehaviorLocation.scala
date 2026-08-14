@@ -22,7 +22,7 @@ object BehaviorLocation:
   def referenceLocations(
       simulationNode: SimulationNode
   ): List[ReferenceLocation] =
-    simulationNode.network.nodes.zipWithIndex
+    simulationNode.nodes.zipWithIndex
       .foldLeft(List.empty)((list, nodeWithIndex) =>
         list ::: referenceLocations(nodeWithIndex._1, nodeWithIndex._2)
       )

@@ -22,7 +22,7 @@ class ValidatorSpec extends UnitSpec {
         10,
         1,
         List.empty,
-        NetworkNode(List(
+        List(
           NodeNode("node-name-1", List.empty),
           NodeNode("node-name-2", List(SimpleResponderNode())),
           NodeNode(
@@ -33,7 +33,7 @@ class ValidatorSpec extends UnitSpec {
               SimpleSenderNode(10, "node-name-2", "Hi!")
             )
           )
-        ))
+        )
       )
 
       assert(validate(validTree) === Success(validTree))
@@ -45,7 +45,7 @@ class ValidatorSpec extends UnitSpec {
         10,
         1,
         List.empty,
-        NetworkNode(List(
+        List(
           NodeNode("node-name-1", List.empty),
           NodeNode("node-name-1", List(SimpleResponderNode())),
           NodeNode(
@@ -56,7 +56,7 @@ class ValidatorSpec extends UnitSpec {
               SimpleSenderNode(10, "node-name-1", "Hi!")
             )
           )
-        ))
+        )
       )
 
       val result = validate(tree)
@@ -72,7 +72,7 @@ class ValidatorSpec extends UnitSpec {
         10,
         1,
         List.empty,
-        NetworkNode(List(
+        List(
           NodeNode("node-name-1", List.empty),
           NodeNode("node-name-2", List(SimpleResponderNode())),
           NodeNode(
@@ -83,7 +83,7 @@ class ValidatorSpec extends UnitSpec {
               SimpleSenderNode(10, "node-name-5", "Hi!")
             )
           )
-        ))
+        )
       )
 
       val result = validate(tree)
@@ -99,7 +99,7 @@ class ValidatorSpec extends UnitSpec {
         10,
         1,
         List.empty,
-        NetworkNode(List(
+        List(
           NodeNode("node-name-1", List.empty),
           NodeNode(
             "node-name-1",
@@ -118,7 +118,7 @@ class ValidatorSpec extends UnitSpec {
           ),
           NodeNode("node-name-3", List.empty),
           NodeNode("node-name-3", List.empty)
-        ))
+        )
       )
 
       val result = validate(tree)
@@ -137,7 +137,7 @@ class ValidatorSpec extends UnitSpec {
         10,
         -1,
         List.empty,
-        NetworkNode(List.empty)
+        List.empty
       )
 
       val result = validate(tree)
@@ -159,7 +159,7 @@ class ValidatorSpec extends UnitSpec {
           MessageDropInterceptorNode(1),
           MessageDropInterceptorNode(5)
         ),
-        NetworkNode(List.empty)
+        List.empty
       )
 
       val result = validate(tree)
@@ -178,7 +178,7 @@ class ValidatorSpec extends UnitSpec {
         10,
         1,
         List(RandomLatencyInterceptorNode(UniformDistributionNode(5, 3))),
-        NetworkNode(List.empty)
+        List.empty
       )
 
       val result = validate(tree)
