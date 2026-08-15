@@ -1,7 +1,6 @@
 package com.lukewassink.simulation.util
 
-import com.lukewassink.simulation.core.Message
-import com.lukewassink.simulation.core.MessageStage.Scheduled
+import com.lukewassink.simulation.core.ExecutionContext
 import com.lukewassink.simulation.test_utils.{MessageSpecUtil, UnitSpec}
 import com.lukewassink.simulation.util.LogEvent.MessageDropEvent
 
@@ -11,32 +10,21 @@ class LoggerSpec extends UnitSpec {
 
   describe("log") {
     it("adds log events to the store and returns them as an immutable vector") {
-      val logger = Logger()
+      given ExecutionContext = ExecutionContext(0, 1, 1)
+      val logger             = Logger()
       assert(logger.exportLog === Vector.empty)
-      logger.addFrame()
       logger.log(event)
       logger.log(event)
       assert(logger.exportLog === Vector(List(event, event)))
     }
 
-    it("adds a frame if the log is empty") {
+    it("extends the log to the current tick and adds the logged event there") {
       val logger = Logger()
       assert(logger.exportLog === Vector.empty)
-      logger.log(event)
+      logger.log(using ExecutionContext(0, 1, 1))(event)
       assert(logger.exportLog === Vector(List(event)))
-    }
-  }
-
-  describe("addFrame") {
-    it("adds a frame to the log") {
-      val logger = Logger()
-      assert(logger.exportLog === Vector.empty)
-      logger.addFrame()
-      logger.addFrame()
-      logger.log(event)
-      logger.addFrame()
-      logger.log(event)
-      assert(logger.exportLog === Vector(List(), List(event), List(event)))
+      logger.log(using ExecutionContext(2, 1, 1))(event)
+      assert(logger.exportLog === Vector(List(event), List(), List(event)))
     }
   }
 }
