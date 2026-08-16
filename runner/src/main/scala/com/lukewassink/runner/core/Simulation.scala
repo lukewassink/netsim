@@ -12,8 +12,6 @@ case class Simulation(metadata: SimulationMetadata, initialNetwork: Network):
   // Lazily compute and cache the network evolution over time.
   lazy val history: LazyList[Network] = Simulation.history(initialNetwork)
 
-  val logger: Logger = initialNetwork.ctx.logger
-
 case object Simulation:
   private def history(network: Network): LazyList[Network] =
     network #:: history(network.next)

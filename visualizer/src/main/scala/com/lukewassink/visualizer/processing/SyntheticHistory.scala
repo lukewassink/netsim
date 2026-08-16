@@ -25,11 +25,15 @@ object SyntheticHistory:
     event match {
       case MessageDropEvent(message) =>
         val start = message.messageStage.sendTime.tick
-        val end   = (message.messageStage.deliveryTime.tick + start) / 2
+        val end   = droppedMessageEndTick(message)
         (start to end)
           .map(idx => (event = DroppedMessageElement(message), idx = idx))
           .toList
     }
+
+  def droppedMessageEndTick(message: Message[Scheduled]): Int =
+    (message.messageStage.deliveryTime.tick +
+      message.messageStage.sendTime.tick - 1) / 2
 
 enum SyntheticHistoryElement:
   case DroppedMessageElement(message: Message[Scheduled])

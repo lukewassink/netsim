@@ -11,7 +11,7 @@ import com.lukewassink.visualizer.core.MessageStatus.{
 }
 import com.lukewassink.visualizer.core.NetworkRenderer.FrameLength
 import com.lukewassink.visualizer.processing.{
-  SyntheticHistoryElement, SyntheticHistoryRow
+  SyntheticHistory, SyntheticHistoryElement, SyntheticHistoryRow
 }
 import com.lukewassink.visualizer.processing.SyntheticHistoryElement.DroppedMessageElement
 
@@ -58,10 +58,15 @@ object MessageRenderer {
     val t      = (time - startTime) / (endTime - startTime - Duration(2))
     val center = sender.center.interpolate(t, receiver.center)
 
+    val isLastTick =
+      time >= endTime - Duration(2) ||
+        (messageStatus == Dropped &&
+          SyntheticHistory.droppedMessageEndTick(message) == time.tick)
+
     MessageData(
       message,
       center,
-      time == startTime || time >= endTime - Duration(2),
+      (time == startTime) || isLastTick,
       messageStatus
     )
   }
