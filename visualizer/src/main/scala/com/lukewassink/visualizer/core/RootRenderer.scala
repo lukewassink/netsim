@@ -27,7 +27,7 @@ object RootRenderer:
     div(
       cls("body"),
       div(
-        NetworkRenderer.render(rootState.currentNetwork),
+        NetworkRenderer.render(rootState.currentNetworkState),
         PlaybackControls.render,
         cls("container-vertical")
       ),

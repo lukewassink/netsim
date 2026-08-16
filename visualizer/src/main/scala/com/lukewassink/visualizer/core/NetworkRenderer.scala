@@ -14,18 +14,17 @@ object NetworkRenderer {
   // Amount of time between ticks in milliseconds.
   val FrameLength = 200
 
-  def render(network: Signal[Network]): SvgElement = {
-
+  def render(state: Signal[NetworkState]): SvgElement = {
     val viewBox = s"0, 0, $NetworkViewBoxSize, $NetworkViewBoxSize"
 
-    val nodeData: Signal[Map[NodeID, NodeData]] = network
-      .map(NodeRenderer.addData)
+    val nodeData: Signal[Map[NodeID, NodeData]] = state
+      .map(s => NodeRenderer.addData(s.network))
 
     val nodeElements: Signal[List[SvgElement]] =
       nodeData.map(_.values.toList).split(_.node.id)(NodeRenderer.render)
 
-    val messageData: Signal[List[MessageData]] = network.combineWith(nodeData)
-      .mapN(MessageRenderer.addData)
+    val messageData: Signal[List[MessageData]] = state.combineWith(nodeData)
+      .mapN(MessageRenderer.addDataToMessages)
 
     val messageElements: Signal[List[SvgElement]] =
       messageData.split(_.message.uniqueID)(MessageRenderer.render)

@@ -14,7 +14,7 @@ class MessageRendererSpec extends UnitSpec {
   describe("addData") {
     val numMessages = testNetwork.messagesInTransit.messages.size
     val nodeData    = NodeRenderer.addData(testNetwork)
-    val messageData = MessageRenderer.addData(testNetwork, nodeData)
+    val messageData = MessageRenderer.addDataToMessages(testNetwork, nodeData)
 
     it("generates data for each message") {
       messageData should have size numMessages

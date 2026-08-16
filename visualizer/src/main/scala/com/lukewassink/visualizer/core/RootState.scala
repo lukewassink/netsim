@@ -8,10 +8,15 @@ import com.lukewassink.visualizer.util.DefaultSimulation.{
 import com.lukewassink.visualizer.util.{DefaultSimulation, PlaybackState}
 import com.raquo.laminar.api.L.{*, given}
 import com.lukewassink.runner.util.Failure
+import com.lukewassink.visualizer.processing.{
+  SyntheticHistory, SyntheticHistoryElement, SyntheticHistoryRow
+}
+
+type NetworkState = (network: Network, row: SyntheticHistoryRow)
 
 object RootState:
   // Amount of the network history to take.
-  private val HISTORY_LENGTH = 200
+  private val HISTORY_LENGTH = 10_000
 
 class RootState(val config: Var[String], val playbackState: PlaybackState) {
   def this(config: Var[String]) = this(
@@ -21,14 +26,19 @@ class RootState(val config: Var[String], val playbackState: PlaybackState) {
 
   private val result = config.signal.map(Runner.run)
 
-  lazy val simulation: Signal[Simulation] = result.changes.filter(_.isSuccess)
-    .map(_.getOrElse(emptySimulation)).startWith(defaultSimulation)
+  private lazy val simulation: Signal[Simulation] = result.changes
+    .filter(_.isSuccess).map(_.getOrElse(emptySimulation))
+    .startWith(defaultSimulation)
 
-  val history: Signal[Vector[Network]] = simulation
+  private val history: Signal[Vector[Network]] = simulation
     .map(_.history.take(RootState.HISTORY_LENGTH).toVector)
 
-  val currentNetwork: Signal[Network] = playbackState.tick.combineWith(history)
-    .map((t, h) => h(t))
+  private val syntheticHistory: Signal[SyntheticHistory] = history
+    .map(h => SyntheticHistory(h.last.ctx.logger))
+
+  val currentNetworkState: Signal[NetworkState] = playbackState.tick
+    .combineWith(history, syntheticHistory)
+    .map((t, h, sh) => (h(t), sh.history(t)))
 
   // If parsing the config fails, the error message goes here, empty string otherwise.
   val errorMessage: Signal[String] = result.map {

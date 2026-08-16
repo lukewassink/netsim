@@ -37,5 +37,5 @@ case class NormalDistribution(mean: Double, stDev: Double) extends Distribution:
 case class LogNormalDistribution(logMean: Double, logStDev: Double)
     extends Distribution:
   def next(using base: BaseDistribution): Double =
-    val normal = NormalDistribution(logMean, logStDev)
+    val normal = NormalDistribution(math.log(logMean), math.log(logStDev))
     math.exp(normal.next)
