@@ -63,3 +63,5 @@ final case class Duration(time: Double):
 
   // The ratio between two durations.
   infix def /(other: Duration): Float = time.toFloat / other.time.toFloat
+
+  infix def /(d: Double): Duration = Duration(time / d)

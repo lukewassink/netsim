@@ -7,7 +7,7 @@ import com.raquo.laminar.api.L.{*, given}
 class NetworkRendererSpec extends UnitSpec {
   describe("render") {
     it("Renders the network and updates it over time") {
-      val networkVar = Var(testNetwork)
+      val networkVar = Var((testNetwork, List.empty))
       mount(NetworkRenderer.render(networkVar.signal), "Root failed to mount")
 
       expectNode(
@@ -25,7 +25,7 @@ class NetworkRendererSpec extends UnitSpec {
       )
 
       // Tick 15 times so all messages have been sent.
-      for _ <- 1 to 15 do networkVar.update(n => n.next)
+      for _ <- 1 to 15 do networkVar.update((n, l) => (n.next, l))
 
       expectNode(
         svg.svg of

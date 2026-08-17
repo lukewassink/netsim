@@ -9,7 +9,7 @@ import com.lukewassink.visualizer.util.{DefaultSimulation, PlaybackState}
 import com.raquo.laminar.api.L.{*, given}
 import com.lukewassink.runner.util.Failure
 import com.lukewassink.visualizer.processing.{
-  SyntheticHistory, SyntheticHistoryElement, SyntheticHistoryRow
+  SyntheticHistory, SyntheticHistoryRow
 }
 
 type NetworkState = (network: Network, row: SyntheticHistoryRow)

@@ -16,9 +16,20 @@
 .message {
     fill: mediumpurple;
     r: 15px;
-    transition: opacity ease-in, visibility ease-in, cx linear, cy linear;
+    transition: all ease-in, visibility ease-in, cx linear, cy linear;
     visibility: hidden;
     opacity: 0;
+}
+
+.message--dropped {
+    fill: darkred;
+}
+
+.message--dropped-last {
+    --shadow-color: red;
+    r: 20px;
+    fill: red;
+    filter: drop-shadow(0 0 5px var(--shadow-color)) drop-shadow(0 0 10px var(--shadow-color)) drop-shadow(0 0 15px var(--shadow-color)) drop-shadow(0 0 25px var(--shadow-color)) drop-shadow(0 0 30px var(--shadow-color));
 }
 
 /* Used to show and hide the messages */

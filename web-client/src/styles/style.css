@@ -1,8 +1,8 @@
+@import "variables.css";
 @import "config.css";
 @import "playback.css";
-@import "simulation.css";
-@import "variables.css";
 @import "root.css";
+@import "simulation.css";
 
 /* Default fonts */
 html {

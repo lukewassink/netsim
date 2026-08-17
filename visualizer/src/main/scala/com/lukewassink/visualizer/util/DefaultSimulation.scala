@@ -14,12 +14,8 @@ object DefaultSimulation {
       |randomSeed = auto-seed()
       |
       |interceptors = [{
-      |    type = random-latency
-      |    distribution {
-      |      type = uniform
-      |      min = 5
-      |      max = 25
-      |    }
+      |    type = message-drop
+      |    chance = 0.99
       |  }
       |]
       |
