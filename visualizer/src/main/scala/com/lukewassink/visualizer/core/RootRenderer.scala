@@ -3,7 +3,9 @@ package com.lukewassink.visualizer.core
 import com.lukewassink.visualizer.config.ConfigRenderer
 import com.lukewassink.visualizer.core.NetworkRenderer
 import com.lukewassink.visualizer.playback.PlaybackControls
-import com.lukewassink.visualizer.util.{DefaultSimulation, PlaybackState}
+import com.lukewassink.visualizer.util.{
+  DefaultSimulation, PlaybackState, RootState
+}
 import com.raquo.laminar.api.L.{*, given}
 import org.scalajs.dom
 

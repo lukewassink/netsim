@@ -1,16 +1,17 @@
-package com.lukewassink.visualizer.core
+package com.lukewassink.visualizer.util
 
 import com.lukewassink.runner.core.{Runner, Simulation}
+import com.lukewassink.runner.util.Failure
 import com.lukewassink.simulation.core.Network
+import com.lukewassink.visualizer.util.RootState
+import com.lukewassink.visualizer.processing.{
+  SyntheticHistory, SyntheticHistoryRow
+}
 import com.lukewassink.visualizer.util.DefaultSimulation.{
   defaultSimulation, emptySimulation
 }
 import com.lukewassink.visualizer.util.{DefaultSimulation, PlaybackState}
 import com.raquo.laminar.api.L.{*, given}
-import com.lukewassink.runner.util.Failure
-import com.lukewassink.visualizer.processing.{
-  SyntheticHistory, SyntheticHistoryRow
-}
 
 type NetworkState = (network: Network, row: SyntheticHistoryRow)
 

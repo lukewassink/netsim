@@ -2,9 +2,10 @@ package com.lukewassink.visualizer.core
 
 import com.raquo.laminar.api.L.{*, given}
 import com.lukewassink.simulation.core.Network
-import com.lukewassink.visualizer.core.{NodeRenderer, MessageRenderer}
+import com.lukewassink.visualizer.core.{MessageRenderer, NodeRenderer}
 import com.lukewassink.visualizer.core.RootRenderer.given
 import com.lukewassink.simulation.core.NodeID.NodeID
+import com.lukewassink.visualizer.util.NetworkState
 
 // Render the network panel.
 object NetworkRenderer {
