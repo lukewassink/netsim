@@ -1,5 +1,8 @@
 package com.lukewassink.runner.core
 
+import com.lukewassink.runner.config.{
+  DuplicateNodeNamesException, MissingBehaviorTypeException
+}
 import com.lukewassink.runner.core.Runner
 import com.lukewassink.runner.util.{Failure, Success}
 import com.lukewassink.simulation.behavior.{SimpleResponder, SimpleSender}
@@ -9,6 +12,7 @@ import com.lukewassink.simulation.core.{
   Message, MessageContent, Network, Node, NodeHeader, NodeState
 }
 import com.lukewassink.simulation.test_utils.UnitSpec
+import io.github.edadma.hocon.HoconException
 
 class RunnerSpec extends UnitSpec {
   describe("run (from config)") {
@@ -18,29 +22,27 @@ class RunnerSpec extends UnitSpec {
            name = "simulation-name"
            randomSeed = 10
 
-           network {
-             nodes = [{
-                 name = "node-name-1"
-                 behaviors = []
-               }
-               {
-                 name = "node-name-2"
-                 behaviors = [{type = "simple-responder"}]
-               }
-               {
-                 name = "node-name-3"
-                 behaviors = [
-                   {type = "simple-responder"}
-                   {type = "simple-responder"}
-                   {
-                     type = "simple-sender"
-                     time = 15
-                     receiver = "node-name-2"
-                     content = "Hi!"
-                   }
-                 ]
-              }]
-           }
+           nodes = [{
+               name = "node-name-1"
+               behaviors = []
+             }
+             {
+               name = "node-name-2"
+               behaviors = [{type = "simple-responder"}]
+             }
+             {
+               name = "node-name-3"
+               behaviors = [
+                 {type = "simple-responder"}
+                 {type = "simple-responder"}
+                 {
+                   type = "simple-sender"
+                   time = 15
+                   receiver = "node-name-2"
+                   content = "Hi!"
+                 }
+               ]
+            }]
         """.stripMargin
 
       val result = Runner.run(config)
@@ -81,15 +83,14 @@ class RunnerSpec extends UnitSpec {
          name = "simulation-name"
          randomSeed = 10
 
-         network {
-           nodes = [{
-               name = "node-name-1"
-               behaviors = []
-             }]x // 'x' here is a syntax error
+         nodes = [{
+             name = "node-name-1"
+             behaviors = []
+           }]x // 'x' here is a syntax error
       """.stripMargin
 
     val result = Runner.run(config)
-    inside(result) { case Failure(_) => }
+    inside(result) { case Failure(List(e)) => e shouldBe a[HoconException] }
   }
 
   it("returns a Failure if there is a missing behavior type") {
@@ -98,15 +99,16 @@ class RunnerSpec extends UnitSpec {
              name = "simulation-name"
              randomSeed = 10
 
-             network {
-               nodes = [{
-                   name = "node-name-1"
-                   behaviors = [{type = "missing-type"}]
-                 }]
+             nodes = [{
+                 name = "node-name-1"
+                 behaviors = [{type = "missing-type"}]
+               }]
           """.stripMargin
 
     val result = Runner.run(config)
-    inside(result) { case Failure(_) => }
+    inside(result) { case Failure(List(e)) =>
+      e shouldBe a[MissingBehaviorTypeException]
+    }
   }
 
   it("returns a Failure if there are validation errors") {
@@ -115,18 +117,19 @@ class RunnerSpec extends UnitSpec {
              name = "simulation-name"
              randomSeed = 10
 
-             network {
-               nodes = [{
-                   name = "node-name-1"
-                   behaviors = []
-                 }
-                 {
-                   name = "node-name-1"
-                   behaviors = []
-                 }]
+             nodes = [{
+                 name = "node-name-1"
+                 behaviors = []
+               }
+               {
+                 name = "node-name-1"
+                 behaviors = []
+               }]
           """.stripMargin
 
     val result = Runner.run(config)
-    inside(result) { case Failure(_) => }
+    inside(result) { case Failure(List(e)) =>
+      e shouldBe a[DuplicateNodeNamesException]
+    }
   }
 }

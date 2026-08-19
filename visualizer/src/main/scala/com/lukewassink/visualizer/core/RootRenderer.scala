@@ -17,24 +17,25 @@ def RenderRoot(): Unit = renderOnDomContentLoaded(
 )
 
 object RootRenderer:
-  private val config = Var(DefaultSimulation.config)
-
-  given rootState: RootState = RootState(config)
-
-  given PlaybackState = rootState.playbackState
 
   def render(): Element = div(
     cls := "root",
     h1("NetSim"),
-    div(
-      cls("body"),
+
+    onMountInsert { ctx =>
+      given Owner = ctx.owner
+
+      given rootState: RootState = RootState(DefaultSimulation.config)
+
+      given PlaybackState = rootState.playbackState
       div(
-        NetworkRenderer.render(rootState.currentNetworkState),
-        PlaybackControls.render,
-        cls("container-vertical")
-      ),
-      ConfigRenderer.render
-    ),
-    rootState.refreshPlaybackOnConfigUpdate,
-    rootState.updateLastValidConfig
+        cls("body"),
+        div(
+          NetworkRenderer.render(rootState.currentNetworkState),
+          PlaybackControls.render,
+          cls("container-vertical")
+        ),
+        ConfigRenderer.render
+      )
+    }
   )

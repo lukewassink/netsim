@@ -11,9 +11,10 @@ class RootRendererSpec extends UnitSpec {
 
       expectNode(div.of(
         h1 of textNode,
+        sentinel,
         div.of(
           div.of(
-            svg.svg of (sentinel, svg.circle, svg.circle, sentinel),
+            svg.svg of (sentinel, svg.circle, svg.circle, sentinel, svg.circle),
             div.of(button, input, input)
           ),
           div.of(

@@ -36,8 +36,8 @@ case class ExecutionContext(
 
   override def equals(other: Any): Boolean =
     other match {
-      case ExecutionContext(t, tpm, _, l) =>
-        time == t && ticksPerMillisecond == tpm && logger == l
+      case ExecutionContext(t, tpm, _, _) =>
+        time == t && ticksPerMillisecond == tpm
       case _ => false
     }
 
