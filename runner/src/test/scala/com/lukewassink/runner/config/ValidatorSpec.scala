@@ -3,7 +3,7 @@ package com.lukewassink.runner.config
 import com.lukewassink.runner.config.BehaviorNode.{
   SimpleResponderNode, SimpleSenderNode
 }
-import com.lukewassink.runner.config.DistributionNode.UniformDistributionNode
+import com.lukewassink.runner.config.UniformDistributionNode
 import com.lukewassink.runner.config.InterceptorNode.{
   MessageDropInterceptorNode, RandomLatencyInterceptorNode
 }
@@ -147,28 +147,26 @@ class ValidatorSpec extends UnitSpec {
       }
     }
 
-    it("catches invalid chances") {
+    it("catches invalid probabilities") {
       val tree = SimulationNode(
         "simulation-name",
         10,
         1,
         List(
-          MessageDropInterceptorNode(-1),
-          MessageDropInterceptorNode(0),
-          MessageDropInterceptorNode(0.5),
-          MessageDropInterceptorNode(1),
-          MessageDropInterceptorNode(5)
+          MessageDropInterceptorNode(BooleanDistributionNode(-1)),
+          MessageDropInterceptorNode(BooleanDistributionNode(0)),
+          MessageDropInterceptorNode(BooleanDistributionNode(0.5)),
+          MessageDropInterceptorNode(BooleanDistributionNode(1)),
+          MessageDropInterceptorNode(BooleanDistributionNode(5))
         ),
         List.empty
       )
 
       val result = validate(tree)
 
-      inside(result) { case Failure(List(e1, e2, e3, e4)) =>
+      inside(result) { case Failure(List(e1, e2)) =>
         e1 shouldBe a[IllegalConfigValueException]
         e2 shouldBe a[IllegalConfigValueException]
-        e3 shouldBe a[IllegalConfigValueException]
-        e4 shouldBe a[IllegalConfigValueException]
       }
     }
 

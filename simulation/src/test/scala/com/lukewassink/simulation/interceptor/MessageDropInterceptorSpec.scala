@@ -6,7 +6,7 @@ import com.lukewassink.simulation.core.ExecutionContextSpec.{
   randChances, testContext
 }
 import com.lukewassink.simulation.test_utils.MessageSpecUtil.scheduledMessage
-import com.lukewassink.simulation.util.Chance
+import com.lukewassink.simulation.util.{BooleanDistribution, Chance}
 
 class MessageDropInterceptorSpec extends UnitSpec {
   private val message = scheduledMessage(1, 2, "Hi")
@@ -15,7 +15,7 @@ class MessageDropInterceptorSpec extends UnitSpec {
     it("drops the message if chances() == true") {
       given ExecutionContext = testContext(1, 1)
       assert(
-        MessageDropInterceptor(Chance((randChances(0) + 1) / 2))
+        MessageDropInterceptor(BooleanDistribution((randChances(0) + 1) / 2))
           .intercept(message).isEmpty
       )
     }
@@ -23,7 +23,7 @@ class MessageDropInterceptorSpec extends UnitSpec {
     it("doesn't drop the message if chances() == false") {
       given ExecutionContext = testContext(1, 1)
       assert(
-        MessageDropInterceptor(Chance(randChances(1) / 2))
+        MessageDropInterceptor(BooleanDistribution(randChances(1) / 2))
           .intercept(message) === List(message)
       )
     }

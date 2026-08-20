@@ -15,7 +15,10 @@ object DefaultSimulation {
       |
       |interceptors = [{
       |    type = message-drop
-      |    chance = 0.99
+      |    distribution {
+      |      type = boolean
+      |      probability = 0.99
+      |    }
       |  }
       |]
       |

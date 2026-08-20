@@ -2,11 +2,10 @@ package com.lukewassink.runner.config
 
 import com.lukewassink.runner.config.BehaviorNode.*
 import com.lukewassink.runner.config.InterceptorNode.*
-import com.lukewassink.runner.config.DistributionNode.*
 import com.lukewassink.runner.config.SyntaxNodeDefaults.defaultSimulationNode
 import com.lukewassink.runner.util.{Failure, Result, Success}
 import io.github.edadma.hocon.{
-  Config, ConfigObject, Decoder, Hocon, HoconException
+  Config, ConfigObject, ConfigValue, Decoder, Hocon, HoconException
 }
 
 object SyntaxTree {
@@ -18,61 +17,65 @@ object SyntaxTree {
       )
     catch case e: (HoconException | ConfigException) => Failure(e)
 
-  given Decoder[BehaviorNode] =
-    (value, path) => {
-      val config =
-        value match {
-          case o: ConfigObject => Config(o)
-          case other           =>
-            throw HoconException(
-              s"Behaviors must be objects, but configuration value at $path was not an object"
-            )
-        }
+  // Extract the object at path.
+  // Error if there is no object at path.
+  private def parseObject(
+      configValue: ConfigValue,
+      path: String,
+      pluralizedNodeType: String // Appears in error message.
+  ): Config =
+    configValue match {
+      case o: ConfigObject => Config(o)
+      case other           =>
+        throw HoconException(
+          s"$pluralizedNodeType must be objects, but configuration value at $path was not an object"
+        )
+    }
 
+  given Decoder[BehaviorNode] =
+    (value, path) =>
+      val config = parseObject(value, path, "Behaviors")
       config.getString("type") match {
         case "simple-sender"    => config.as[SimpleSenderNode]
         case "simple-responder" => config.as[SimpleResponderNode]
         case t                  => throw MissingBehaviorTypeException(t)
       }
-    }
 
   given Decoder[InterceptorNode] =
-    (value, path) => {
-      val config =
-        value match {
-          case o: ConfigObject => Config(o)
-          case other           =>
-            throw HoconException(
-              s"Interceptors must be objects, but configuration value at $path was not an object"
-            )
-        }
-
+    (value, path) =>
+      val config = parseObject(value, path, "Interceptors")
       config.getString("type") match {
         case "message-drop"   => config.as[MessageDropInterceptorNode]
         case "random-latency" => config.as[RandomLatencyInterceptorNode]
         case t                => throw MissingInterceptorTypeException(t)
       }
-    }
 
-  given Decoder[DistributionNode] =
-    (value, path) => {
-      val config =
-        value match {
-          case o: ConfigObject => Config(o)
-          case other           =>
-            throw HoconException(
-              s"Distributions must be objects, but configuration value at $path was not an object"
-            )
-        }
+  trait DistributionDecoder[A] extends Decoder[DistributionNode[A]]
 
+  given [A: DistributionDecoder]: Decoder[DistributionNode[A]] =
+    (value, path) => summon[DistributionDecoder[A]].decode(value, path)
+
+  given DistributionDecoder[Double] =
+    (value, path) =>
+      val config = parseObject(value, path, "Distributions")
       config.getString("type") match {
         case "uniform"    => config.as[UniformDistributionNode]
         case "normal"     => config.as[NormalDistributionNode]
         case "log-normal" => config.as[LogNormalDistributionNode]
-        case t            => throw MissingBehaviorTypeException(t)
+        case t            => throw MissingDistributionTypeException(t, "Double")
       }
-    }
+
+  given DistributionDecoder[Boolean] =
+    (value, path) =>
+      val config = parseObject(value, path, "Distributions")
+      config.getString("type") match {
+        case "boolean" => config.as[BooleanDistributionNode]
+        case t         => throw MissingDistributionTypeException(t, "Boolean")
+      }
 }
+
+// All syntax tree nodes should extend this trait.
+trait SyntaxTreeNode
 
 final case class SimulationNode(
     name: String,
@@ -80,19 +83,26 @@ final case class SimulationNode(
     ticksPerMillisecond: Double,
     interceptors: List[InterceptorNode],
     nodes: List[NodeNode]
-)
+) extends SyntaxTreeNode
 
-enum InterceptorNode:
-  case MessageDropInterceptorNode(chance: Double)
-  case RandomLatencyInterceptorNode(distribution: DistributionNode)
+enum InterceptorNode extends SyntaxTreeNode:
+  case MessageDropInterceptorNode(distribution: DistributionNode[Boolean])
+  case RandomLatencyInterceptorNode(distribution: DistributionNode[Double])
 
-enum DistributionNode:
-  case UniformDistributionNode(min: Double, max: Double)
-  case NormalDistributionNode(mean: Double, stDev: Double)
-  case LogNormalDistributionNode(logMean: Double, logStdDev: Double)
+sealed trait DistributionNode[T] extends SyntaxTreeNode
+
+case class UniformDistributionNode(min: Double, max: Double)
+    extends DistributionNode[Double]
+case class NormalDistributionNode(mean: Double, stDev: Double)
+    extends DistributionNode[Double]
+case class LogNormalDistributionNode(logMean: Double, logStdDev: Double)
+    extends DistributionNode[Double]
+case class BooleanDistributionNode(probability: Double)
+    extends DistributionNode[Boolean]
 
 case class NodeNode(name: String, behaviors: List[BehaviorNode])
+    extends SyntaxTreeNode
 
-enum BehaviorNode:
+enum BehaviorNode extends SyntaxTreeNode:
   case SimpleSenderNode(time: Double, receiver: String, content: String)
   case SimpleResponderNode()

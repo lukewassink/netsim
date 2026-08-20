@@ -3,7 +3,7 @@ package com.lukewassink.runner.config
 import com.lukewassink.runner.config.BehaviorNode.{
   SimpleResponderNode, SimpleSenderNode
 }
-import com.lukewassink.runner.config.DistributionNode.{
+import com.lukewassink.runner.config.{
   LogNormalDistributionNode, NormalDistributionNode, UniformDistributionNode
 }
 import com.lukewassink.runner.config.InterceptorNode.{
@@ -24,7 +24,8 @@ import com.lukewassink.simulation.interceptor.{
 }
 import com.lukewassink.simulation.test_utils.UnitSpec
 import com.lukewassink.simulation.util.{
-  LogNormalDistribution, NormalDistribution, UniformDistribution
+  BooleanDistribution, LogNormalDistribution, NormalDistribution,
+  UniformDistribution
 }
 
 class TransformerSpec extends UnitSpec {
@@ -160,7 +161,7 @@ class TransformerSpec extends UnitSpec {
         10,
         1,
         List(
-          MessageDropInterceptorNode(0.63),
+          MessageDropInterceptorNode(BooleanDistributionNode(0.63)),
           RandomLatencyInterceptorNode(UniformDistributionNode(6, 12.1)),
           RandomLatencyInterceptorNode(NormalDistributionNode(2.3, 4)),
           RandomLatencyInterceptorNode(LogNormalDistributionNode(6, 7))
@@ -175,7 +176,7 @@ class TransformerSpec extends UnitSpec {
           List.empty,
           DeliveryQueue(
             List(
-              MessageDropInterceptor(0.63),
+              MessageDropInterceptor(BooleanDistribution(0.63)),
               RandomLatencyInterceptor(UniformDistribution(6.0, 12.1)),
               RandomLatencyInterceptor(NormalDistribution(2.3, 4.0)),
               RandomLatencyInterceptor(LogNormalDistribution(6.0, 7.0))

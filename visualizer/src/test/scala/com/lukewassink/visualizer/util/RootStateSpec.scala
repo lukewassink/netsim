@@ -1,7 +1,5 @@
 package com.lukewassink.visualizer.util
 
-import com.lukewassink.runner.core.Runner
-import com.lukewassink.runner.util.Success
 import com.lukewassink.simulation.behavior.SimpleSender
 import com.lukewassink.simulation.core.MessageStage.Drafted
 import com.lukewassink.simulation.core.ResponseState.Request

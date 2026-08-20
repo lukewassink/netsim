@@ -3,7 +3,7 @@ package com.lukewassink.runner.config
 import com.lukewassink.runner.config.BehaviorNode.{
   SimpleResponderNode, SimpleSenderNode
 }
-import com.lukewassink.runner.config.DistributionNode.{
+import com.lukewassink.runner.config.{
   LogNormalDistributionNode, NormalDistributionNode, UniformDistributionNode
 }
 import com.lukewassink.runner.config.InterceptorNode.{
@@ -125,7 +125,10 @@ class SyntaxTreeSpec extends UnitSpec {
           |interceptors = [
           |  {
           |    type = message-drop
-          |    chance = 0.63
+          |    distribution {
+          |      type = boolean
+          |      probability = 0.63
+          |    }
           |  }
           |  {
           |    type = random-latency
@@ -160,7 +163,7 @@ class SyntaxTreeSpec extends UnitSpec {
         10,
         1,
         List(
-          MessageDropInterceptorNode(0.63),
+          MessageDropInterceptorNode(BooleanDistributionNode(0.63)),
           RandomLatencyInterceptorNode(UniformDistributionNode(6, 12.1)),
           RandomLatencyInterceptorNode(NormalDistributionNode(2.3, 4)),
           RandomLatencyInterceptorNode(LogNormalDistributionNode(6, 7))

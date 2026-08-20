@@ -18,24 +18,32 @@ trait BaseDistribution:
   // but this is not possible for closed intervals.
   def nextChance: Chance
 
-trait Distribution:
-  def next(using BaseDistribution): Double
+trait Distribution[A]:
+  def next(using BaseDistribution): A
 
-case class UniformDistribution(min: Double, max: Double) extends Distribution:
+case class UniformDistribution(min: Double, max: Double)
+    extends Distribution[Double]:
   def next(using base: BaseDistribution): Double =
     val d = base.nextChance
     (max - min) * d + min
 
-case class NormalDistribution(mean: Double, stDev: Double) extends Distribution:
+case class NormalDistribution(mean: Double, stDev: Double)
+    extends Distribution[Double]:
   def next(using base: BaseDistribution): Double =
-    // Use the Box-Muller transform. See https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform.
+    // Using the Box-Muller transform.
+    // See https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform.
     val u1 = base.nextChance
     val u2 = base.nextChance
     val z  = math.sqrt(-2 * math.log(u1)) * math.cos(2 * math.Pi * u2)
     mean + stDev * z
 
 case class LogNormalDistribution(logMean: Double, logStDev: Double)
-    extends Distribution:
+    extends Distribution[Double]:
   def next(using base: BaseDistribution): Double =
     val normal = NormalDistribution(math.log(logMean), math.log(logStDev))
     math.exp(normal.next)
+
+case class BooleanDistribution(probability: Double)
+    extends Distribution[Boolean]:
+  def next(using base: BaseDistribution): Boolean =
+    probability >= base.nextChance

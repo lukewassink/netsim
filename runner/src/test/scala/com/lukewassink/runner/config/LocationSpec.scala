@@ -6,7 +6,7 @@ import com.lukewassink.runner.config.BehaviorNode.{
   SimpleResponderNode, SimpleSenderNode
 }
 
-class BehaviorLocationSpec extends UnitSpec {
+class LocationSpec extends UnitSpec {
   describe("referenceLocations") {
     it("handles empty nodes") {
       val references = referenceLocations(

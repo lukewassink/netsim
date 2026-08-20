@@ -17,7 +17,7 @@ class TestBaseDistribution(chances: Vector[Chance]) extends BaseDistribution:
 def uniformChances(n: Int): Vector[Chance] = (1 to n).map(_.toDouble / (n + 1))
   .map(Chance(_)).toVector
 
-def uniformSample(n: Int, distribution: Distribution): Vector[Double] =
+def uniformSample[A](n: Int, distribution: Distribution[A]): Vector[A] =
   given TestBaseDistribution(uniformChances(n))
   (for _ <- 1 to n yield distribution.next).toVector
 

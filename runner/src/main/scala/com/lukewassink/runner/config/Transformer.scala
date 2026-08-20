@@ -3,8 +3,9 @@ package com.lukewassink.runner.config
 import com.lukewassink.runner.config.BehaviorNode.{
   SimpleResponderNode, SimpleSenderNode
 }
-import com.lukewassink.runner.config.DistributionNode.{
-  LogNormalDistributionNode, NormalDistributionNode, UniformDistributionNode
+import com.lukewassink.runner.config.{
+  BooleanDistributionNode, DistributionNode, LogNormalDistributionNode,
+  NormalDistributionNode, UniformDistributionNode
 }
 import com.lukewassink.runner.config.InterceptorNode.{
   MessageDropInterceptorNode, RandomLatencyInterceptorNode
@@ -23,9 +24,12 @@ import com.lukewassink.simulation.interceptor.{
   MessageDropInterceptor, MessageInterceptor, RandomLatencyInterceptor
 }
 import com.lukewassink.simulation.util.{
-  Chance, Distribution, LogNormalDistribution, NormalDistribution, Time,
-  UniformDistribution
+  BooleanDistribution, Chance, Distribution, LogNormalDistribution,
+  NormalDistribution, Time, UniformDistribution
 }
+
+// Refactor to use Transformer[A, B] type classes.
+// Give [A <: SyntaxTreeNode] an extension method A.to[B](using ctx: TransformContext) that uses Transformer[A, B]
 
 // Context used by the transformers to build the Simulation.
 case class TransformContext(nameToID: Map[String, NodeID]):
@@ -48,71 +52,115 @@ object TransformContext:
     TransformContext(nameToID)
   }
 
+trait Transformer[A, B]:
+  def transform(using syntaxTreeNode: A, ctx: TransformContext): B
+
+// Sadly, we need this because of type erasure.
+trait DistributionTransformer[T]
+    extends Transformer[DistributionNode[T], Distribution[T]]
+
 // Transforms a syntax tree into an actual Simulation with a network.
 // This includes assigning node IDs and resolving node name references.
 object Transformer {
+  extension [A <: SyntaxTreeNode](syntaxTreeNode: A)
+    def to[B](using
+        transformer: Transformer[A, B],
+        transformContext: TransformContext
+    ): B = {
+      given A = syntaxTreeNode
+      transformer.transform
+    }
+
   def transform(simulationNode: SimulationNode): Result[Simulation] =
     try {
       given TransformContext = TransformContext(simulationNode)
-
-      Success(Simulation(
-        SimulationMetadata(simulationNode.name, simulationNode.randomSeed),
-        Network(
-          ExecutionContext(
-            Time(0),
-            simulationNode.ticksPerMillisecond,
-            simulationNode.randomSeed
-          ),
-          simulationNode.nodes.map(transformNode),
-          DeliveryQueue(
-            simulationNode.interceptors.map(transformInterceptor),
-            List.empty
-          )
-        )
-      ))
+      Success(simulationNode.to[Simulation])
     } catch { case e: IllegalStateException => Failure(e) }
 
-  private def transformInterceptor(using
-      context: TransformContext
-  )(interceptorNode: InterceptorNode): MessageInterceptor =
-    interceptorNode match {
-      case MessageDropInterceptorNode(chance) =>
-        MessageDropInterceptor(Chance(chance))
-      case RandomLatencyInterceptorNode(distribution) =>
-        RandomLatencyInterceptor(transformDistribution(distribution))
-    }
-
-  private def transformDistribution(using
-      context: TransformContext
-  )(distributionNode: DistributionNode): Distribution =
-    distributionNode match {
-      case UniformDistributionNode(min, max) => UniformDistribution(min, max)
-      case NormalDistributionNode(mean, stDev) => NormalDistribution(mean, stDev)
-      case LogNormalDistributionNode(logMean, logStdDev) =>
-        LogNormalDistribution(logMean, logStdDev)
-    }
-
-  private def transformNode(using
-      context: TransformContext
-  )(nodeNode: NodeNode): Node = {
-    val id    = context.resolveID(nodeNode.name)
-    val state = NodeState(NodeHeader(id, MessageID(0)), List.empty, List.empty)
-    Node(nodeNode.behaviors.map(transformBehavior), state)
-  }
-
-  private def transformBehavior(using
-      context: TransformContext
-  )(behaviorNode: BehaviorNode): NodeBehavior =
-    behaviorNode match {
-      case SimpleSenderNode(time, receiver, content) =>
-        SimpleSender(
-          Time(time),
-          Message[Drafted](
-            Drafted(context.resolveID(receiver)),
-            Request(),
-            MessageContent(content)
-          )
+  given Transformer[SimulationNode, Simulation] with
+    def transform(using
+        simulationNode: SimulationNode,
+        ctx: TransformContext
+    ): Simulation = Simulation(
+      SimulationMetadata(simulationNode.name, simulationNode.randomSeed),
+      Network(
+        ExecutionContext(
+          Time(0),
+          simulationNode.ticksPerMillisecond,
+          simulationNode.randomSeed
+        ),
+        simulationNode.nodes.map(_.to[Node]),
+        DeliveryQueue(
+          simulationNode.interceptors.map(_.to[MessageInterceptor]),
+          List.empty
         )
-      case SimpleResponderNode() => SimpleResponder()
+      )
+    )
+
+  given Transformer[InterceptorNode, MessageInterceptor] with
+    def transform(using
+        interceptorNode: InterceptorNode,
+        ctx: TransformContext
+    ): MessageInterceptor =
+      interceptorNode match {
+        case MessageDropInterceptorNode(d) =>
+          MessageDropInterceptor(d.to[Distribution[Boolean]])
+        case RandomLatencyInterceptorNode(d) =>
+          RandomLatencyInterceptor(d.to[Distribution[Double]])
+      }
+
+  given [A: DistributionTransformer]
+      : Transformer[DistributionNode[A], Distribution[A]] with
+    def transform(using
+        distributionNode: DistributionNode[A],
+        ctx: TransformContext
+    ): Distribution[A] = summon[DistributionTransformer[A]].transform
+
+  given DistributionTransformer[Double] with
+    def transform(using
+        distributionNode: DistributionNode[Double],
+        ctx: TransformContext
+    ): Distribution[Double] =
+      distributionNode match {
+        case UniformDistributionNode(min, max) => UniformDistribution(min, max)
+        case NormalDistributionNode(mean, stDev) =>
+          NormalDistribution(mean, stDev)
+        case LogNormalDistributionNode(logMean, logStdDev) =>
+          LogNormalDistribution(logMean, logStdDev)
+      }
+
+  given DistributionTransformer[Boolean] with
+    def transform(using
+        distributionNode: DistributionNode[Boolean],
+        ctx: TransformContext
+    ): Distribution[Boolean] =
+      distributionNode match {
+        case BooleanDistributionNode(probability) =>
+          BooleanDistribution(probability)
+      }
+
+  given Transformer[NodeNode, Node] with
+    def transform(using nodeNode: NodeNode, ctx: TransformContext): Node = {
+      val id = ctx.resolveID(nodeNode.name)
+      val state = NodeState(NodeHeader(id, MessageID(0)), List.empty, List.empty)
+      Node(nodeNode.behaviors.map(_.to[NodeBehavior]), state)
     }
+
+  given Transformer[BehaviorNode, NodeBehavior] with
+    def transform(using
+        behaviorNode: BehaviorNode,
+        ctx: TransformContext
+    ): NodeBehavior =
+      behaviorNode match {
+        case SimpleSenderNode(time, receiver, content) =>
+          SimpleSender(
+            Time(time),
+            Message[Drafted](
+              Drafted(ctx.resolveID(receiver)),
+              Request(),
+              MessageContent(content)
+            )
+          )
+        case SimpleResponderNode() => SimpleResponder()
+      }
 }

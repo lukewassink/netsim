@@ -5,7 +5,7 @@ import com.lukewassink.simulation.util.Time.milliseconds
 import com.lukewassink.simulation.util.{Distribution, Duration}
 
 // Adds a random, nonnegative Duration to the message delivery time.
-case class RandomLatencyInterceptor(distribution: Distribution)
+case class RandomLatencyInterceptor(distribution: Distribution[Double])
     extends MessageInterceptor {
   override def intercept(using
       ExecutionContext

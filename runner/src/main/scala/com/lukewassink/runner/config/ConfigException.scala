@@ -18,9 +18,11 @@ case class MissingBehaviorTypeException(behaviorType: String)
 case class MissingInterceptorTypeException(interceptorType: String)
     extends ConfigException(s"Interceptor type $interceptorType does not exist.")
 
-case class MissingDistributionTypeException(distributionType: String)
-    extends ConfigException(
-      s"Distribution type $distributionType does note exist."
+case class MissingDistributionTypeException(
+    distributionType: String,
+    returnType: String
+) extends ConfigException(
+      s"Distribution type $distributionType does not correspond to any distribution with return type $returnType."
     )
 
 case class IllegalConfigValueException(message: String)
