@@ -1,24 +1,24 @@
 package com.lukewassink.simulation.core
 
+import com.lukewassink.simulation.behavior.{Behavior, UpdatedState}
 import com.lukewassink.simulation.core.MessageStage.{Pending, Scheduled}
 import com.lukewassink.simulation.core.NodeID.NodeID
 
 // The fundamental abstraction of the simulation. It can send and receive messages in response to incoming
 // messages and top its own state.
-case class Node(behaviors: List[NodeBehavior], sharedState: NodeState) {
+case class Node(behaviors: List[Behavior], sharedState: NodeState) {
   // Updates the node before receiving new messages. Used for cleanup and initialization. No behaviors execute here.
   def preDeliveryAction(using ctx: ExecutionContext): Node =
     // Clear sent messages from the last tick.
     Node(behaviors, sharedState.clearIncomingMessages)
 
   // Updates the node based on delivered messages. Behaviors are triggered here.
-  def postDeliveryAction(using ctx: ExecutionContext): Node =
-    // Clear messages that were sent last tick.
+  def postDeliveryAction(using ctx: ExecutionContext): Node = { // Clear messages that were sent last tick.
     val clearedState = sharedState.clearOutgoingMessages
 
     // Update shared and behavior states by triggering behaviors in order.
     val (nextState, nextBehaviors) =
-      behaviors.foldLeft((clearedState, List[NodeBehavior]())) {
+      behaviors.foldLeft((clearedState, List[Behavior]())) {
         case ((curState, processedBehaviors), behavior) =>
           val UpdatedState(nextS, nextB) = behavior.updated(curState)
           (nextS, nextB :: processedBehaviors)
@@ -27,6 +27,7 @@ case class Node(behaviors: List[NodeBehavior], sharedState: NodeState) {
     // Reverse nextBehaviors because triggering the behaviors reverses it, and clear incoming messages now that they
     // have been read.
     Node(nextBehaviors.reverse, nextState)
+  }
 
   // Returns all outgoing messages.
   def outgoingMessages: List[Message[Pending]] = sharedState.outgoingMessages

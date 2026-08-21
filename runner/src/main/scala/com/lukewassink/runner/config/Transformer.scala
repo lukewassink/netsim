@@ -12,12 +12,14 @@ import com.lukewassink.runner.config.InterceptorNode.{
 }
 import com.lukewassink.runner.core.{Simulation, SimulationMetadata}
 import com.lukewassink.runner.util.{Failure, Result, Success}
-import com.lukewassink.simulation.behavior.{SimpleResponder, SimpleSender}
+import com.lukewassink.simulation.behavior.{
+  Behavior, SimpleResponder, SimpleSender
+}
 import com.lukewassink.simulation.core.MessageStage.Drafted
 import com.lukewassink.simulation.core.NodeID.NodeID
 import com.lukewassink.simulation.core.{
   DeliveryQueue, ExecutionContext, Message, MessageContent, MessageID, Network,
-  Node, NodeBehavior, NodeHeader, NodeID, NodeState
+  Node, NodeHeader, NodeID, NodeState
 }
 import com.lukewassink.simulation.core.ResponseState.Request
 import com.lukewassink.simulation.interceptor.{
@@ -143,14 +145,14 @@ object Transformer {
     def transform(using nodeNode: NodeNode, ctx: TransformContext): Node = {
       val id = ctx.resolveID(nodeNode.name)
       val state = NodeState(NodeHeader(id, MessageID(0)), List.empty, List.empty)
-      Node(nodeNode.behaviors.map(_.to[NodeBehavior]), state)
+      Node(nodeNode.behaviors.map(_.to[Behavior]), state)
     }
 
-  given Transformer[BehaviorNode, NodeBehavior] with
+  given Transformer[BehaviorNode, Behavior] with
     def transform(using
         behaviorNode: BehaviorNode,
         ctx: TransformContext
-    ): NodeBehavior =
+    ): Behavior =
       behaviorNode match {
         case SimpleSenderNode(time, receiver, content) =>
           SimpleSender(
