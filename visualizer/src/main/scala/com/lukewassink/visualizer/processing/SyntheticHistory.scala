@@ -3,7 +3,7 @@ package com.lukewassink.visualizer.processing
 import com.lukewassink.simulation.core.Message
 import com.lukewassink.simulation.core.MessageStage.Scheduled
 import com.lukewassink.simulation.util.LogEvent.MessageDropEvent
-import com.lukewassink.simulation.util.{LogEvent, Logger, Time}
+import com.lukewassink.simulation.util.{LogEvent, Logger}
 import com.lukewassink.visualizer.processing.SyntheticHistoryElement.DroppedMessageElement
 
 type SyntheticHistoryRow = List[SyntheticHistoryElement]

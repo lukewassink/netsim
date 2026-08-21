@@ -27,32 +27,32 @@ lazy val simulation = crossProject(JSPlatform, JVMPlatform)
 
 lazy val runner = crossProject(JSPlatform, JVMPlatform).crossType(CrossType.Pure)
   .in(file("runner")).settings(
-    name                                       := "runner",
+    name := "runner",
     libraryDependencies ++= sharedDependencies,
     libraryDependencies += "io.github.edadma" %%% "hocon" % "0.1.1"
   ).dependsOn(simulation % "compile->compile;test->test")
 
 lazy val visualizer = (project in file("visualizer"))
   .enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin).settings(
-    name                                       := "visualizer",
-    scalaJSUseMainModuleInitializer            := true,
-    webpackBundlingMode                        := BundlingMode.LibraryOnly(),
-    (installJsdom / version)                   := "20.0.3",
-    (webpack / version)                        := "5.76.2",
-    (startWebpackDevServer / version)          := "4.13.1",
+    name                              := "visualizer",
+    scalaJSUseMainModuleInitializer   := true,
+    webpackBundlingMode               := BundlingMode.LibraryOnly(),
+    (installJsdom / version)          := "20.0.3",
+    (webpack / version)               := "5.76.2",
+    (startWebpackDevServer / version) := "4.13.1",
     scalaJSLinkerConfig ~= {
       _.withModuleKind(ModuleKind.CommonJSModule)
         .withModuleSplitStyle(ModuleSplitStyle.SmallModulesFor(List("visualizer")))
     },
-    libraryDependencies += "org.scala-js"     %%% "scalajs-dom"  % "2.8.1",
-    libraryDependencies += "com.raquo"        %%% "laminar"      % "18.0.0-M2",
-    libraryDependencies += "io.github.edadma" %%% "hocon"        % "0.1.1",
-    libraryDependencies += "org.scalatest"    %%% "scalatest"    % "3.2.20" % Test,
-    libraryDependencies += "com.raquo"        %%% "domtestutils" % "19.0.0" % Test,
-    jsEnv                                      := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
+    libraryDependencies += "org.scala-js"     %%% "scalajs-dom" % "2.8.1",
+    libraryDependencies += "com.raquo"        %%% "laminar"     % "18.0.0-M2",
+    libraryDependencies += "io.github.edadma" %%% "hocon"       % "0.1.1",
+    libraryDependencies += "org.scalatest" %%% "scalatest"    % "3.2.20" % Test,
+    libraryDependencies += "com.raquo"     %%% "domtestutils" % "19.0.0" % Test,
+    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
     Test / scalaJSLinkerConfig ~= {
       _.withModuleKind(ModuleKind.CommonJSModule)
         .withModuleSplitStyle(ModuleSplitStyle.FewestModules)
     },
-    (Test / requireJsDomEnv)                   := true
+    (Test / requireJsDomEnv) := true
   ).dependsOn(runner.js, simulation.js % "compile->compile;test->test")

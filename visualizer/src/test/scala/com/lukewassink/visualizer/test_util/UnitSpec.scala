@@ -9,16 +9,26 @@ import com.raquo.laminar.keys.*
 import com.raquo.laminar.nodes.*
 import com.raquo.laminar.tags.Tag
 import com.lukewassink.simulation.test_utils.ImplicitConversions
+import com.raquo.airstream.ownership.{Owner, Subscription}
 import org.scalactic
 import com.raquo.laminar.api.L
+import org.scalatest.BeforeAndAfter
 
 // Don't generate compiler warnings for the implicit conversions below. They are required for domtestutils.
 import scala.language.implicitConversions
+
+class TestableOwner extends Owner {
+
+  def _testSubscriptions: List[Subscription] = subscriptions.asScalaJs.toList
+
+  override def killSubscriptions(): Unit = super.killSubscriptions()
+}
 
 class UnitSpec
     extends AnyFunSpec
     with Matchers
     with MountSpec
+    with BeforeAndAfter
     with RuleImplicits[
       Tag.Base,
       CommentNode,
@@ -30,6 +40,11 @@ class UnitSpec
       StyleProp,
       CompositeAttr[?]
     ] {
+
+  // Allows us to call .observe on Airstream Signals in tests
+  // so that we can get their value with .now().
+  given owner: TestableOwner = TestableOwner()
+  after(owner.killSubscriptions())
 
   var root: RootNode = null
 
