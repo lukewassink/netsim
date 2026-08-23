@@ -69,12 +69,27 @@ class NodeSpec extends UnitSpec {
     }
   }
 
-  describe("postDeliveryAction") {
-    it("clears outgoing messages") {
-      nodeWithOutgoingMessages.preDeliveryAction(using testContext(1))
-        .outgoingMessages shouldBe empty
+  describe("preAction") {
+    it("triggers a behavior to update the shared state") {
+      val node = Node(List(TestMessageBehavior(draftedMessage1)), emptyState)
+      node.outgoingMessages shouldBe empty
+      val nextMessages = node.preAction(using testContext(5)).outgoingMessages
+      nextMessages should have size 1
+      all(nextMessages) should have(stringContent("One"))
     }
 
+    it("triggers a behavior to update the behavior's state") {
+      val node = Node(List(TestSelfUpdateBehavior(0)), emptyState)
+      node.behaviors.head match {
+        case TestSelfUpdateBehavior(selfState) => selfState.should(equal(0))
+      }
+      node.preAction(using testContext(10)).behaviors.head match {
+        case TestSelfUpdateBehavior(selfState) => selfState.should(equal(1))
+      }
+    }
+  }
+
+  describe("mainAction") {
     it("triggers a behavior to update the shared state") {
       val node = Node(List(TestMessageBehavior(draftedMessage1)), emptyState)
       node.outgoingMessages shouldBe empty
@@ -82,15 +97,35 @@ class NodeSpec extends UnitSpec {
       nextMessages should have size 1
       all(nextMessages) should have(stringContent("One"))
     }
+
+    it("triggers a behavior to update the behavior's state") {
+      val node = Node(List(TestSelfUpdateBehavior(0)), emptyState)
+      node.behaviors.head match {
+        case TestSelfUpdateBehavior(selfState) => selfState.should(equal(0))
+      }
+      node.mainAction(using testContext(10)).behaviors.head match {
+        case TestSelfUpdateBehavior(selfState) => selfState.should(equal(1))
+      }
+    }
   }
 
-  it("triggers a behavior to update the behavior's state") {
-    val node = Node(List(TestSelfUpdateBehavior(0)), emptyState)
-    node.behaviors.head match {
-      case TestSelfUpdateBehavior(selfState) => selfState.should(equal(0))
+  describe("postAction") {
+    it("triggers a behavior to update the shared state") {
+      val node = Node(List(TestMessageBehavior(draftedMessage1)), emptyState)
+      node.outgoingMessages shouldBe empty
+      val nextMessages = node.postAction(using testContext(5)).outgoingMessages
+      nextMessages should have size 1
+      all(nextMessages) should have(stringContent("One"))
     }
-    node.mainAction(using testContext(10)).behaviors.head match {
-      case TestSelfUpdateBehavior(selfState) => selfState.should(equal(1))
+
+    it("triggers a behavior to update the behavior's state") {
+      val node = Node(List(TestSelfUpdateBehavior(0)), emptyState)
+      node.behaviors.head match {
+        case TestSelfUpdateBehavior(selfState) => selfState.should(equal(0))
+      }
+      node.postAction(using testContext(10)).behaviors.head match {
+        case TestSelfUpdateBehavior(selfState) => selfState.should(equal(1))
+      }
     }
   }
 

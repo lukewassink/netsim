@@ -3,7 +3,7 @@ package com.lukewassink.simulation.core
 import com.lukewassink.simulation.core.{DeliveryQueue, Network, Node, NodeHeader}
 import com.lukewassink.simulation.message.{Message, MessageContent}
 import com.lukewassink.simulation.test_utils.BehaviorSpecUtil.{
-  TestMessageBehavior, TestSelfUpdateBehavior
+  TestMessageBehavior, TestMessageMainActionOnlyBehavior, TestSelfUpdateBehavior
 }
 import com.lukewassink.simulation.test_utils.NetworkSpecUtil.testNetwork
 import com.lukewassink.simulation.test_utils.NodeStateSpecUtil.testNodeState
@@ -76,15 +76,17 @@ class NetworkSpec extends UnitSpec {
         network.nodes(3).behaviors.head match {
           case TestSelfUpdateBehavior(selfState) => selfState.should(equal(0))
         }
+
         nextNetwork.nodes(3).behaviors.head match {
-          case TestSelfUpdateBehavior(selfState) => selfState.should(equal(1))
+          // Should be three because it triggers the pre, main, and post actions.
+          case TestSelfUpdateBehavior(selfState) => selfState.should(equal(3))
         }
       }
 
       it("collects new messages and sets the delivery time") {
         val message = draftedMessage(1, "")
         val node    = Node(
-          List(TestMessageBehavior(message)),
+          List(TestMessageMainActionOnlyBehavior(message)),
           testNodeState(NodeHeader(1, 0), List.empty, List.empty)
         )
         val network = testNetwork(0, List(node), List.empty)

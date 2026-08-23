@@ -8,8 +8,33 @@ import com.lukewassink.simulation.message.Message
 object BehaviorSpecUtil {
 
   // Sends the specified message.
+  case class TestMessageMainActionOnlyBehavior(message: Message[Drafted])
+      extends Behavior {
+    override def preAction(using
+        ctx: ExecutionContext
+    )(state: NodeState): UpdatedState = UpdatedState(
+      this,
+      state.withOutgoingMessage(message)
+    )
+  }
+
+  // Sends the specified message.
   case class TestMessageBehavior(message: Message[Drafted]) extends Behavior {
+    override def preAction(using
+        ctx: ExecutionContext
+    )(state: NodeState): UpdatedState = UpdatedState(
+      this,
+      state.withOutgoingMessage(message)
+    )
+
     override def mainAction(using
+        ctx: ExecutionContext
+    )(state: NodeState): UpdatedState = UpdatedState(
+      this,
+      state.withOutgoingMessage(message)
+    )
+
+    override def postAction(using
         ctx: ExecutionContext
     )(state: NodeState): UpdatedState = UpdatedState(
       this,
@@ -19,7 +44,21 @@ object BehaviorSpecUtil {
 
   // Increments its own state.
   case class TestSelfUpdateBehavior(selfState: Int) extends Behavior {
+    override def preAction(using
+        ctx: ExecutionContext
+    )(state: NodeState): UpdatedState = UpdatedState(
+      TestSelfUpdateBehavior(selfState + 1),
+      state
+    )
+
     override def mainAction(using
+        ctx: ExecutionContext
+    )(state: NodeState): UpdatedState = UpdatedState(
+      TestSelfUpdateBehavior(selfState + 1),
+      state
+    )
+
+    override def postAction(using
         ctx: ExecutionContext
     )(state: NodeState): UpdatedState = UpdatedState(
       TestSelfUpdateBehavior(selfState + 1),
