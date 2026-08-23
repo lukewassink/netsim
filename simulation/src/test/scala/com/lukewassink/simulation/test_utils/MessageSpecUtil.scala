@@ -1,18 +1,26 @@
 package com.lukewassink.simulation.test_utils
 
-import com.lukewassink.simulation.core.ResponseState.Request
-import com.lukewassink.simulation.core.MessageStage.{Drafted, Pending, Scheduled}
-import com.lukewassink.simulation.core.{
-  Message, MessageContent, MessageID, NodeID
+import com.lukewassink.simulation.message.ResponseState.Request
+import com.lukewassink.simulation.message.MessageStage.{
+  Drafted, Pending, Scheduled
 }
+import com.lukewassink.simulation.core.NodeID
 import org.scalatest.matchers.{HavePropertyMatchResult, HavePropertyMatcher}
 import com.lukewassink.simulation.util.Time
 import com.lukewassink.simulation.core.NodeID.NodeID
-import com.lukewassink.simulation.core.MessageID.MessageID
+import com.lukewassink.simulation.message.MessageID.MessageID
+import com.lukewassink.simulation.message.RecipientSpecification.Single
+import com.lukewassink.simulation.message.{
+  DeliverySemantics, Message, MessageContent, MessageID
+}
 
 object MessageSpecUtil {
   def draftedMessage(receiverId: NodeID, content: String): Message[Drafted] =
-    Message[Drafted](Drafted(receiverId), Request(), MessageContent(content))
+    Message[Drafted](
+      Drafted(Single(receiverId)),
+      DeliverySemantics.empty,
+      MessageContent(content)
+    )
 
   def pendingMessage(
       messageId: MessageID,
@@ -22,7 +30,7 @@ object MessageSpecUtil {
       content: String
   ): Message[Pending] = Message(
     Pending(messageId, nodeId, receiverId, sendTime),
-    Request(),
+    DeliverySemantics.empty,
     MessageContent(content)
   )
 

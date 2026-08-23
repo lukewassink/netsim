@@ -1,8 +1,9 @@
 package com.lukewassink.simulation.test_utils
 
-import com.lukewassink.simulation.core.{Message, Node, NodeHeader, NodeState}
+import com.lukewassink.simulation.core.{Node, NodeHeader, NodeState}
 import RandomSpecUtil.InertRandom
-import com.lukewassink.simulation.core.MessageStage.{Pending, Scheduled}
+import com.lukewassink.simulation.message.MessageStage.{Pending, Scheduled}
+import com.lukewassink.simulation.message.Message
 
 object NodeStateSpecUtil {
   // Generates a node state with an inert random number generator for tests that don't care about randomness.

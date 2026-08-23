@@ -1,9 +1,8 @@
 package com.lukewassink.simulation.behavior
 
 import com.lukewassink.simulation.behavior.SimpleResponder
-import com.lukewassink.simulation.core.{
-  Message, MessageContent, ExecutionContext, NodeHeader
-}
+import com.lukewassink.simulation.core.{ExecutionContext, NodeHeader}
+import com.lukewassink.simulation.message.{Message, MessageContent}
 import com.lukewassink.simulation.test_utils.UnitSpec
 import com.lukewassink.simulation.test_utils.MessageSpecUtil.scheduledMessage
 import com.lukewassink.simulation.test_utils.ExecutionContextUtils.testContext
@@ -30,20 +29,20 @@ class SimpleResponderSpec extends UnitSpec {
     )
 
     it("handles zero messages") {
-      responder.updated(noMessagesState).sharedState.outgoingMessages shouldBe
-        empty
+      responder.mainAction(noMessagesState).sharedState
+        .outgoingMessages shouldBe empty
     }
 
     it("responds to one message") {
       val outgoingMessages =
-        responder.updated(oneMessageState).sharedState.outgoingMessages
+        responder.mainAction(oneMessageState).sharedState.outgoingMessages
       outgoingMessages should have size 1
       all(outgoingMessages) should have(stringContent("Response to: One"))
     }
 
     it("responds to multiple messages") {
       val outgoingMessages =
-        responder.updated(twoMessagesState).sharedState.outgoingMessages
+        responder.mainAction(twoMessagesState).sharedState.outgoingMessages
       outgoingMessages should have size 2
       exactly(1, outgoingMessages) should have(stringContent("Response to: One"))
       exactly(1, outgoingMessages) should have(stringContent("Response to: Two"))

@@ -1,13 +1,15 @@
 package com.lukewassink.visualizer.util
 
 import com.lukewassink.simulation.behavior.SimpleSender
-import com.lukewassink.simulation.core.MessageStage.{Drafted, Scheduled}
-import com.lukewassink.simulation.core.ResponseState.Request
+import com.lukewassink.simulation.message.MessageStage.{Drafted, Scheduled}
 import com.lukewassink.simulation.core.{
-  DeliveryQueue, ExecutionContext, Message, MessageContent, Network, Node,
-  NodeHeader, NodeState
+  DeliveryQueue, ExecutionContext, Network, Node, NodeHeader, NodeState
 }
 import com.lukewassink.simulation.interceptor.MessageDropInterceptor
+import com.lukewassink.simulation.message.RecipientSpecification.Single
+import com.lukewassink.simulation.message.{
+  DeliverySemantics, Message, MessageContent
+}
 import com.lukewassink.simulation.util.BooleanDistribution
 import com.lukewassink.visualizer.processing.SyntheticHistoryElement.DroppedMessageElement
 import com.lukewassink.visualizer.test_util.UnitSpec
@@ -46,7 +48,11 @@ class RootStateSpec extends UnitSpec {
           Node(
             List(SimpleSender(
               2,
-              Message(Drafted(0), Request(), MessageContent("Hi!"))
+              Message(
+                Drafted(Single(0)),
+                DeliverySemantics.empty,
+                MessageContent("Hi!")
+              )
             )),
             NodeState(NodeHeader(1, 0), List.empty, List.empty)
           )
@@ -99,7 +105,11 @@ class RootStateSpec extends UnitSpec {
           Node(
             List(SimpleSender(
               2,
-              Message(Drafted(0), Request(), MessageContent("Hi!"))
+              Message(
+                Drafted(Single(0)),
+                DeliverySemantics.empty,
+                MessageContent("Hi!")
+              )
             )),
             NodeState(NodeHeader(1, 1), List.empty, List.empty)
           )
@@ -112,9 +122,11 @@ class RootStateSpec extends UnitSpec {
 
       val expectedState: NetworkState = (
         network,
-        List(DroppedMessageElement(
-          Message(Scheduled(0, 1, 0, 2, 12), Request(), MessageContent("Hi!"))
-        ))
+        List(DroppedMessageElement(Message(
+          Scheduled(0, 1, 0, 2, 12),
+          DeliverySemantics.empty,
+          MessageContent("Hi!")
+        )))
       )
 
       assert(expectedState === state.currentNetworkState.observe.now())

@@ -15,15 +15,18 @@ import com.lukewassink.runner.util.{Failure, Result, Success}
 import com.lukewassink.simulation.behavior.{
   Behavior, SimpleResponder, SimpleSender
 }
-import com.lukewassink.simulation.core.MessageStage.Drafted
+import com.lukewassink.simulation.message.MessageStage.Drafted
 import com.lukewassink.simulation.core.NodeID.NodeID
 import com.lukewassink.simulation.core.{
-  DeliveryQueue, ExecutionContext, Message, MessageContent, MessageID, Network,
-  Node, NodeHeader, NodeID, NodeState
+  DeliveryQueue, ExecutionContext, Network, Node, NodeHeader, NodeID, NodeState
 }
-import com.lukewassink.simulation.core.ResponseState.Request
+import com.lukewassink.simulation.message.ResponseState.Request
 import com.lukewassink.simulation.interceptor.{
   MessageDropInterceptor, MessageInterceptor, RandomLatencyInterceptor
+}
+import com.lukewassink.simulation.message.RecipientSpecification.Single
+import com.lukewassink.simulation.message.{
+  DeliverySemantics, Message, MessageContent, MessageID, RecipientSpecification
 }
 import com.lukewassink.simulation.util.{
   BooleanDistribution, Chance, Distribution, LogNormalDistribution,
@@ -158,8 +161,8 @@ object Transformer {
           SimpleSender(
             Time(time),
             Message[Drafted](
-              Drafted(ctx.resolveID(receiver)),
-              Request(),
+              Drafted(Single(ctx.resolveID(receiver))),
+              DeliverySemantics.empty,
               MessageContent(content)
             )
           )

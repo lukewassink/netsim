@@ -1,7 +1,8 @@
 package com.lukewassink.simulation.interceptor
 
-import com.lukewassink.simulation.core.MessageStage.Scheduled
-import com.lukewassink.simulation.core.{ExecutionContext, Message, MessageStage}
+import com.lukewassink.simulation.message.MessageStage.Scheduled
+import com.lukewassink.simulation.core.ExecutionContext
+import com.lukewassink.simulation.message.{Message, MessageStage}
 import com.lukewassink.simulation.util.Chance.*
 import com.lukewassink.simulation.util.Distribution
 import com.lukewassink.simulation.util.LogEvent.MessageDropEvent

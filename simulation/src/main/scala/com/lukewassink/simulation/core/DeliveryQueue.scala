@@ -1,8 +1,9 @@
 package com.lukewassink.simulation.core
 
-import com.lukewassink.simulation.core.MessageStage.Scheduled
+import com.lukewassink.simulation.message.MessageStage.Scheduled
 import com.lukewassink.simulation.util.Time
 import com.lukewassink.simulation.interceptor.MessageInterceptor
+import com.lukewassink.simulation.message.Message
 
 // A store of scheduled messages. Can return messages ready to be delivered based on time.
 case class DeliveryQueue(

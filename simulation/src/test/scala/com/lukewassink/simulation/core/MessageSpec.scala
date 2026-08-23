@@ -1,7 +1,11 @@
 package com.lukewassink.simulation.core
 
-import com.lukewassink.simulation.core.MessageStage.{Drafted, Scheduled}
-import com.lukewassink.simulation.core.ResponseState.Response
+import com.lukewassink.simulation.message.{
+  DeliverySemantics, Message, MessageContent
+}
+import com.lukewassink.simulation.message.MessageStage.{Drafted, Scheduled}
+import com.lukewassink.simulation.message.RecipientSpecification.Single
+import com.lukewassink.simulation.message.ResponseState.Response
 import com.lukewassink.simulation.test_utils.MessageSpecUtil.{
   draftedMessage, pendingMessage, scheduledMessage
 }
@@ -12,8 +16,8 @@ class MessageSpec extends UnitSpec {
     describe("send") {
       it("adds node metadata to the message") {
         assert(
-          draftedMessage(1, "Hi!").send(2, 3, 4) ===
-            pendingMessage(2, 3, 1, 4, "Hi!")
+          draftedMessage(1, "Hi!").send(2, 3, 1, 14) ===
+            pendingMessage(2, 3, 1, 14, "Hi!")
         )
       }
     }
@@ -32,18 +36,6 @@ class MessageSpec extends UnitSpec {
 
   describe("Message[Scheduled]") {
     val message = scheduledMessage(1, 2, 3, 4, 5, "Hi!")
-
-    describe("respond") {
-      it("fills in the response fields") {
-        val response         = message.respond(MessageContent("Hi to you too!"))
-        val expectedResponse = Message[Drafted](
-          Drafted(2),
-          Response(2, 1),
-          MessageContent("Hi to you too!")
-        )
-        assert(response === expectedResponse)
-      }
-    }
 
     describe("readyToDeliver") {
       it("returns true if the message is ready to deliver") {
@@ -72,8 +64,8 @@ class MessageSpec extends UnitSpec {
     describe("isResponseTo") {
       it("returns true if it is a response to the other message") {
         val response = Message[Drafted](
-          Drafted(2),
-          Response(2, 1),
+          Drafted(Single(2)),
+          DeliverySemantics(Response(2, 1)),
           MessageContent("")
         )
 
@@ -82,13 +74,13 @@ class MessageSpec extends UnitSpec {
 
       it("returns false if it is not a response to the other message") {
         val response1 = Message[Drafted](
-          Drafted(3),
-          Response(3, 1),
+          Drafted(Single(3)),
+          DeliverySemantics(Response(3, 1)),
           MessageContent("")
         )
         val response2 = Message[Drafted](
-          Drafted(2),
-          Response(2, 0),
+          Drafted(Single(2)),
+          DeliverySemantics(Response(2, 0)),
           MessageContent("")
         )
 

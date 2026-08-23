@@ -3,13 +3,13 @@ package com.lukewassink.simulation.util
 import com.lukewassink.simulation.test_utils.UnitSpec
 
 class StorageSpec extends UnitSpec {
-  trait TestData
+  enum TestData:
+    case DataTypeOne(i: Int)
+    case DataTypeTwo(i: Int)
 
-  case class DataTypeOne(i: Int) extends TestData
+  import TestData.*
 
-  case class DataTypeTwo(i: Int) extends TestData
-
-  private val storage = Storage.empty[TestData]
+  private val storage = Store.empty[TestData]
 
   describe("withValue") {
     val storage2 = storage.withValue(DataTypeOne(1)).withValue(DataTypeTwo(0))
@@ -38,6 +38,18 @@ class StorageSpec extends UnitSpec {
 
     it("returns None if the type is not present") {
       assert(storage2.get[DataTypeTwo] === None)
+    }
+  }
+
+  describe("getOrElse") {
+    val storage2 = storage.withValue(DataTypeOne(1))
+
+    it("returns the value of the requested type") {
+      assert(storage2.getOrElse(DataTypeOne(0)) === DataTypeOne(0))
+    }
+
+    it("returns the fallback if the type is not present") {
+      assert(storage2.getOrElse(DataTypeTwo(0)) === DataTypeTwo(0))
     }
   }
 
@@ -106,6 +118,14 @@ class StorageSpec extends UnitSpec {
         storage2.map[DataTypeTwo](x => DataTypeTwo(x.i * 2))
           .get[DataTypeTwo] === None
       )
+    }
+  }
+
+  describe("list constructor") {
+    it("adds the elements to the store") {
+      val storage2 = Store[TestData](DataTypeOne(1), DataTypeTwo(2))
+      assert(storage2.get[DataTypeOne] === Some(DataTypeOne(1)))
+      assert(storage2.get[DataTypeTwo] === Some(DataTypeTwo(2)))
     }
   }
 }

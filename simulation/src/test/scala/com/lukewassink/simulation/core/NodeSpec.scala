@@ -1,6 +1,7 @@
 package com.lukewassink.simulation.core
 
-import com.lukewassink.simulation.core.{Message, Node, NodeHeader, NodeState}
+import com.lukewassink.simulation.core.{Node, NodeHeader, NodeState}
+import com.lukewassink.simulation.message.Message
 import com.lukewassink.simulation.test_utils.UnitSpec
 import com.lukewassink.simulation.test_utils.BehaviorSpecUtil.{
   TestMessageBehavior, TestSelfUpdateBehavior
@@ -70,15 +71,14 @@ class NodeSpec extends UnitSpec {
 
   describe("postDeliveryAction") {
     it("clears outgoing messages") {
-      nodeWithOutgoingMessages.postDeliveryAction(using testContext(1))
+      nodeWithOutgoingMessages.preDeliveryAction(using testContext(1))
         .outgoingMessages shouldBe empty
     }
 
     it("triggers a behavior to update the shared state") {
       val node = Node(List(TestMessageBehavior(draftedMessage1)), emptyState)
       node.outgoingMessages shouldBe empty
-      val nextMessages =
-        node.postDeliveryAction(using testContext(5)).outgoingMessages
+      val nextMessages = node.mainAction(using testContext(5)).outgoingMessages
       nextMessages should have size 1
       all(nextMessages) should have(stringContent("One"))
     }
@@ -89,7 +89,7 @@ class NodeSpec extends UnitSpec {
     node.behaviors.head match {
       case TestSelfUpdateBehavior(selfState) => selfState.should(equal(0))
     }
-    node.postDeliveryAction(using testContext(10)).behaviors.head match {
+    node.mainAction(using testContext(10)).behaviors.head match {
       case TestSelfUpdateBehavior(selfState) => selfState.should(equal(1))
     }
   }
@@ -104,7 +104,7 @@ class NodeSpec extends UnitSpec {
     )
     node.outgoingMessages shouldBe empty
     val outgoingMessages =
-      node.postDeliveryAction(using testContext(10)).outgoingMessages
+      node.mainAction(using testContext(10)).outgoingMessages
 
     it("triggers multiple behaviors") {
       outgoingMessages should have size 2

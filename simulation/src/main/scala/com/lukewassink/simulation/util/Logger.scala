@@ -1,7 +1,8 @@
 package com.lukewassink.simulation.util
 
-import com.lukewassink.simulation.core.{ExecutionContext, Message}
-import com.lukewassink.simulation.core.MessageStage.Scheduled
+import com.lukewassink.simulation.core.ExecutionContext
+import com.lukewassink.simulation.message.MessageStage.Scheduled
+import com.lukewassink.simulation.message.Message
 
 import scala.collection.mutable.ArrayBuffer
 

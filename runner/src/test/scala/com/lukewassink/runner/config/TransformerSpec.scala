@@ -12,15 +12,18 @@ import com.lukewassink.runner.config.InterceptorNode.{
 import com.lukewassink.runner.core.{Simulation, SimulationMetadata}
 import com.lukewassink.runner.util.Success
 import com.lukewassink.simulation.behavior.{SimpleResponder, SimpleSender}
-import com.lukewassink.simulation.core.MessageStage.Drafted
-import com.lukewassink.simulation.core.ResponseState.Request
+import com.lukewassink.simulation.message.MessageStage.Drafted
+import com.lukewassink.simulation.message.ResponseState.Request
 import com.lukewassink.simulation.core.NodeID.NodeID
 import com.lukewassink.simulation.core.{
-  DeliveryQueue, ExecutionContext, Message, MessageContent, Network, Node,
-  NodeHeader, NodeID, NodeState
+  DeliveryQueue, ExecutionContext, Network, Node, NodeHeader, NodeID, NodeState
 }
 import com.lukewassink.simulation.interceptor.{
   MessageDropInterceptor, RandomLatencyInterceptor
+}
+import com.lukewassink.simulation.message.RecipientSpecification.Single
+import com.lukewassink.simulation.message.{
+  DeliverySemantics, Message, MessageContent
 }
 import com.lukewassink.simulation.test_utils.UnitSpec
 import com.lukewassink.simulation.util.{
@@ -142,7 +145,11 @@ class TransformerSpec extends UnitSpec {
                 SimpleResponder(),
                 SimpleSender(
                   15,
-                  Message[Drafted](Drafted(1), Request(), MessageContent("Hi!"))
+                  Message[Drafted](
+                    Drafted(Single(1)),
+                    DeliverySemantics.empty,
+                    MessageContent("Hi!")
+                  )
                 )
               ),
               NodeState(NodeHeader(2, 0), List.empty, List.empty)

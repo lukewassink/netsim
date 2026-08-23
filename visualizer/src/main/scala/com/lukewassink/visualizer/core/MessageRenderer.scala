@@ -1,11 +1,11 @@
 package com.lukewassink.visualizer.core
 
-import com.lukewassink.simulation.core.MessageStage.Scheduled
-import com.lukewassink.simulation.core.{Message, MessageUniqueID}
+import com.lukewassink.simulation.message.MessageStage.Scheduled
 import com.lukewassink.simulation.util.{Duration, Time}
 import com.lukewassink.visualizer.util.{NetworkState, Pos}
 import com.raquo.laminar.api.L.{*, given}
 import com.lukewassink.simulation.core.NodeID.NodeID
+import com.lukewassink.simulation.message.{Message, MessageUniqueID}
 import com.lukewassink.visualizer.core.MessageStatus.{Default, Dropped}
 import com.lukewassink.visualizer.core.NetworkRenderer.FrameLength
 import com.lukewassink.visualizer.processing.{

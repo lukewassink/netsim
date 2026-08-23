@@ -1,8 +1,11 @@
-package com.lukewassink.simulation.core
+package com.lukewassink.simulation.message
 
-import com.lukewassink.simulation.core.MessageID.MessageID
-import com.lukewassink.simulation.util.Time
+import MessageID.MessageID
 import com.lukewassink.simulation.core.NodeID.NodeID
+import com.lukewassink.simulation.core.*
+import com.lukewassink.simulation.message.RecipientSpecification.Single
+import com.lukewassink.simulation.message.ResponseState.{Request, Response}
+import com.lukewassink.simulation.util.Time
 
 // NOTE: a message ID uniquely identifies a message withing a node.
 // The message's UniqueID(message ID, node ID) is required to uniquely
@@ -16,7 +19,7 @@ case object MessageID:
 
 enum MessageStage:
   // Message has content and a recipient and is ready to be added to the outbox.
-  case Drafted(receiverId: NodeID)
+  case Drafted(recipientSpecification: RecipientSpecification)
   // Message has been added to the node outbox to be sent.
   case Pending(
       messageId: MessageID,
@@ -33,14 +36,7 @@ enum MessageStage:
       deliveryTime: Time
   )
 
-import com.lukewassink.simulation.core.MessageStage.*
-
-enum ResponseState:
-  // Message is not a response to another message.
-  case Request()
-  // Message is a response to another message.
-  case Response(nodeId: NodeID, messageId: MessageID)
-import com.lukewassink.simulation.core.ResponseState.*
+import MessageStage.*
 
 // The content of a message.
 case class MessageContent(stringContent: String)
@@ -48,29 +44,30 @@ case class MessageContent(stringContent: String)
 // A message that can be sent from one node toa another.
 final case class Message[S <: MessageStage](
     messageStage: S,
-    responseState: ResponseState,
+    deliverySemantics: DeliverySemantics,
     content: MessageContent
 ):
   def isResponseTo(other: Message[Scheduled]): Boolean =
-    responseState match
+    deliverySemantics.responseState match
       case Request()                   => false
       case Response(nodeId, messageId) =>
         nodeId == other.messageStage.senderId &&
         messageId == other.messageStage.messageId
 
-// Contains the sender ID and message ID, which uniquely identify the message withing the network history.
+// Uniquely identifies the message modulo duplicated messages.
 final case class MessageUniqueID(senderID: NodeID, messageID: MessageID)
 
 case object Message {
   // Methods for Drafted messages.
   extension (message: Message[Drafted])
     def send(
-        messageId: MessageID,
-        senderId: NodeID,
+        messageID: MessageID,
+        senderID: NodeID,
+        receiverID: NodeID,
         sendTime: Time
     ): Message[Pending] = Message(
-      Pending(messageId, senderId, message.messageStage.receiverId, sendTime),
-      message.responseState,
+      Pending(messageID, senderID, receiverID, sendTime),
+      message.deliverySemantics,
       message.content
     )
 
@@ -86,7 +83,7 @@ case object Message {
           messageStage.sendTime,
           deliveryTime
         ),
-        message.responseState,
+        message.deliverySemantics,
         message.content
       )
     }
@@ -94,15 +91,6 @@ case object Message {
 
   // Methods for Scheduled messages.
   extension (message: Message[Scheduled]) {
-    def respond(content: MessageContent): Message[Drafted] = {
-      val messageStage = message.messageStage
-      Message[Drafted](
-        Drafted(messageStage.senderId),
-        Response(messageStage.senderId, messageStage.messageId),
-        content
-      )
-    }
-
     def readyToDeliver(time: Time): Boolean =
       message.messageStage.deliveryTime <= time
 

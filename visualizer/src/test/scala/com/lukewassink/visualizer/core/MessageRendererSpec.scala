@@ -1,8 +1,9 @@
 package com.lukewassink.visualizer.core
 
-import com.lukewassink.simulation.core.{Message, MessageContent, MessageUniqueID}
-import com.lukewassink.simulation.core.MessageStage.Scheduled
-import com.lukewassink.simulation.core.ResponseState.Request
+import com.lukewassink.simulation.message.MessageStage.Scheduled
+import com.lukewassink.simulation.message.{
+  DeliverySemantics, Message, MessageContent, MessageUniqueID
+}
 import com.lukewassink.visualizer.test_util.UnitSpec
 import com.lukewassink.visualizer.test_util.NetworkUtil.testNetwork
 import com.lukewassink.visualizer.util.Pos
@@ -34,7 +35,7 @@ class MessageRendererSpec extends UnitSpec {
       val id      = MessageUniqueID(0, 0)
       val message = Message[Scheduled](
         Scheduled(0, 0, 1, 5, 20),
-        Request(),
+        DeliverySemantics.empty,
         MessageContent("")
       )
       val messageData = MessageData(

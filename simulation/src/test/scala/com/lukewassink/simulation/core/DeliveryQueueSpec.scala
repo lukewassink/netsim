@@ -2,8 +2,9 @@ package com.lukewassink.simulation.core
 
 import com.lukewassink.simulation.core.DeliveryQueue
 import com.lukewassink.simulation.core.DeliveryQueueSpec.TestInterceptor
-import com.lukewassink.simulation.core.MessageStage.Scheduled
+import com.lukewassink.simulation.message.MessageStage.Scheduled
 import com.lukewassink.simulation.interceptor.MessageInterceptor
+import com.lukewassink.simulation.message.Message
 import com.lukewassink.simulation.test_utils.MessageSpecUtil.{
   pendingMessage, scheduledMessage
 }

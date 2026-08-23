@@ -6,10 +6,12 @@ import com.lukewassink.runner.config.{
 import com.lukewassink.runner.core.Runner
 import com.lukewassink.runner.util.{Failure, Success}
 import com.lukewassink.simulation.behavior.{SimpleResponder, SimpleSender}
-import com.lukewassink.simulation.core.MessageStage.Drafted
-import com.lukewassink.simulation.core.ResponseState.Request
-import com.lukewassink.simulation.core.{
-  Message, MessageContent, Network, Node, NodeHeader, NodeState
+import com.lukewassink.simulation.message.MessageStage.Drafted
+import com.lukewassink.simulation.message.ResponseState.Request
+import com.lukewassink.simulation.core.{Network, Node, NodeHeader, NodeState}
+import com.lukewassink.simulation.message.RecipientSpecification.Single
+import com.lukewassink.simulation.message.{
+  DeliverySemantics, Message, MessageContent
 }
 import com.lukewassink.simulation.test_utils.UnitSpec
 import io.github.edadma.hocon.HoconException
@@ -63,7 +65,11 @@ class RunnerSpec extends UnitSpec {
                 SimpleResponder(),
                 SimpleSender(
                   15,
-                  Message[Drafted](Drafted(1), Request(), MessageContent("Hi!"))
+                  Message[Drafted](
+                    Drafted(Single(1)),
+                    DeliverySemantics.empty,
+                    MessageContent("Hi!")
+                  )
                 )
               ),
               NodeState(NodeHeader(2, 0), List.empty, List.empty)

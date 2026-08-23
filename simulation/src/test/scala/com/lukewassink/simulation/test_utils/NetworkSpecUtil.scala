@@ -1,8 +1,9 @@
 package com.lukewassink.simulation.test_utils
 
-import com.lukewassink.simulation.core.{Message, Network, Node}
+import com.lukewassink.simulation.core.{Network, Node}
 import RandomSpecUtil.InertRandom
-import com.lukewassink.simulation.core.MessageStage.Scheduled
+import com.lukewassink.simulation.message.MessageStage.Scheduled
+import com.lukewassink.simulation.message.Message
 import com.lukewassink.simulation.util.Time
 
 object NetworkSpecUtil {

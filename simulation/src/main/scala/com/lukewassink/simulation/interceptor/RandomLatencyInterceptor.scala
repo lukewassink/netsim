@@ -1,6 +1,7 @@
 package com.lukewassink.simulation.interceptor
 
-import com.lukewassink.simulation.core.{ExecutionContext, Message, MessageStage}
+import com.lukewassink.simulation.core.ExecutionContext
+import com.lukewassink.simulation.message.{Message, MessageStage}
 import com.lukewassink.simulation.util.Time.milliseconds
 import com.lukewassink.simulation.util.{Distribution, Duration}
 

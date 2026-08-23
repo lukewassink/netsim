@@ -1,8 +1,10 @@
 package com.lukewassink.simulation.core
 
-import com.lukewassink.simulation.core.MessageID.MessageID
-import com.lukewassink.simulation.core.MessageStage.*
+import com.lukewassink.simulation.message.MessageID.MessageID
+import com.lukewassink.simulation.message.MessageStage.*
 import com.lukewassink.simulation.core.NodeID.NodeID
+import com.lukewassink.simulation.message.Message
+import com.lukewassink.simulation.message.RecipientSpecification.Single
 
 object NodeID:
   opaque type NodeID = Int
@@ -26,12 +28,22 @@ case class NodeState(
   // Sets the message ID, sender ID, and send time for outgoing messages and adds it to the list.
   def withOutgoingMessage(using
       ctx: ExecutionContext
-  )(message: Message[Drafted]): NodeState = {
-    val messageToSend = message.send(header.nextMessageId, header.id, ctx.time)
+  )(draft: Message[Drafted]): NodeState = {
+    // When this can return more than one message, consider refactoring to handle
+    // incrementing message IDs more gracefully.
+    //
+    // Also, consider extracting a helper function RecipientSpecification -> List[NodeID]
+    // and moving it to another file.
+    val pendingMessages =
+      draft.messageStage.recipientSpecification match {
+        case Single(id) =>
+          Vector(draft.send(header.nextMessageId, header.id, id, ctx.time))
+      }
 
     copy(
-      outgoingMessages = messageToSend :: outgoingMessages,
-      header = header.copy(nextMessageId = header.nextMessageId.next)
+      outgoingMessages = pendingMessages.toList ::: outgoingMessages,
+      header = header
+        .copy(nextMessageId = pendingMessages.last.messageStage.messageId.next)
     )
   }
 

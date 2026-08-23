@@ -1,12 +1,9 @@
 package com.lukewassink.simulation.core
 
-import com.lukewassink.simulation.core.MessageStage.Scheduled
-import com.lukewassink.simulation.util.Time.TimeConverter
-import com.lukewassink.simulation.util.{BaseDistribution, Chance, Duration, Time}
-import com.lukewassink.simulation.util.Chance.*
+import com.lukewassink.simulation.message.MessageStage.Scheduled
+import com.lukewassink.simulation.util.{Duration, Time}
 import com.lukewassink.simulation.core.NodeID.NodeID
-
-import scala.util.Random
+import com.lukewassink.simulation.message.Message
 
 // The time it takes for a message to be delivered. Hardcoded for now. Later this should be changed to be config
 // based.
@@ -22,7 +19,7 @@ case class Network(
   // 1) tick the time forward
   // 2) trigger pre-delivery node actions
   // 3) deliver messages
-  // 4) trigger node behaviors
+  // 4) trigger node actions
   // 5) collect outgoing messages from nodes
   def next: Network = {
     given nextCtx: ExecutionContext = ctx.withNextTime
@@ -33,15 +30,15 @@ case class Network(
     // Deliver messages
     val nodesWithDeliveredMessages =
       messagesInTransit.deliverableMessages(nextCtx.time)
-        .foldLeft(initializedNodes) { (nodes, message) =>
-          nodes.updatedWith(message.messageStage.receiverId)(_.map(
+        .foldLeft(initializedNodes) { (nodeMap, message) =>
+          nodeMap.updatedWith(message.messageStage.receiverId)(_.map(
             _.withIncomingMessage(message)
           ))
         }
 
     // Trigger node behavior
-    val updatedNodes = nodesWithDeliveredMessages
-      .map((id, node) => (id, node.postDeliveryAction))
+    val updatedNodes = nodesWithDeliveredMessages.map(_ -> _.preAction)
+      .map(_ -> _.mainAction).map(_ -> _.postAction)
 
     // New messages to deliver
     val toDeliver: Iterable[Message[Scheduled]] =

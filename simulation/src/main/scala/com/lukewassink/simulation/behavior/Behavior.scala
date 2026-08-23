@@ -4,18 +4,25 @@ import com.lukewassink.simulation.core.{ExecutionContext, NodeState}
 
 // A data class that encapsulates the return type of the NodeBehavior.updated() method, which can update shared state,
 // and/or itself.
-final case class UpdatedState(sharedState: NodeState, selfState: Behavior)
+final case class UpdatedState(selfState: Behavior, sharedState: NodeState)
 
-// Plan:
-// 1. get rid of updatedNodeState and updatedSelfState. Behaviors can just updated the whole thing
-// 2. Three methods: preReceiveAction, mainAction, preSendAction. Just override the ones you want
-// 3. Nodes should have three actions: preReceiveAction, mainAction, preSendAction.
-// 4. Trigger all three node actions from the network.
-
-// The fundamental unit of behavior for a node. In response to current node state and incoming messages, it can update
-// its own state and shared state, including delivering messages.
+// Equip Behaviors to Nodes to give them custom logic.
 trait Behavior {
-  def updated(using
+  // Called after messages are delivered to the node.
+  // Behaviors that want to intercept or preprocess messages before the main action
+  // can overload this method.
+  def preAction(using
       ctx: ExecutionContext
-  )(sharedState: NodeState): UpdatedState = UpdatedState(sharedState, this)
+  )(sharedState: NodeState): UpdatedState = UpdatedState(this, sharedState)
+
+  def mainAction(using
+      ctx: ExecutionContext
+  )(sharedState: NodeState): UpdatedState = UpdatedState(this, sharedState)
+
+  // Called before outgoing messages are collected by the network.
+  // Behaviors that want to intercept or preprocess messages before the network
+  // collects them for delivery can override this method.
+  def postAction(using
+      ctx: ExecutionContext
+  )(sharedState: NodeState): UpdatedState = UpdatedState(this, sharedState)
 }

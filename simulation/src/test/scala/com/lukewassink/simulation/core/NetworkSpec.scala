@@ -1,14 +1,12 @@
 package com.lukewassink.simulation.core
 
-import com.lukewassink.simulation.core.{
-  DeliveryQueue, Message, MessageContent, Network, Node, NodeHeader
-}
+import com.lukewassink.simulation.core.{DeliveryQueue, Network, Node, NodeHeader}
+import com.lukewassink.simulation.message.{Message, MessageContent}
 import com.lukewassink.simulation.test_utils.BehaviorSpecUtil.{
   TestMessageBehavior, TestSelfUpdateBehavior
 }
 import com.lukewassink.simulation.test_utils.NetworkSpecUtil.testNetwork
 import com.lukewassink.simulation.test_utils.NodeStateSpecUtil.testNodeState
-import com.lukewassink.simulation.test_utils.RandomSpecUtil.InertRandom
 import com.lukewassink.simulation.test_utils.{BehaviorSpecUtil, UnitSpec}
 import com.lukewassink.simulation.util.Time
 import com.lukewassink.simulation.test_utils.MessageSpecUtil.{

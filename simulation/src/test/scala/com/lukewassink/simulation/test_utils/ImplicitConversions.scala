@@ -1,10 +1,10 @@
 package com.lukewassink.simulation.test_utils
 
-import com.lukewassink.simulation.core.MessageID
-import com.lukewassink.simulation.core.MessageID.MessageID
+import com.lukewassink.simulation.message.MessageID.MessageID
 import com.lukewassink.simulation.util.{Chance, Duration, Time}
 import com.lukewassink.simulation.core.NodeID.NodeID
 import com.lukewassink.simulation.core.NodeID
+import com.lukewassink.simulation.message.MessageID
 import com.lukewassink.simulation.util.Chance.Chance
 
 // To simplify tests. These allow us to write:
