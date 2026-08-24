@@ -7,9 +7,7 @@ import com.lukewassink.simulation.core.{
 }
 import com.lukewassink.simulation.interceptor.MessageDropInterceptor
 import com.lukewassink.simulation.message.RecipientSpecification.Single
-import com.lukewassink.simulation.message.{
-  DeliverySemantics, Message, MessageContent
-}
+import com.lukewassink.simulation.message.{DeliverySemantics, Message, Content}
 import com.lukewassink.simulation.util.BooleanDistribution
 import com.lukewassink.visualizer.processing.SyntheticHistoryElement.DroppedMessageElement
 import com.lukewassink.visualizer.test_util.UnitSpec
@@ -48,11 +46,7 @@ class RootStateSpec extends UnitSpec {
           Node(
             List(SimpleSender(
               2,
-              Message(
-                Drafted(Single(0)),
-                DeliverySemantics.empty,
-                MessageContent("Hi!")
-              )
+              Message(Drafted(Single(0)), DeliverySemantics.empty, Content("Hi!"))
             )),
             NodeState(NodeHeader(1, 0), List.empty, List.empty)
           )
@@ -105,11 +99,7 @@ class RootStateSpec extends UnitSpec {
           Node(
             List(SimpleSender(
               2,
-              Message(
-                Drafted(Single(0)),
-                DeliverySemantics.empty,
-                MessageContent("Hi!")
-              )
+              Message(Drafted(Single(0)), DeliverySemantics.empty, Content("Hi!"))
             )),
             NodeState(NodeHeader(1, 1), List.empty, List.empty)
           )
@@ -125,7 +115,7 @@ class RootStateSpec extends UnitSpec {
         List(DroppedMessageElement(Message(
           Scheduled(0, 1, 0, 2, 12),
           DeliverySemantics.empty,
-          MessageContent("Hi!")
+          Content("Hi!")
         )))
       )
 

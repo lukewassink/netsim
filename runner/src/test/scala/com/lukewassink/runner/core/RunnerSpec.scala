@@ -10,9 +10,7 @@ import com.lukewassink.simulation.message.MessageStage.Drafted
 import com.lukewassink.simulation.message.ResponseState.Request
 import com.lukewassink.simulation.core.{Network, Node, NodeHeader, NodeState}
 import com.lukewassink.simulation.message.RecipientSpecification.Single
-import com.lukewassink.simulation.message.{
-  DeliverySemantics, Message, MessageContent
-}
+import com.lukewassink.simulation.message.{DeliverySemantics, Message, Content}
 import com.lukewassink.simulation.test_utils.UnitSpec
 import io.github.edadma.hocon.HoconException
 
@@ -68,7 +66,7 @@ class RunnerSpec extends UnitSpec {
                   Message[Drafted](
                     Drafted(Single(1)),
                     DeliverySemantics.empty,
-                    MessageContent("Hi!")
+                    Content("Hi!")
                   )
                 )
               ),

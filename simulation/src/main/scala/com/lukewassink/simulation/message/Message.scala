@@ -39,13 +39,16 @@ enum MessageStage:
 import MessageStage.*
 
 // The content of a message.
-case class MessageContent(stringContent: String)
+case class Content(stringContent: String)
+
+case object Content:
+  def empty: Content = new Content("")
 
 // A message that can be sent from one node toa another.
-final case class Message[S <: MessageStage](
+final case class Message[+S <: MessageStage](
     messageStage: S,
     deliverySemantics: DeliverySemantics,
-    content: MessageContent
+    content: Content
 ):
   def isResponseTo(other: Message[Scheduled]): Boolean =
     deliverySemantics.responseState match
@@ -91,17 +94,24 @@ case object Message {
 
   // Methods for Scheduled messages.
   extension (message: Message[Scheduled]) {
+    def respondTo: Drafted = Drafted(Single(message.messageStage.senderId))
+
+    def responseStateTo: Response = Response(
+      message.messageStage.senderId,
+      message.messageStage.messageId
+    )
+
     def readyToDeliver(time: Time): Boolean =
       message.messageStage.deliveryTime <= time
 
     def stillWaiting(time: Time): Boolean =
       message.messageStage.deliveryTime > time
-
-    // Note: if this is also needed for Pending messages, move it to an extension of Pending | Scheduled,
-    // and use pattern matching to extract the unique ID.
-    def uniqueID: MessageUniqueID = MessageUniqueID(
-      message.messageStage.senderId,
-      message.messageStage.messageId
-    )
   }
+
+  extension (message: Message[Pending | Scheduled])
+    def uniqueID: MessageUniqueID =
+      message.messageStage match {
+        case stage: Pending => MessageUniqueID(stage.senderId, stage.messageId)
+        case stage: Scheduled => MessageUniqueID(stage.senderId, stage.messageId)
+      }
 }

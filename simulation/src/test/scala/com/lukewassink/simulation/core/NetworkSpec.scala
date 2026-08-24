@@ -1,7 +1,7 @@
 package com.lukewassink.simulation.core
 
 import com.lukewassink.simulation.core.{DeliveryQueue, Network, Node, NodeHeader}
-import com.lukewassink.simulation.message.{Message, MessageContent}
+import com.lukewassink.simulation.message.{Message, Content}
 import com.lukewassink.simulation.test_utils.BehaviorSpecUtil.{
   TestMessageBehavior, TestMessageMainActionOnlyBehavior, TestSelfUpdateBehavior
 }
@@ -17,7 +17,7 @@ class NetworkSpec extends UnitSpec {
   describe("Network") {
     val emptyNetwork = testNetwork(1, List.empty, List.empty)
 
-    val emptyContent         = MessageContent("")
+    val emptyContent         = Content("")
     val pendingMessageAToB   = pendingMessage(1, 1, 2, 3, "")
     val pendingMessageAToC   = pendingMessage(4, 1, 3, 5, "")
     val pendingMessageBToA   = pendingMessage(9, 2, 1, 4, "")

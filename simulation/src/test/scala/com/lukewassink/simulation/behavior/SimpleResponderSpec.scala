@@ -2,7 +2,7 @@ package com.lukewassink.simulation.behavior
 
 import com.lukewassink.simulation.behavior.SimpleResponder
 import com.lukewassink.simulation.core.{ExecutionContext, NodeHeader}
-import com.lukewassink.simulation.message.{Message, MessageContent}
+import com.lukewassink.simulation.message.{Message, Content}
 import com.lukewassink.simulation.test_utils.UnitSpec
 import com.lukewassink.simulation.test_utils.MessageSpecUtil.scheduledMessage
 import com.lukewassink.simulation.test_utils.ExecutionContextUtils.testContext

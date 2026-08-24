@@ -22,9 +22,7 @@ import com.lukewassink.simulation.interceptor.{
   MessageDropInterceptor, RandomLatencyInterceptor
 }
 import com.lukewassink.simulation.message.RecipientSpecification.Single
-import com.lukewassink.simulation.message.{
-  DeliverySemantics, Message, MessageContent
-}
+import com.lukewassink.simulation.message.{DeliverySemantics, Message, Content}
 import com.lukewassink.simulation.test_utils.UnitSpec
 import com.lukewassink.simulation.util.{
   BooleanDistribution, LogNormalDistribution, NormalDistribution,
@@ -148,7 +146,7 @@ class TransformerSpec extends UnitSpec {
                   Message[Drafted](
                     Drafted(Single(1)),
                     DeliverySemantics.empty,
-                    MessageContent("Hi!")
+                    Content("Hi!")
                   )
                 )
               ),

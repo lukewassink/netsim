@@ -6,7 +6,7 @@ import ResponseState.*
 import com.lukewassink.simulation.util.Store
 
 // Add OneOf, AllOf as needed.
-// BroadcastProtocols can add details: gossip, linear, etc.
+// Protocol can add details: gossip, linear, etc.
 enum RecipientSpecification:
   case Single(id: NodeID)
 
@@ -18,22 +18,22 @@ enum ResponseState:
 
 enum Protocol:
   case Reliable()
+  case ReliableAck(id: MessageUniqueID) // Acknowledge the message with this ID.
 
-case class BroadcastProtocols(protocols: Store[Protocol])
+object Protocol {
+  def empty: Store[Protocol] = Store.empty[Protocol]
 
-object BroadcastProtocols {
-  def empty: BroadcastProtocols = new BroadcastProtocols(Store.empty[Protocol])
+  def apply(protocols: Protocol*): Store[Protocol] = Store(protocols.toList)
 }
 
 case class DeliverySemantics(
     responseState: ResponseState,
-    broadcastProtocols: BroadcastProtocols
+    broadcastProtocols: Store[Protocol]
 )
 
 object DeliverySemantics {
-  def empty: DeliverySemantics =
-    new DeliverySemantics(Request(), BroadcastProtocols.empty)
+  def empty: DeliverySemantics = new DeliverySemantics(Request(), Protocol.empty)
 
   def apply(response: Response): DeliverySemantics =
-    new DeliverySemantics(response, BroadcastProtocols.empty)
+    new DeliverySemantics(response, Protocol.empty)
 }

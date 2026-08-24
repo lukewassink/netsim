@@ -26,7 +26,7 @@ import com.lukewassink.simulation.interceptor.{
 }
 import com.lukewassink.simulation.message.RecipientSpecification.Single
 import com.lukewassink.simulation.message.{
-  DeliverySemantics, Message, MessageContent, MessageID, RecipientSpecification
+  DeliverySemantics, Message, Content, MessageID, RecipientSpecification
 }
 import com.lukewassink.simulation.util.{
   BooleanDistribution, Chance, Distribution, LogNormalDistribution,
@@ -163,7 +163,7 @@ object Transformer {
             Message[Drafted](
               Drafted(Single(ctx.resolveID(receiver))),
               DeliverySemantics.empty,
-              MessageContent(content)
+              Content(content)
             )
           )
         case SimpleResponderNode() => SimpleResponder()

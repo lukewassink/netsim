@@ -1,8 +1,6 @@
 package com.lukewassink.simulation.core
 
-import com.lukewassink.simulation.message.{
-  DeliverySemantics, Message, MessageContent
-}
+import com.lukewassink.simulation.message.{DeliverySemantics, Message, Content}
 import com.lukewassink.simulation.message.MessageStage.{Drafted, Scheduled}
 import com.lukewassink.simulation.message.RecipientSpecification.Single
 import com.lukewassink.simulation.message.ResponseState.Response
@@ -66,7 +64,7 @@ class MessageSpec extends UnitSpec {
         val response = Message[Drafted](
           Drafted(Single(2)),
           DeliverySemantics(Response(2, 1)),
-          MessageContent("")
+          Content("")
         )
 
         assert(response.isResponseTo(message))
@@ -76,12 +74,12 @@ class MessageSpec extends UnitSpec {
         val response1 = Message[Drafted](
           Drafted(Single(3)),
           DeliverySemantics(Response(3, 1)),
-          MessageContent("")
+          Content("")
         )
         val response2 = Message[Drafted](
           Drafted(Single(2)),
           DeliverySemantics(Response(2, 0)),
-          MessageContent("")
+          Content("")
         )
 
         assert(!response1.isResponseTo(message))

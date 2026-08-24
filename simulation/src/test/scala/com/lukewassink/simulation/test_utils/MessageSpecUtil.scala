@@ -11,7 +11,7 @@ import com.lukewassink.simulation.core.NodeID.NodeID
 import com.lukewassink.simulation.message.MessageID.MessageID
 import com.lukewassink.simulation.message.RecipientSpecification.Single
 import com.lukewassink.simulation.message.{
-  DeliverySemantics, Message, MessageContent, MessageID
+  DeliverySemantics, Message, Content, MessageID
 }
 
 object MessageSpecUtil {
@@ -19,7 +19,7 @@ object MessageSpecUtil {
     Message[Drafted](
       Drafted(Single(receiverId)),
       DeliverySemantics.empty,
-      MessageContent(content)
+      Content(content)
     )
 
   def pendingMessage(
@@ -31,7 +31,7 @@ object MessageSpecUtil {
   ): Message[Pending] = Message(
     Pending(messageId, nodeId, receiverId, sendTime),
     DeliverySemantics.empty,
-    MessageContent(content)
+    Content(content)
   )
 
   def pendingMessage(receiverId: NodeID, content: String): Message[Pending] =

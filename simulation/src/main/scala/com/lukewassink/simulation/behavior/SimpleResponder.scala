@@ -4,9 +4,7 @@ import com.lukewassink.simulation.message.MessageStage.{Drafted, Scheduled}
 import com.lukewassink.simulation.core.{ExecutionContext, NodeState}
 import com.lukewassink.simulation.message.RecipientSpecification.Single
 import com.lukewassink.simulation.message.ResponseState.Response
-import com.lukewassink.simulation.message.{
-  BroadcastProtocols, DeliverySemantics, Message, MessageContent
-}
+import com.lukewassink.simulation.message.{Message, Content}
 import com.lukewassink.simulation.util.Time
 
 case class SimpleResponder() extends Behavior {
@@ -19,7 +17,7 @@ case class SimpleResponder() extends Behavior {
       message.deliverySemantics.copy(responseState =
         Response(messageStage.senderId, messageStage.messageId)
       ),
-      MessageContent("Response to: " + message.content.stringContent)
+      Content("Response to: " + message.content.stringContent)
     )
 
   override def mainAction(using
