@@ -20,7 +20,7 @@ enum Protocol:
   case Reliable()
   case ReliableAck(id: MessageUniqueID) // Acknowledge the message with this ID.
 
-object Protocol {
+object BroadcastProtocols {
   def empty: Store[Protocol] = Store.empty[Protocol]
 
   def apply(protocols: Protocol*): Store[Protocol] = Store(protocols.toList)
@@ -32,8 +32,9 @@ case class DeliverySemantics(
 )
 
 object DeliverySemantics {
-  def empty: DeliverySemantics = new DeliverySemantics(Request(), Protocol.empty)
+  def empty: DeliverySemantics =
+    new DeliverySemantics(Request(), BroadcastProtocols.empty)
 
-  def apply(response: Response): DeliverySemantics =
-    new DeliverySemantics(response, Protocol.empty)
+  def apply(responseState: ResponseState): DeliverySemantics =
+    new DeliverySemantics(responseState, BroadcastProtocols.empty)
 }

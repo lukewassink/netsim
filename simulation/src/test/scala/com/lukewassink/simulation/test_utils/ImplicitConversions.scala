@@ -7,7 +7,7 @@ import com.lukewassink.simulation.core.NodeID
 import com.lukewassink.simulation.message.MessageID
 import com.lukewassink.simulation.util.Chance.Chance
 
-// To simplify tests. These allow us to write:
+// To simplify tests. These allow us to write things like:
 //
 //   NodeHeader(1, 3)
 //
@@ -17,6 +17,7 @@ import com.lukewassink.simulation.util.Chance.Chance
 //
 // in test files. Production code wants clarity and type-safety,
 // but tests want to be concise and easy to write.
+
 object ImplicitConversions {
   given Conversion[Int, NodeID] with
     def apply(id: Int): NodeID = NodeID(id)
@@ -29,6 +30,9 @@ object ImplicitConversions {
 
   given Conversion[Double, Time] with
     def apply(ticks: Double): Time = Time(ticks)
+
+  given Conversion[Int, Duration] with
+    def apply(ticks: Int): Duration = Duration(ticks)
 
   given Conversion[Double, Duration] with
     def apply(ticks: Double): Duration = Duration(ticks)

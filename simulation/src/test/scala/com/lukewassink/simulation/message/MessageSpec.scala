@@ -1,9 +1,9 @@
-package com.lukewassink.simulation.core
+package com.lukewassink.simulation.message
 
-import com.lukewassink.simulation.message.{DeliverySemantics, Message, Content}
 import com.lukewassink.simulation.message.MessageStage.{Drafted, Scheduled}
 import com.lukewassink.simulation.message.RecipientSpecification.Single
 import com.lukewassink.simulation.message.ResponseState.Response
+import com.lukewassink.simulation.message.{Content, DeliverySemantics, Message}
 import com.lukewassink.simulation.test_utils.MessageSpecUtil.{
   draftedMessage, pendingMessage, scheduledMessage
 }

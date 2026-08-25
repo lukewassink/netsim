@@ -2,8 +2,6 @@ package com.lukewassink.simulation.behavior
 
 import com.lukewassink.simulation.core.{ExecutionContext, NodeState}
 
-// A data class that encapsulates the return type of the NodeBehavior.updated() method, which can update shared state,
-// and/or itself.
 final case class UpdatedState(selfState: Behavior, sharedState: NodeState)
 
 // Equip Behaviors to Nodes to give them custom logic.
