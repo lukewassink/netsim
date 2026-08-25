@@ -165,12 +165,14 @@ object Transformer {
         ctx: TransformContext
     ): Behavior =
       behaviorNode match {
-        case SimpleSenderNode(time, receiver, content) =>
+        case SimpleSenderNode(time, receiver, content, isReliable) =>
           SimpleSender(
             Time(time),
             Message[Drafted](
               Drafted(Single(ctx.resolveID(receiver))),
-              DeliverySemantics.empty,
+              if isReliable then
+                DeliverySemantics(Request(), BroadcastProtocols(Reliable()))
+              else DeliverySemantics.empty,
               Content(content)
             )
           )

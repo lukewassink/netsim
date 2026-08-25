@@ -4,7 +4,7 @@ import com.lukewassink.runner.config.BehaviorNode.*
 import com.lukewassink.runner.config.InterceptorNode.*
 import com.lukewassink.runner.config.SyntaxNodeDefaults.{
   defaultNodeNodeConfig, defaultReliableBroadcasterNodeConfig,
-  defaultSimulationNodeConfig
+  defaultSimpleSenderNodeConfig, defaultSimulationNodeConfig
 }
 import com.lukewassink.runner.util.{Failure, Result, Success}
 import io.github.edadma.hocon.{
@@ -41,7 +41,8 @@ object SyntaxTree {
     (value, path) =>
       val config = parseObject(value, path, "Behaviors")
       config.getString("type") match {
-        case "simple-sender"        => config.as[SimpleSenderNode]
+        case "simple-sender" =>
+          config.withFallback(defaultSimpleSenderNodeConfig).as[SimpleSenderNode]
         case "simple-responder"     => config.as[SimpleResponderNode]
         case "reliable-broadcaster" =>
           config.withFallback(defaultReliableBroadcasterNodeConfig)
@@ -112,7 +113,12 @@ case class NodeNode(name: String, behaviors: List[BehaviorNode])
     extends SyntaxTreeNode
 
 enum BehaviorNode extends SyntaxTreeNode:
-  case SimpleSenderNode(time: Double, receiver: String, content: String)
+  case SimpleSenderNode(
+      time: Double,
+      receiver: String,
+      content: String,
+      isReliable: Boolean
+  )
   case SimpleResponderNode()
   case ReliableBroadcasterNode(
       ackTimeout: Double,

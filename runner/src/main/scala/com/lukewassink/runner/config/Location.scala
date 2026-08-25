@@ -52,9 +52,9 @@ object BehaviorLocation {
 
 private def references(behavior: BehaviorNode): List[String] =
   behavior match {
-    case SimpleSenderNode(_, nodeName, _) => List(nodeName)
-    case b: SimpleResponderNode           => List.empty
-    case b: ReliableBroadcasterNode       => List.empty
+    case SimpleSenderNode(_, nodeName, _, _) => List(nodeName)
+    case b: SimpleResponderNode              => List.empty
+    case b: ReliableBroadcasterNode          => List.empty
   }
 
 // The location of a reference to another Node.

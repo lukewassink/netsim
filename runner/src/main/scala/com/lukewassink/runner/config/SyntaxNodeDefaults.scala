@@ -21,6 +21,14 @@ object SyntaxNodeDefaults {
       |""".stripMargin
   val defaultNodeNodeConfig: Config = Hocon.parse(defaultNodeNodeString)
 
+  private val defaultSimpleSenderNodeString: String =
+    """
+      |content = ""
+      |isReliable = false
+      |""".stripMargin
+  val defaultSimpleSenderNodeConfig: Config = Hocon
+    .parse(defaultSimpleSenderNodeString)
+
   private val defaultReliableBroadcasterNodeString: String =
     """
       |ackTimeout = 50

@@ -104,7 +104,7 @@ class SyntaxTreeSpec extends UnitSpec {
             List(
               SimpleResponderNode(),
               SimpleResponderNode(),
-              SimpleSenderNode(10, "node-name-2", "Hi!")
+              SimpleSenderNode(10, "node-name-2", "Hi!", false)
             )
           )
         )

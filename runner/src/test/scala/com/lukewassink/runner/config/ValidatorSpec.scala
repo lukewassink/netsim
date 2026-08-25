@@ -30,7 +30,7 @@ class ValidatorSpec extends UnitSpec {
             List(
               SimpleResponderNode(),
               SimpleResponderNode(),
-              SimpleSenderNode(10, "node-name-2", "Hi!")
+              SimpleSenderNode(10, "node-name-2", "Hi!", false)
             )
           )
         )
@@ -53,7 +53,7 @@ class ValidatorSpec extends UnitSpec {
             List(
               SimpleResponderNode(),
               SimpleResponderNode(),
-              SimpleSenderNode(10, "node-name-1", "Hi!")
+              SimpleSenderNode(10, "node-name-1", "Hi!", false)
             )
           )
         )
@@ -80,7 +80,7 @@ class ValidatorSpec extends UnitSpec {
             List(
               SimpleResponderNode(),
               SimpleResponderNode(),
-              SimpleSenderNode(10, "node-name-5", "Hi!")
+              SimpleSenderNode(10, "node-name-5", "Hi!", false)
             )
           )
         )
@@ -105,7 +105,7 @@ class ValidatorSpec extends UnitSpec {
             "node-name-1",
             List(
               SimpleResponderNode(),
-              SimpleSenderNode(10, "node-name-12", "Hi!")
+              SimpleSenderNode(10, "node-name-12", "Hi!", false)
             )
           ),
           NodeNode(
@@ -113,7 +113,7 @@ class ValidatorSpec extends UnitSpec {
             List(
               SimpleResponderNode(),
               SimpleResponderNode(),
-              SimpleSenderNode(10, "node-name-5", "Hi!")
+              SimpleSenderNode(10, "node-name-5", "Hi!", false)
             )
           ),
           NodeNode("node-name-3", List.empty),

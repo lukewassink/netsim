@@ -124,7 +124,7 @@ class TransformerSpec extends UnitSpec {
             List(
               SimpleResponderNode(),
               SimpleResponderNode(),
-              SimpleSenderNode(15, "node-name-2", "Hi!")
+              SimpleSenderNode(15, "node-name-2", "Hi!", false)
             )
           )
         )

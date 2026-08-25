@@ -37,13 +37,16 @@ class LocationSpec extends UnitSpec {
         List(
           NodeNode(
             "node1",
-            List(SimpleSenderNode(10, "node2", "Hi!"), SimpleResponderNode())
+            List(
+              SimpleSenderNode(10, "node2", "Hi!", false),
+              SimpleResponderNode()
+            )
           ),
           NodeNode(
             "node2",
             List(
-              SimpleSenderNode(15, "node1", "Hi to you!"),
-              SimpleSenderNode(20, "node1", "Hi again!")
+              SimpleSenderNode(15, "node1", "Hi to you!", false),
+              SimpleSenderNode(20, "node1", "Hi again!", false)
             )
           )
         )
