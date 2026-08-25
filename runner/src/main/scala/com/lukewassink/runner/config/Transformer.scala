@@ -1,7 +1,7 @@
 package com.lukewassink.runner.config
 
 import com.lukewassink.runner.config.BehaviorNode.{
-  SimpleResponderNode, SimpleSenderNode
+  ReliableBroadcasterNode, SimpleResponderNode, SimpleSenderNode
 }
 import com.lukewassink.runner.config.{
   BooleanDistributionNode, DistributionNode, LogNormalDistributionNode,
@@ -13,7 +13,8 @@ import com.lukewassink.runner.config.InterceptorNode.{
 import com.lukewassink.runner.core.{Simulation, SimulationMetadata}
 import com.lukewassink.runner.util.{Failure, Result, Success}
 import com.lukewassink.simulation.behavior.{
-  Behavior, SimpleResponder, SimpleSender
+  Behavior, ReliableBroadcaster, ReliableBroadcasterConfig, SimpleResponder,
+  SimpleSender
 }
 import com.lukewassink.simulation.message.MessageStage.Drafted
 import com.lukewassink.simulation.core.NodeID.NodeID
@@ -24,21 +25,23 @@ import com.lukewassink.simulation.message.ResponseState.Request
 import com.lukewassink.simulation.interceptor.{
   MessageDropInterceptor, MessageInterceptor, RandomLatencyInterceptor
 }
+import com.lukewassink.simulation.message.Protocol.Reliable
 import com.lukewassink.simulation.message.RecipientSpecification.Single
 import com.lukewassink.simulation.message.{
-  DeliverySemantics, Message, Content, MessageID, RecipientSpecification
+  BroadcastProtocols, Content, DeliverySemantics, Message, MessageID,
+  RecipientSpecification
 }
+import com.lukewassink.simulation.util.Time.{TimeConverter, milliseconds}
 import com.lukewassink.simulation.util.{
-  BooleanDistribution, Chance, Distribution, LogNormalDistribution,
+  BooleanDistribution, Chance, Distribution, Duration, LogNormalDistribution,
   NormalDistribution, Time, UniformDistribution
 }
 
-// Refactor to use Transformer[A, B] type classes.
-// Give [A <: SyntaxTreeNode] an extension method A.to[B](using ctx: TransformContext) that uses Transformer[A, B]
-
 // Context used by the transformers to build the Simulation.
-case class TransformContext(nameToID: Map[String, NodeID]):
-  // This method should never fail to find an ID for a name unless there is a bug in syntax tree validation
+case class TransformContext(
+    ticksPerMillisecond: Double,
+    nameToID: Map[String, NodeID]
+) extends TimeConverter { // This method should never fail to find an ID for a name unless there is a bug in syntax tree validation
   // or in constructing the transform context, so throw an error if it does fail.
   def resolveID(name: String): NodeID =
     nameToID.get(name) match {
@@ -49,12 +52,17 @@ case class TransformContext(nameToID: Map[String, NodeID]):
         )
     }
 
+  override def convertTime(millis: Double): Duration = Duration(
+    ticksPerMillisecond * millis
+  )
+}
+
 object TransformContext:
   def apply(simulation: SimulationNode): TransformContext = {
     val nameToID =
       simulation.nodes.map(_.name).zipWithIndex
         .map((name, id) => name -> NodeID(id)).toMap
-    TransformContext(nameToID)
+    TransformContext(simulation.ticksPerMillisecond, nameToID)
   }
 
 trait Transformer[A, B]:
@@ -162,10 +170,16 @@ object Transformer {
             Time(time),
             Message[Drafted](
               Drafted(Single(ctx.resolveID(receiver))),
-              DeliverySemantics.empty,
+              DeliverySemantics(Request(), BroadcastProtocols(Reliable())),
               Content(content)
             )
           )
         case SimpleResponderNode() => SimpleResponder()
+        case ReliableBroadcasterNode(ackTimeout, maxRetries, dedupeTimeout) =>
+          ReliableBroadcaster.empty(ReliableBroadcasterConfig(
+            ackTimeout.milliseconds,
+            maxRetries,
+            dedupeTimeout.milliseconds
+          ))
       }
 }

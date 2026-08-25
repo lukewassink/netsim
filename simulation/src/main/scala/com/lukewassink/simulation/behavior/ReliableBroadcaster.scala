@@ -44,10 +44,18 @@ case class ReliableBroadcaster(
   private def isReliable(message: Message[?]): Boolean = message
     .deliverySemantics.broadcastProtocols.contains[Reliable]
 
-  private def resend(expectedResponse: UnAckedMessage): Message[Drafted] =
-    expectedResponse.message.copy(messageStage =
-      Drafted(Single(expectedResponse.message.messageStage.receiverId))
+  private def resend(unAckedMessage: UnAckedMessage): Message[Drafted] = {
+    val semantics = unAckedMessage.message.deliverySemantics
+    // Resends can't be reliable or it will trigger infinite resends of resends.
+    val nonReliableSemantics = semantics
+      .copy(broadcastProtocols = semantics.broadcastProtocols.without[Reliable])
+    unAckedMessage.message.copy(
+      messageStage = Drafted(
+        Single(unAckedMessage.message.messageStage.receiverId)
+      ),
+      deliverySemantics = nonReliableSemantics
     )
+  }
 
   // 1. Ack incoming reliable messages.
   // 2. Process incoming acks.

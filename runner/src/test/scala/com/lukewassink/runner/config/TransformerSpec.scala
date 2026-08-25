@@ -50,11 +50,14 @@ class TransformerSpec extends UnitSpec {
       it("builds transformation context from a SimulationNode") {
 
         assert(
-          context === TransformContext(Map[String, NodeID](
-            "node-name-1" -> 0,
-            "node-name-2" -> 1,
-            "node-name-3" -> 2
-          ))
+          context === TransformContext(
+            1,
+            Map[String, NodeID](
+              "node-name-1" -> 0,
+              "node-name-2" -> 1,
+              "node-name-3" -> 2
+            )
+          )
         )
       }
     }

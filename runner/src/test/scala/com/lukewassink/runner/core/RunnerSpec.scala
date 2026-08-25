@@ -5,12 +5,14 @@ import com.lukewassink.runner.config.{
 }
 import com.lukewassink.runner.core.Runner
 import com.lukewassink.runner.util.{Failure, Success}
-import com.lukewassink.simulation.behavior.{SimpleResponder, SimpleSender}
+import com.lukewassink.simulation.behavior.{
+  ReliableBroadcaster, ReliableBroadcasterConfig, SimpleResponder, SimpleSender
+}
 import com.lukewassink.simulation.message.MessageStage.Drafted
 import com.lukewassink.simulation.message.ResponseState.Request
 import com.lukewassink.simulation.core.{Network, Node, NodeHeader, NodeState}
 import com.lukewassink.simulation.message.RecipientSpecification.Single
-import com.lukewassink.simulation.message.{DeliverySemantics, Message, Content}
+import com.lukewassink.simulation.message.{Content, DeliverySemantics, Message}
 import com.lukewassink.simulation.test_utils.UnitSpec
 import io.github.edadma.hocon.HoconException
 
@@ -73,6 +75,42 @@ class RunnerSpec extends UnitSpec {
               NodeState(NodeHeader(2, 0), List.empty, List.empty)
             )
           ),
+          List.empty
+        )
+      )
+
+      inside(result) { case Success(s) => s === simulation }
+    }
+
+    it("transforms a reliable broadcaster") {
+      val config =
+        """
+             name = "simulation-name"
+             randomSeed = 10
+
+             nodes = [{
+                   name = "node-1"
+                   behaviors = [{
+                       type = reliable-broadcaster
+                       ackTimeout = 100
+                       maxRetries = 3
+                       dedupeTimeout = 1000
+                     }]
+                 }]
+        """.stripMargin
+
+      val result = Runner.run(config)
+
+      val simulation = Simulation(
+        SimulationMetadata("simulation-name", 10),
+        Network(
+          0,
+          List(Node(
+            List(
+              ReliableBroadcaster.empty(ReliableBroadcasterConfig(100, 3, 1000))
+            ),
+            NodeState(NodeHeader(0, 0), List.empty, List.empty)
+          )),
           List.empty
         )
       )

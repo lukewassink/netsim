@@ -16,7 +16,7 @@ type NetworkState = (network: Network, row: SyntheticHistoryRow)
 
 object RootState:
   // Amount of the network history to take.
-  private val HISTORY_LENGTH = 10_000
+  private val HISTORY_LENGTH = 200
 
 class RootState private (using Owner)(
     val configState: ConfigState,

@@ -36,9 +36,10 @@ object SyntaxTree {
     (value, path) =>
       val config = parseObject(value, path, "Behaviors")
       config.getString("type") match {
-        case "simple-sender"    => config.as[SimpleSenderNode]
-        case "simple-responder" => config.as[SimpleResponderNode]
-        case t                  => throw MissingBehaviorTypeException(t)
+        case "simple-sender"        => config.as[SimpleSenderNode]
+        case "simple-responder"     => config.as[SimpleResponderNode]
+        case "reliable-broadcaster" => config.as[ReliableBroadcasterNode]
+        case t                      => throw MissingBehaviorTypeException(t)
       }
 
   given Decoder[InterceptorNode] =
@@ -106,3 +107,8 @@ case class NodeNode(name: String, behaviors: List[BehaviorNode])
 enum BehaviorNode extends SyntaxTreeNode:
   case SimpleSenderNode(time: Double, receiver: String, content: String)
   case SimpleResponderNode()
+  case ReliableBroadcasterNode(
+      ackTimeout: Double,
+      maxRetries: Int,
+      dedupeTimeout: Double
+  )

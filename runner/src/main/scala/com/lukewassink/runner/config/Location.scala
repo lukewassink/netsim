@@ -1,7 +1,7 @@
 package com.lukewassink.runner.config
 
 import com.lukewassink.runner.config.BehaviorNode.{
-  SimpleResponderNode, SimpleSenderNode
+  ReliableBroadcasterNode, SimpleResponderNode, SimpleSenderNode
 }
 import com.lukewassink.runner.config.InterceptorNode.{
   MessageDropInterceptorNode, RandomLatencyInterceptorNode
@@ -53,7 +53,8 @@ object BehaviorLocation {
 private def references(behavior: BehaviorNode): List[String] =
   behavior match {
     case SimpleSenderNode(_, nodeName, _) => List(nodeName)
-    case SimpleResponderNode()            => List.empty
+    case b: SimpleResponderNode           => List.empty
+    case b: ReliableBroadcasterNode       => List.empty
   }
 
 // The location of a reference to another Node.
