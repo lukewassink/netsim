@@ -11,7 +11,7 @@ import com.lukewassink.simulation.core.NodeID.NodeID
 import com.lukewassink.simulation.message.MessageID.MessageID
 import com.lukewassink.simulation.message.RecipientSpecification.Single
 import com.lukewassink.simulation.message.{
-  DeliverySemantics, Message, Content, MessageID
+  Content, DeliverySemantics, Message, MessageID, MessageUniqueID
 }
 
 object MessageSpecUtil {
@@ -83,5 +83,18 @@ trait MessageMatchers {
         "messageId",
         expectedID,
         message.messageStage.messageId
+      )
+
+  // Custom matcher to compare the message and node IDs of messages.
+  def messageUniqueID(
+      expectedNodeID: NodeID,
+      expectedMessageID: MessageID
+  ): HavePropertyMatcher[Message[Pending | Scheduled], MessageUniqueID] =
+    (message: Message[Pending | Scheduled]) =>
+      HavePropertyMatchResult(
+        message.uniqueID == MessageUniqueID(expectedNodeID, expectedMessageID),
+        "messageId",
+        MessageUniqueID(expectedNodeID, expectedMessageID),
+        message.uniqueID
       )
 }

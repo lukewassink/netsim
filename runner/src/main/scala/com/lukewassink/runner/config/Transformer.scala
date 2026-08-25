@@ -170,7 +170,7 @@ object Transformer {
             Time(time),
             Message[Drafted](
               Drafted(Single(ctx.resolveID(receiver))),
-              DeliverySemantics(Request(), BroadcastProtocols(Reliable())),
+              DeliverySemantics.empty,
               Content(content)
             )
           )

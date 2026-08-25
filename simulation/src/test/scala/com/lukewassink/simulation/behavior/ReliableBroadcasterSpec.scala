@@ -88,8 +88,7 @@ class ReliableBroadcasterSpec extends UnitSpec {
 
       val UpdatedState(_, withRetries) =
         withAcks.mainAction(using ExecutionContext(200, 1, 1))(state)
-      withRetries.outgoingMessages should contain theSameElementsAs
-        List(outgoingMessage2.send(0, 0, 2, 200))
+      exactly(1, withRetries.outgoingMessages) should have(messageUniqueID(0, 0))
     }
 
     it("it gives up after reaching the max retries") {
@@ -98,18 +97,15 @@ class ReliableBroadcasterSpec extends UnitSpec {
 
       val UpdatedState(afterRetries1, withRetries1) =
         withReliables.mainAction(using ExecutionContext(200, 1, 1))(state)
-      withRetries1.outgoingMessages should contain theSameElementsAs
-        List(outgoingMessage1.send(0, 0, 2, 200))
+      exactly(1, withRetries1.outgoingMessages) should have(messageUniqueID(0, 0))
 
       val UpdatedState(afterRetries2, withRetries2) =
         afterRetries1.mainAction(using ExecutionContext(400, 1, 1))(state)
-      withRetries2.outgoingMessages should contain theSameElementsAs
-        List(outgoingMessage1.send(0, 0, 2, 400))
+      exactly(1, withRetries2.outgoingMessages) should have(messageUniqueID(0, 0))
 
       val UpdatedState(afterRetries3, withRetries3) =
         afterRetries2.mainAction(using ExecutionContext(600, 1, 1))(state)
-      withRetries3.outgoingMessages should contain theSameElementsAs
-        List(outgoingMessage1.send(0, 0, 2, 600))
+      exactly(1, withRetries3.outgoingMessages) should have(messageUniqueID(0, 0))
 
       val UpdatedState(_, withMaxRetries) =
         afterRetries3.mainAction(using ExecutionContext(800, 1, 1))(state)

@@ -1,8 +1,9 @@
 package com.lukewassink.simulation.behavior
 
+import com.lukewassink.simulation.behavior.ReliableBroadcaster.*
 import com.lukewassink.simulation.core.{ExecutionContext, NodeState}
 import com.lukewassink.simulation.message.{
-  Content, DeliverySemantics, Message, MessageUniqueID, BroadcastProtocols
+  BroadcastProtocols, Content, DeliverySemantics, Message, MessageUniqueID
 }
 import com.lukewassink.simulation.message.MessageStage.{
   Drafted, Pending, Scheduled
@@ -21,15 +22,9 @@ case class UnAckedMessage(message: Message[Pending], deadline: Time, retry: Int)
 
 case class SeenMessageData(deadline: Time)
 
-case object ReliableBroadcaster:
+case object ReliableBroadcaster {
   def empty(config: ReliableBroadcasterConfig): ReliableBroadcaster =
     new ReliableBroadcaster(config, List.empty, Map.empty)
-
-case class ReliableBroadcaster(
-    config: ReliableBroadcasterConfig,
-    unAckedMessages: List[UnAckedMessage],
-    seenMessages: Map[MessageUniqueID, SeenMessageData]
-) extends Behavior {
 
   private def ack(message: Message[Scheduled]): Message[Drafted] =
     Message[Drafted](
@@ -44,7 +39,8 @@ case class ReliableBroadcaster(
   private def isReliable(message: Message[?]): Boolean = message
     .deliverySemantics.broadcastProtocols.contains[Reliable]
 
-  private def resend(unAckedMessage: UnAckedMessage): Message[Drafted] = {
+  // Public for tests.
+  def resend(unAckedMessage: UnAckedMessage): Message[Drafted] = {
     val semantics = unAckedMessage.message.deliverySemantics
     // Resends can't be reliable or it will trigger infinite resends of resends.
     val nonReliableSemantics = semantics
@@ -56,6 +52,13 @@ case class ReliableBroadcaster(
       deliverySemantics = nonReliableSemantics
     )
   }
+}
+
+case class ReliableBroadcaster(
+    config: ReliableBroadcasterConfig,
+    unAckedMessages: List[UnAckedMessage],
+    seenMessages: Map[MessageUniqueID, SeenMessageData]
+) extends Behavior {
 
   // 1. Ack incoming reliable messages.
   // 2. Process incoming acks.

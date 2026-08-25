@@ -2,7 +2,10 @@ package com.lukewassink.runner.config
 
 import com.lukewassink.runner.config.BehaviorNode.*
 import com.lukewassink.runner.config.InterceptorNode.*
-import com.lukewassink.runner.config.SyntaxNodeDefaults.defaultSimulationNode
+import com.lukewassink.runner.config.SyntaxNodeDefaults.{
+  defaultNodeNodeConfig, defaultReliableBroadcasterNodeConfig,
+  defaultSimulationNodeConfig
+}
 import com.lukewassink.runner.util.{Failure, Result, Success}
 import io.github.edadma.hocon.{
   Config, ConfigObject, ConfigValue, Decoder, Hocon, HoconException
@@ -11,10 +14,7 @@ import io.github.edadma.hocon.{
 object SyntaxTree {
   def fromConfig(config: Config): Result[SimulationNode] =
     try
-      Success(
-        config.withFallback(Hocon.parse(defaultSimulationNode))
-          .as[SimulationNode]
-      )
+      Success(config.withFallback(defaultSimulationNodeConfig).as[SimulationNode])
     catch case e: (HoconException | ConfigException) => Failure(e)
 
   // Extract the object at path.
@@ -32,14 +32,21 @@ object SyntaxTree {
         )
     }
 
+  given Decoder[NodeNode] =
+    (value, path) =>
+      parseObject(value, path, "Nodes").withFallback(defaultNodeNodeConfig)
+        .as[NodeNode]
+
   given Decoder[BehaviorNode] =
     (value, path) =>
       val config = parseObject(value, path, "Behaviors")
       config.getString("type") match {
         case "simple-sender"        => config.as[SimpleSenderNode]
         case "simple-responder"     => config.as[SimpleResponderNode]
-        case "reliable-broadcaster" => config.as[ReliableBroadcasterNode]
-        case t                      => throw MissingBehaviorTypeException(t)
+        case "reliable-broadcaster" =>
+          config.withFallback(defaultReliableBroadcasterNodeConfig)
+            .as[ReliableBroadcasterNode]
+        case t => throw MissingBehaviorTypeException(t)
       }
 
   given Decoder[InterceptorNode] =

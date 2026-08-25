@@ -20,8 +20,6 @@ class SyntaxTreeSpec extends UnitSpec {
         """
            name = "simulation-name"
            randomSeed = 10
-
-           nodes = []
         """.stripMargin
       )
       val result = SyntaxTree.fromConfig(config)
@@ -45,7 +43,6 @@ class SyntaxTreeSpec extends UnitSpec {
 
                  nodes = [{
                    name = "node-name"
-                   behaviors = []
                  }]
               """.stripMargin
       )
