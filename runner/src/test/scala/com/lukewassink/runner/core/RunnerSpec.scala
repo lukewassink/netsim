@@ -92,9 +92,10 @@ class RunnerSpec extends UnitSpec {
                    name = "node-1"
                    behaviors = [{
                        type = reliable-broadcaster
-                       ackTimeout = 100
+                       incomingAckTimeout = 100
                        maxRetries = 3
                        dedupeTimeout = 1000
+                       outgoingAckTimeout = 50
                      }]
                  }]
         """.stripMargin
@@ -107,7 +108,8 @@ class RunnerSpec extends UnitSpec {
           0,
           List(Node(
             List(
-              ReliableBroadcaster.empty(ReliableBroadcasterConfig(100, 3, 1000))
+              ReliableBroadcaster
+                .empty(ReliableBroadcasterConfig(100, 3, 1000, 50))
             ),
             NodeState(NodeHeader(0, 0), List.empty, List.empty)
           )),

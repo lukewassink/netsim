@@ -31,9 +31,10 @@ object SyntaxNodeDefaults {
 
   private val defaultReliableBroadcasterNodeString: String =
     """
-      |ackTimeout = 50
+      |incomingAckTimeout = 50
       |maxRetries = 3
       |dedupeTimeout = 200
+      |outgoingAckTimeout = 10
       |""".stripMargin
   val defaultReliableBroadcasterNodeConfig: Config = Hocon
     .parse(defaultReliableBroadcasterNodeString)

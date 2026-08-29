@@ -7,13 +7,13 @@ import com.lukewassink.simulation.message.{
 import com.lukewassink.simulation.message.MessageStage.{
   Drafted, Pending, Scheduled
 }
-import com.lukewassink.simulation.message.Protocol.{Reliable, ReliableAck}
+import com.lukewassink.simulation.message.{Reliable, ReliableAcks}
 import com.lukewassink.simulation.message.RecipientSpecification.Single
 import com.lukewassink.simulation.message.ResponseState.{Request, Response}
 import com.lukewassink.simulation.test_utils.UnitSpec
 
 class ReliableBroadcasterSpec extends UnitSpec {
-  private val config      = ReliableBroadcasterConfig(100, 3, 1000)
+  private val config      = ReliableBroadcasterConfig(100, 3, 1000, 0)
   private val broadcaster = ReliableBroadcaster.empty(config)
   private val state       = NodeState(NodeHeader(0, 0), List.empty, List.empty)
 
@@ -69,7 +69,7 @@ class ReliableBroadcasterSpec extends UnitSpec {
       Scheduled(3, 2, 0, 20, 35),
       DeliverySemantics(
         Response(0, 0),
-        BroadcastProtocols(ReliableAck(MessageUniqueID(0, 0)))
+        BroadcastProtocols(ReliableAcks(List(MessageUniqueID(0, 0))))
       ),
       Content.empty
     )
@@ -122,14 +122,17 @@ class ReliableBroadcasterSpec extends UnitSpec {
         Pending(0, 0, 2, 20),
         DeliverySemantics(
           Response(2, 1),
-          BroadcastProtocols(ReliableAck(MessageUniqueID(2, 1)))
+          BroadcastProtocols(ReliableAcks(List(MessageUniqueID(2, 1))))
         ),
         Content.empty
       )
-      val UpdatedState(_, withAck) =
-        broadcaster.preAction(using
-          ExecutionContext(20, 1, 1)
-        )(state.withIncomingMessage(incomingMessage))
+
+      given ExecutionContext = ExecutionContext(20, 1, 1)
+
+      val UpdatedState(_, withAck) = broadcaster
+        .preAction(state.withIncomingMessage(incomingMessage)).selfState
+        .mainAction(state)
+
       withAck.outgoingMessages should contain theSameElementsAs List(ack)
     }
   }

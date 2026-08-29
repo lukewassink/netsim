@@ -121,7 +121,8 @@ enum BehaviorNode extends SyntaxTreeNode:
   )
   case SimpleResponderNode()
   case ReliableBroadcasterNode(
-      ackTimeout: Double,
+      incomingAckTimeout: Double,
       maxRetries: Int,
-      dedupeTimeout: Double
+      dedupeTimeout: Double,
+      outgoingAckTimeout: Double
   )

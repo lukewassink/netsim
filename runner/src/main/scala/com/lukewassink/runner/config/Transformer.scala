@@ -25,7 +25,7 @@ import com.lukewassink.simulation.message.ResponseState.Request
 import com.lukewassink.simulation.interceptor.{
   MessageDropInterceptor, MessageInterceptor, RandomLatencyInterceptor
 }
-import com.lukewassink.simulation.message.Protocol.Reliable
+import com.lukewassink.simulation.message.Reliable
 import com.lukewassink.simulation.message.RecipientSpecification.Single
 import com.lukewassink.simulation.message.{
   BroadcastProtocols, Content, DeliverySemantics, Message, MessageID,
@@ -177,11 +177,17 @@ object Transformer {
             )
           )
         case SimpleResponderNode() => SimpleResponder()
-        case ReliableBroadcasterNode(ackTimeout, maxRetries, dedupeTimeout) =>
+        case ReliableBroadcasterNode(
+              incomingAckTimeout,
+              maxRetries,
+              dedupeTimeout,
+              outgoingAckTimeout
+            ) =>
           ReliableBroadcaster.empty(ReliableBroadcasterConfig(
-            ackTimeout.milliseconds,
+            incomingAckTimeout.milliseconds,
             maxRetries,
-            dedupeTimeout.milliseconds
+            dedupeTimeout.milliseconds,
+            outgoingAckTimeout.milliseconds
           ))
       }
 }

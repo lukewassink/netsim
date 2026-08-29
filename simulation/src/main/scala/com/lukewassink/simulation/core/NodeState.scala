@@ -47,6 +47,11 @@ case class NodeState(
     )
   }
 
+  def withOutgoingMessages(using
+      ctx: ExecutionContext
+  )(drafts: Iterable[Message[Drafted]]): NodeState =
+    drafts.foldLeft(this)((s, draft) => s.withOutgoingMessage(draft))
+
   def withIncomingMessage(message: Message[Scheduled]): NodeState = copy(
     incomingMessages = message :: incomingMessages
   )
