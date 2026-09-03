@@ -39,6 +39,23 @@ The core primitives that simulations are built on:
     delivered. They allow the simulation to model message dropping, random
     latency, etc.
 
+## Roadmap
+
+| Step                                     | Status      |
+|------------------------------------------|-------------|
+| Core network logic                       | Done        |
+| Visualizer                               | Done        |
+| Send and respond to messages             | Done        |
+| Generate simulations from config         | Done        |
+| Random message dropping                  | Done        |
+| Random message latency                   | Done        |
+| Retry dropped messages                   | Done        |
+| Generate statistics from simulation runs | In progress |
+| RAFT clusters                            | In progress |
+| Distributed, linearizable storage system | In progress |
+| Resource costs for node actions          | Not started |
+| Load balancers                           | Not started |
+
 ## Usage
 
 There are a few steps to run the simulator for yourself.
