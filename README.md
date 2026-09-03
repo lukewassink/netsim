@@ -22,7 +22,7 @@ Netsim is:
     isolated chunks of code to add new logic for nodes, for message handling,
     etc.
 
-## Primatives
+## Primitives
 
 The core primitives that simulations are built on:
 
